@@ -60,7 +60,7 @@ The following software are need to run the automatic RepeatOBserver script:
 - r/4.1.2 : https://cran.r-project.org/bin/windows/base/old/
 
 Newer versions of these software may work but the program has not yet been tested throughly in them. 
-If you are unable to install any of the programs above you can run the RepeatOBserver code in R but the automated bash script will not work for you.
+If you are unable to install any of the programs above you can run the RepeatOBserver code in R but the automated bash script will not work for you (see <a href="#troubleshooting">Troubleshooting</a> at the end of this page for details on how to run the code without this script).
 
 Example software installation (using Compute Canada modules):
   ```sh
