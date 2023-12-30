@@ -89,7 +89,7 @@ To install the R package "RepeatOBserverV1", you will first need to install the 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
 ### Basic run 
-Download a copy of the Setup_Run_Repeats.sh script from this github repo into this same directory. 
+Download a copy of the Setup_Run_Repeats.sh script from this github repo into the directory that you want to run the code in. 
    ```sh
 wget https://github.com/celphin/RepeatOBserverV1/blob/main/Setup_Run_Repeats.sh 
    ```
@@ -98,7 +98,7 @@ Make sure the script is executable.
    ```sh
    chmod +x Setup_Run_Repeats.sh
    ```
-Move your chromosome scale fasta file into a directory that you want to run RepeatOBserverV1 in.
+Move your chromosome scale fasta file into a directory that you want to run RepeatOBserverV1 in. Make sure to unzip/gunzip the file.
 In this directory, with your desired reference genome, you can run the default RepeatOBserverV1 commands automatically with the following command:
 
    ```sh
