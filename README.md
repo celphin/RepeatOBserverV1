@@ -13,7 +13,7 @@
   <a href="XX">
     <img src="images/logo.png" alt="Logo" width="650" height="300">
   </a>
-<h3 align="center">RepeatOBserverV1</h3>
+<h3 align="center">RepeatOBserver</h3>
   <p align="center">
     An R package to visualize chromosome scale repeat patterns and predict centromere locations.
     <br />
@@ -46,21 +46,21 @@
 <!-- GETTING STARTED-->
 ## Getting Started
 
-RepeatOBserverV1 is an R package that can be run on any chromosome scale reference genome assembly (e.g. fasta file). 
-RepeatOBserverV1 returns many plots describing the tandem repeats and clusters of transposons found across each chromosome. 
-Based on the repeat patterns, RepeatOBserverV1 also returns a predicted centromere location for each chromosome based on the repeat diversity across that chromosome. 
+RepeatOBserver is an R package that can be run on any chromosome scale reference genome assembly (e.g. fasta file). 
+RepeatOBserver returns many plots describing the tandem repeats and clusters of transposons found across each chromosome. 
+Based on the repeat patterns, RepeatOBserver also returns a predicted centromere location for each chromosome based on the repeat diversity across that chromosome. 
 
 You can learn more about the interpretations of the plots in our manuscript here: 
 
 ### Software needed
-The following software are need to run the automatic RepeatOBserverV1 script: 
+The following software are need to run the automatic RepeatOBserver script: 
 
 - seqkit/2.3.1 : https://bioinf.shenwei.me/seqkit/
 - emboss/6.6.0 : https://emboss.sourceforge.net/download/
 - r/4.1.2 : https://cran.r-project.org/bin/windows/base/old/
 
 Newer versions of these software may work but the program has not yet been tested throughly in them. 
-If you are unable to install any of the programs above you can run the RepeatOBserverV1 code in R but the automated bash script will not work for you.
+If you are unable to install any of the programs above you can run the RepeatOBserver code in R but the automated bash script will not work for you.
 
 Example software installation (using Compute Canada modules):
   ```sh
