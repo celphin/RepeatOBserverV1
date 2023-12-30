@@ -4006,11 +4006,17 @@ join_chromosome_parts <- function(fname=fname, chromosome=chromosome, inpath=inp
     base::cat("already a chromosome")
     nam_list5 <- nam_list1[base::grep(paste0(chromosome), nam_list1)]
   } else {
-    nam_list5 <- NULL
-    for (i in 1:base::nrow(nam_list4)){
-      nam_list5[i]<- base::paste0(nam_list4[i,1], "_", nam_list4[i,2], "_", nam_list4[i,3])
+    if (is.null(nrow(nam_list4))){
+      nam_list5 <- NULL
+      nam_list5 <- base::paste0(nam_list4[1], "_", nam_list4[2], "_", nam_list4[3])
+    } else {
+      nam_list5 <- NULL
+      for (i in 1:base::nrow(nam_list4)){
+        nam_list5[i]<- base::paste0(nam_list4[i,1], "_", nam_list4[i,2], "_", nam_list4[i,3])
+      }
     }
   }
+
   full_length_total <- NULL
   All_spec_Total <- NULL
   DNAwalk_Total <- NULL
