@@ -39,7 +39,6 @@
         <li><a href="#basic-run">Basic run</a></li>
       </ul>
     </li>
-    <li><a href="#current-issues">Current Issues</a></li>
     <li><a href="#citation">Citation</a></li>
     <li><a href="#contact-and-questions">Contact and Questions</a></li>
     <li><a href="#usage-examples">Usage Examples</a></li>
