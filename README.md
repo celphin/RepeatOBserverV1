@@ -130,7 +130,7 @@ module load StdEnv/2020
 module load emboss/6.6.0
 module load r/4.1.2
 
-srun Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -mem m
+srun Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -m m
 
 EOF
 
