@@ -15,7 +15,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="XX">
+  <a href="https://www.biorxiv.org/content/10.1101/2023.12.30.573697v1">
     <img src="images/logo.png" alt="Logo" width="650" height="300">
   </a>
 <h3 align="center">RepeatOBserver</h3>
@@ -54,7 +54,7 @@ RepeatOBserver is an R package that can be run on any chromosome scale reference
 RepeatOBserver returns many plots describing the tandem repeats and clusters of transposons found across each chromosome. 
 Based on the repeat patterns, RepeatOBserver also returns a predicted centromere location for each chromosome based on the repeat diversity across that chromosome. 
 
-You can learn more about the interpretations of the plots in our manuscript here: 
+You can learn more about the interpretations of the plots in our manuscript here: https://www.biorxiv.org/content/10.1101/2023.12.30.573697v1
 
 ### Software needed
 The following software are need to run the automatic RepeatOBserver script: 
@@ -126,7 +126,7 @@ If you require an allocation to get enough memory or cpu (125G for 15 CPU is bes
 cat << EOF > SPP_repeats.sh
 #!/bin/bash
 #SBATCH --account=<your-account>
-#SBATCH --time=3:00:00
+#SBATCH --time=5:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=15
 #SBATCH --mem=128000M
@@ -143,7 +143,7 @@ sbatch SPP_repeats.sh
    ```
 Summary plots and output files can be found in:
    ```
-cd ~/scratch/repeats/auto_script/output_chromosomes/Summary_output
+cd <your-starting-directory>/output_chromosomes/SpeciesName/Summary_output
    ```
 Some example/test code can be found <a href="https://github.com/celphin/RepeatOBserverV1/blob/main/Example_code/Example_test_code.R">here.</a>
 
@@ -152,8 +152,8 @@ Some example/test code can be found <a href="https://github.com/celphin/RepeatOB
 
 <!-- CITATION -->
 ## Citation
-
-Pre-print: 
+Pre-print:
+Elphinstone, C., Elphinstone, R., Todesco, M., & Rieseberg, L. (2023). RepeatOBserver: Tandem repeat visualization and centromere detection (p. 2023.12.30.573697). bioRxiv. https://doi.org/10.1101/2023.12.30.573697
 
 <!-- CONTACT AND QUESTIONS-->
 ## Contact and Questions
@@ -161,7 +161,7 @@ Pre-print:
 If you have questions, suggestions or comments please contact:
 
 Cassandra Elphinstone - cassandra (dot) elphinstone (at) gmail (dot) com \
-Or post here: https://github.com/celphin/RepeatOBserverV1/discussions/1
+Or post here: https://github.com/celphin/RepeatOBserverV1/discussions
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
