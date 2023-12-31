@@ -102,7 +102,7 @@ Move your chromosome scale fasta file into a directory that you want to run Repe
 In this directory, with your desired reference genome, you can run the default RepeatOBserverV1 commands automatically with the following command:
 
    ```sh
-   sh Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -mem m 
+   sh Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -m m 
    ```
 Note that if you need to rerun the script above you will need to remove all the chromosomes in:
 ./input_chromosomes/chromosome_files/
