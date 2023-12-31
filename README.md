@@ -140,6 +140,11 @@ EOF
 
 sbatch Arabidopsis_repeats.sh
    ```
+Summary plots and output files can be found in:
+   ```
+cd ~/scratch/repeats/auto_script/output_chromosomes/Summary_output
+   ```
+Some example/test code can be found <a href="https://github.com/celphin/RepeatOBserverV1/blob/main/Example_code/Example_test_code.R">here.</a>
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
