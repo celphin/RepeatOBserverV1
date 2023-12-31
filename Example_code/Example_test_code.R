@@ -22,6 +22,7 @@ cd ~/scratch/repeats/auto_script/
 # download the Setup_Run_Repeats.sh
 wget https://github.com/celphin/RepeatOBserverV1/blob/main/Setup_Run_Repeats.sh
 chmod +x Setup_Run_Repeats.sh
+dos2unix Setup_Run_Repeats.sh
 
 #-----------------------------------
 # download genome, Citrus limon

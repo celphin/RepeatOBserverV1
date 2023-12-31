@@ -98,9 +98,10 @@ Download a copy of the Setup_Run_Repeats.sh script from this github repo into th
 wget https://github.com/celphin/RepeatOBserverV1/blob/main/Setup_Run_Repeats.sh 
    ```
    
-Make sure the script is executable.
+Make sure the script is executable and setup to run on unix. 
    ```sh
    chmod +x Setup_Run_Repeats.sh
+   dos2unix Setup_Run_Repeats.sh
    ```
 Move your chromosome scale fasta file into a directory that you want to run RepeatOBserverV1 in. Make sure to unzip/gunzip the file.
 In this directory, with your desired reference genome, you can run the default RepeatOBserverV1 commands automatically with the following command:

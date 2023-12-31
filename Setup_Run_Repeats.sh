@@ -5,7 +5,7 @@
 run() {
   #Get input:
   get_input "$@"
-  echo "Running RepeatOBserver on: $species"
+  echo "Running RepeatOBserverV1 on: $species"
   echo "with fasta file: $fasta_file"
   echo "With $cpu cpus over $memory MB"
   set_up_directories
@@ -16,6 +16,7 @@ run() {
   build_post_repeats
   run_all 
 }
+
 
 #get_input:
   #Reads input from original send, 
@@ -97,7 +98,6 @@ rename_chr() {
   count=1
   for filename in *; do
     new_name="${species}_${haplotype}_Chr$count.fasta"
-    
     # Rename the file
     mv "$filename" "$new_name"
     ((count++))
@@ -160,7 +160,7 @@ wc -c \${pathname}/chromosome_files/* > chromosome_lengths.txt
 # list of chromosomes
 ls \${pathname}/chromosome_files/* > chr_list.txt
 
-#while IFS= read -r chr; 
+while IFS= read -r chr; 
 do
 isochore -sequence \${chr} -outfile \${chr}.isochore -window 100000 -shift 50000  -graph png -goutfile \${chr}_png
 done < chr_list.txt
@@ -374,9 +374,6 @@ echo "post-repeats.sh file made"
 run_all(){
   
 ############################################
-# slurm scripts:
-# submit the pre, post and R scripts to your server
-# code below is setup for slurm
 
   cd ${path_name}
 
