@@ -7,6 +7,11 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -34,7 +39,6 @@
         <li><a href="#basic-run">Basic run</a></li>
       </ul>
     </li>
-    <li><a href="#current-issues">Current Issues</a></li>
     <li><a href="#citation">Citation</a></li>
     <li><a href="#contact-and-questions">Contact and Questions</a></li>
     <li><a href="#usage-examples">Usage Examples</a></li>
@@ -139,17 +143,11 @@ sbatch Arabidopsis_repeats.sh
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
-<!-- CURRENT ISSUES -->
-## Current Issues
-
-See the [open issues](https://github.com/celphin/RepeatOBserverV1/issues) for a full list of proposed features (and known issues).
 
 <!-- CITATION -->
 ## Citation
 
 Pre-print: 
-
-Citation:
 
 <!-- CONTACT AND QUESTIONS-->
 ## Contact and Questions
@@ -158,11 +156,6 @@ If you have questions, suggestions or comments please contact:
 
 Cassandra Elphinstone - cassandra (dot) elphinstone (at) gmail (dot) com \
 Or post here: https://github.com/celphin/RepeatOBserverV1/discussions/1
-
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
@@ -320,7 +313,7 @@ startbp=35005001
 endbp=39000000
 
 #----------------------
-library(RepeatOBserver)
+library(RepeatOBserverV1)
 
 outpath="~/scratch/repeats/output_chromosomes"
 x_cpu=1
@@ -356,7 +349,7 @@ chromosome="ChrDlow77"
 part="part01"
 nam="Fly_H0_ChrDlow77part01"
 #----------------------
-library(RepeatOBserver)
+library(RepeatOBserverV1)
 
 outpath="~/scratch/repeats/output_chromosomes"
 x_cpu=1
@@ -405,7 +398,7 @@ if(!base::is.null(r1))largeimagesub_NEW(All_spec,fname=fname, chromosome=chromos
 
 Use the run_long_repeats_NEW function: 
    ```
-   library(RepeatOBserver)
+   library(RepeatOBserverV1)
 inpath="~/scratch/repeats/input_chromosomes/Einkorn/chromosome_files/"
 fname= "Einkorn_H0"
 
