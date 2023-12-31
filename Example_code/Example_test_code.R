@@ -3,15 +3,11 @@
 ##############################
 
 # in R install the libraries
-
 install.packages("devtools")
 
 library(devtools)
-
 install_github("celphin/RepeatOBserverV1") #to install the package
-
 library(RepeatOBserverV1) # to load the package
-
 
 #############################
 # on the terminal 
@@ -20,16 +16,14 @@ library(RepeatOBserverV1) # to load the package
 cd ~/scratch/repeats/auto_script/
 
 # download the Setup_Run_Repeats.sh
-wget https://github.com/celphin/RepeatOBserverV1/blob/main/Setup_Run_Repeats.sh
+wget https://raw.githubusercontent.com/celphin/RepeatOBserverV1/main/Setup_Run_Repeats.sh
 chmod +x Setup_Run_Repeats.sh
 dos2unix Setup_Run_Repeats.sh
 
 #-----------------------------------
 # download genome, Citrus limon
 wget https://download.cncb.ac.cn/gwh/Plants/Citrus_limon_lemon_GWHCBFQ00000000.1/GWHCBFQ00000000.1.genome.fasta.gz
-
 gunzip GWHCBFQ00000000.1.genome.fasta.gz
-
 mv GWHCBFQ00000000.1.genome.fasta Lemon.fasta
 
 #---------------------------
