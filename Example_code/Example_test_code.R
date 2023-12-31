@@ -14,6 +14,8 @@ library(RepeatOBserverV1) # to load the package
 
 
 #############################
+# on the terminal 
+
 # change to directory you want to work in
 cd ~/scratch/repeats/auto_script/
 
@@ -45,11 +47,12 @@ module load seqkit/2.3.1
 module load emboss/6.6.0
 module load r/4.1.2
 
-srun Setup_Run_Repeats.sh -i Lemon -f Lemon.fasta -h H0 -c 15 -mem 128000M
+srun Setup_Run_Repeats.sh -i Lemon -f Lemon.fasta -h H0 -c 15 -m 128000M
 
 EOF
 
 sbatch Auto_Lemon.sh
 
 ###########################
-# look at the output in ~/scratch/repeats/auto_script/output_chromosomes/Summary_output
+# look at the output in:
+cd ~/scratch/repeats/auto_script/output_chromosomes/Lemon_H0/Summary_output
