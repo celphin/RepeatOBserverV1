@@ -7,6 +7,11 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -139,17 +144,11 @@ sbatch Arabidopsis_repeats.sh
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
-<!-- CURRENT ISSUES -->
-## Current Issues
-
-See the [open issues](https://github.com/celphin/RepeatOBserverV1/issues) for a full list of proposed features (and known issues).
 
 <!-- CITATION -->
 ## Citation
 
 Pre-print: 
-
-Citation:
 
 <!-- CONTACT AND QUESTIONS-->
 ## Contact and Questions
@@ -158,11 +157,6 @@ If you have questions, suggestions or comments please contact:
 
 Cassandra Elphinstone - cassandra (dot) elphinstone (at) gmail (dot) com \
 Or post here: https://github.com/celphin/RepeatOBserverV1/discussions/1
-
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
