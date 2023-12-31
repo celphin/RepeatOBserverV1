@@ -95,7 +95,7 @@ To install the R package "RepeatOBserverV1", you will first need to install the 
 ### Basic run 
 Download a copy of the Setup_Run_Repeats.sh script from this github repo into the directory that you want to run the code in. 
    ```sh
-wget https://github.com/celphin/RepeatOBserverV1/blob/main/Setup_Run_Repeats.sh 
+wget https://raw.githubusercontent.com/celphin/RepeatOBserverV1/main/Setup_Run_Repeats.sh
    ```
    
 Make sure the script is executable and setup to run on unix. 
@@ -121,12 +121,12 @@ Necessary parameters:
 | -c | cpus available (any integer value) | 20  |
 | -m | memory available (MB) | 128000|
 
-If you require an allocation to get enough memory or cpu on your server, here is a slurm template to follow:
+If you require an allocation to get enough memory or cpu (125G for 15 CPU is best) on your server, here is a slurm template to follow:
    ```sh
-cat << EOF > Arabidopsis_repeats.sh
+cat << EOF > SPP_repeats.sh
 #!/bin/bash
 #SBATCH --account=<your-account>
-#SBATCH --time=1:00:00
+#SBATCH --time=3:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=15
 #SBATCH --mem=128000M
@@ -139,7 +139,7 @@ srun Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -m
 
 EOF
 
-sbatch Arabidopsis_repeats.sh
+sbatch SPP_repeats.sh
    ```
 Summary plots and output files can be found in:
    ```
