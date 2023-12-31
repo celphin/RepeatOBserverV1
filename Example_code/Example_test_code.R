@@ -1,57 +1,55 @@
 # Test code
 
 ##############################
-# run code
 
-#-----------------------
-# Custom settings
-inpath="/home/celphin/scratch/repeats/input_chromosomes/Arabidopsis/chromosome_files/"
-fname= "Arab_H0"
-outpath="/home/celphin/scratch/repeats/output_chromosomes"
-pflag=FALSE
-writeflag=FALSE
-plotflag=FALSE
-x_cpu=19
+# in R install the libraries
 
-#--------------------------
-library(RepeatObserver)
+install.packages("devtools")
 
-chr_list0 <- list.files(inpath)
-chr_list <- tools::file_path_sans_ext(chr_list0)
-chr_list <- chr_list[c(4)]
-chr_list
+library(devtools)
 
-for (nam in chr_list){
-  print(nam)
-  run_plot_chromosome_parallel(nam=nam, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu)
-}
-# done
+install_github("celphin/RepeatOBserverV1") #to install the package
 
-#----------------------------
+library(RepeatOBserverV1) # to load the package
 
-for (nam in chr_list){
-  print(nam)
-  runs_run_barplots(nam=nam, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag)
-}
 
-# works - maybe comment out bedGraph making in run_barplots? still prints?
-#--------------------------
+#############################
+# change to directory you want to work in
+cd ~/scratch/repeats/auto_script/
 
-for (nam in chr_list){
-  print(nam)
-  run_20Mbpimag(nam=nam, fname=fname, inpath=inpath, outpath=outpath,  pflag=pflag, plotflag=plotflag,  writeflag=writeflag)
-}
+# download the Setup_Run_Repeats.sh
+wget https://github.com/celphin/RepeatOBserverV1/blob/main/Setup_Run_Repeats.sh
+chmod +x Setup_Run_Repeats.sh
 
-# works
-#--------------------------
+#-----------------------------------
+# download genome, Citrus limon
+wget https://download.cncb.ac.cn/gwh/Plants/Citrus_limon_lemon_GWHCBFQ00000000.1/GWHCBFQ00000000.1.genome.fasta.gz
 
-for (nam in chr_list){
-  print(nam)
-  run_long_repeats_NEW(nam=nam, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag)
-}
+gunzip GWHCBFQ00000000.1.genome.fasta.gz
 
-# works
-# 5000bp_spectra.pdf/ is blank?
-# 5000bp_spectra.txt/ is blank?
+mv GWHCBFQ00000000.1.genome.fasta Lemon.fasta
 
-###################################
+#---------------------------
+# make slurm script
+
+cat << EOF > Auto_Lemon.sh
+#!/bin/bash
+#SBATCH --account=<your-account>
+#SBATCH --time=3:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=15
+#SBATCH --mem=128000M
+
+module load StdEnv/2020
+module load seqkit/2.3.1
+module load emboss/6.6.0
+module load r/4.1.2
+
+srun Setup_Run_Repeats.sh -i Lemon -f Lemon.fasta -h H0 -c 15 -mem 128000M
+
+EOF
+
+sbatch Auto_Lemon.sh
+
+###########################
+# look at the output in ~/scratch/repeats/auto_script/output_chromosomes/Summary_output
