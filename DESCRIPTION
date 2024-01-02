@@ -20,7 +20,8 @@ Imports:
     pracma,
     stringr,
     parallel,
-    rapportools
+    rapportools,
+    zoo
 Suggests: 
     knitr,
     rmarkdown
