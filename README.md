@@ -146,6 +146,8 @@ Summary plots and output files can be found in:
 cd <your-starting-directory>/output_chromosomes/SpeciesName/Summary_output
    ```
 Some example/test code can be found <a href="https://github.com/celphin/RepeatOBserverV1/blob/main/Example_code/Example_test_code.R">here.</a>
+After running the Wine genome you should get the following plot for chromosome 7 repeat lengths 15 to 35 bp. 
+![Example Results Wine][product-example]
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
@@ -695,6 +697,7 @@ results2 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_pl
 [product-DNAwalk]: images/DNAwalk.png
 [product-repeat_lengths]: images/repeat_lengths.png
 [product-chromosome-subset]: images/chromosome-subset.png
+[product-example]: images/Example_test_result.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
