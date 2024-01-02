@@ -10,8 +10,6 @@ run() {
   echo "With $cpu cpus over $memory MB"
   set_up_directories
   split_fasta
-  rename_chr
-  split_long_chr
   build_pre_repeats
   build_post_repeats
   run_all 
@@ -68,33 +66,23 @@ split_fasta() {
   #seqkit seq -w 60 GCA_029775835.1_ASM2977583v1_genomic.fna > Maize_2.fasta
   seqkit seq -w 60 $fasta_file > ${species}_2.fasta
 
+  if [ -d chromosome_files ]
+  then
+    echo "chromosome_files directory exists"
+    cd ./chromosome_files/
+  else
   # make a directory to store the individual chromosome files in
   mkdir chromosome_files/
   cd ./chromosome_files/
-
+  
   # split the assembly fasta file into one fasta file per chromosome
-  #awk '/^>/ { file=substr($1,2) ".fasta" } { print > file }'  ../Maize_2.fasta
   awk '/^>/ { file=substr($1,2) ".fasta" } { print > file }'  ../${species}_2.fasta
-  # remove any chromosomes or scaffolds that are less than 5Mbp _ this can be set as low as 1Mbp
-  find -type f -size -5000000c -delete
+  # remove any chromosomes or scaffolds that are less than 1Mbp 
+  find -type f -size -1000000c -delete
   echo "The resulting chromosome files are: "
   ls    
-}
-
-
-#!!! To do
-rename_chr() {
-    # rename the chromosomes in the form Refspp_Haplotype_Chr#
-  # the 3 part naming of the files here is important for the reading into the program
-  # Refspp can be any name you use to identify this species but should not include any underscores
-  # Haplotype can be any way to record the haplotype, H0 if the haplotype is unknown, again this should not include any underscores
-  # Chromosome number should be your ID for the chromosome and should not include any underscores
-
-  # in this case "CP1167" is the start of the NCBI chromosome names and we renmae this to "Maize_H0_Chr"
-  # note if you do this each chromosome will have the NCBI ID number and not the chromosome number starting from 1 in the output
-  #rename CP1167 Maize_H0_Chr *
-  #DO: RENAME
-  #Various starts - sometimes pattern does not work:
+  
+  # rename parts
   count=1
   for filename in *; do
     new_name="${species}_${haplotype}_Chr$count.fasta"
@@ -103,12 +91,6 @@ rename_chr() {
     ((count++))
   done
   echo "Files renamed"
-
-}
-
-split_long_chr() {
-  # the files should also end in .fasta not .fna or .fa
-  #rename .1.fasta .fasta *
 
   # loop to split long chromosomes
   # any chromosomes over 100Mbp long will be run in 100Mbp sections and rejoined
@@ -127,9 +109,8 @@ split_long_chr() {
 
   find ./chromosome_files/ -type f -exec mv {} {}".fasta" \;
 
-  # all chromosomes should be labelled in the form:
-  # Maize_H0_Chr39part01.fasta
-  }
+  fi
+}
 
 
 #Writes and builds pre-repeats script in three parts:
@@ -148,7 +129,7 @@ cat << EOF > pre-repeats.sh
 # inlude / at the end of pathname
 pathname=\$1
 SPP=\$2
-
+cpu=\$3
 cd \${pathname}
 echo "need to be in: \${pathname}"
 echo "Currently in: \$(pwd)"
@@ -194,7 +175,7 @@ fname=\${qq}\${SPP}\${qq}
 #----------------------------------------
 
 outpath="${path_name}/output_chromosomes"
-x_cpu=14 # same as on top -1 
+x_cpu=\${cpu} 
 pflag=FALSE
 writeflag=FALSE
 plotflag=FALSE
@@ -247,7 +228,7 @@ chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpat
   run_diversity_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
   run_summary_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
 }
-x_cpu=2 #maxmem/25
+x_cpu=1
 cl <- parallel::makeCluster(x_cpu)
 results2 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary,uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
 print("repeats_fourier.R finished running")
@@ -266,7 +247,7 @@ fname=\${qq}\${SPP}\${qq}
 #----------------------------------------
 
 outpath="${path_name}/output_chromosomes"
-x_cpu=14 #memory/x_cpu >= 10
+x_cpu=\${cpu}
 pflag=FALSE
 writeflag=FALSE
 plotflag=FALSE
@@ -289,7 +270,6 @@ chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpat
   run_summary_hist(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
   run_summary_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
   run_diversity_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
-
 }
 
 cl <- parallel::makeCluster(x_cpu)
@@ -377,7 +357,7 @@ run_all(){
 
   cd ${path_name}
 
-  ${path_name}/pre-repeats.sh "${path_name}/input_chromosomes/${species}" "${species}_H0"
+  ${path_name}/pre-repeats.sh "${path_name}/input_chromosomes/${species}" "${species}_H0" "${cpu}"
 
   cd ${path_name}/input_chromosomes/${species}
 
