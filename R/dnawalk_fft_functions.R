@@ -3354,7 +3354,7 @@ run_chromosome_loop <- function(x, nam, fname, atflag, startgroup,majorlen,lengt
 
   #  for(startval in start_seq){
   # https://www.r-bloggers.com/2017/10/running-r-code-in-parallel/
-  library(RepeatObserver)
+  library(RepeatOBserverV1)
 
   startval <<- start_seq[x]
   DNAwalk_extended<-NULL
