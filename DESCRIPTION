@@ -19,7 +19,8 @@ Imports:
     matrixStats,
     pracma,
     stringr,
-    parallel
+    parallel,
+    rapportools
 Suggests: 
     knitr,
     rmarkdown
