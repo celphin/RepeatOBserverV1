@@ -97,7 +97,7 @@ split_fasta() {
 
   while IFS= read -r Chr; 
   do
-  split -l 3333333 ${Chr} ${Chr}- --numeric-suffixes=1
+  split -l 3333330 ${Chr} ${Chr}- --numeric-suffixes=1
   rm ${Chr}
   done < ../list_long_chrnum.txt
   wc -c *
