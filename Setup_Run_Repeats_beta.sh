@@ -237,20 +237,34 @@ cl <- parallel::makeCluster(x_cpu)
 results2 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), parts_join, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
 
 #----------------------------------
-# plot chromosomes 
+# plot centromeres 
 
-chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
+centromere_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
   library(RepeatOBserverV1)
   chromosome <<- uni_chr_list[x]
   print(chromosome)
   run_summary_hist(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
   run_diversity_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
+}
+
+x_cpu=\${cpu}
+cl <- parallel::makeCluster(x_cpu)
+results3 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), centromere_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
+
+#----------------------------------
+# plot chromosomes - summary plots
+
+chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
+  library(RepeatOBserverV1)
+  chromosome <<- uni_chr_list[x]
+  print(chromosome)
   run_summary_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
 }
 
 x_cpu=\${cpu}
 cl <- parallel::makeCluster(x_cpu)
-results3 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
+results4 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
+
 
 print("repeats_fourier.R finished running")
 EOF1
