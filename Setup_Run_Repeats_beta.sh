@@ -243,8 +243,8 @@ centromere_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpat
   library(RepeatOBserverV1)
   chromosome <<- uni_chr_list[x]
   print(chromosome)
-  run_summary_hist(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
   run_diversity_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
+  run_summary_hist(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
 }
 
 x_cpu=\${cpu}
