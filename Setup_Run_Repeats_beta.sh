@@ -352,7 +352,6 @@ run_all(){
   cd ${path_name}/input_chromosomes/${species}
 
   Rscript ${path_name}/input_chromosomes/${species}/repeats_fourier.R 
-  Rscript ${path_name}/input_chromosomes/${species}/centromere_histogram.R
 
   ${path_name}/post-repeats.sh "${species}_H0"
 
