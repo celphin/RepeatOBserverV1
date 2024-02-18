@@ -83,14 +83,14 @@ split_fasta() {
   ls    
   
   # rename chromosomes
-  touch chromosome_renaming.txt
-  echo "Old_Name	New_Name" >> chromosome_renaming.txt
+  touch ../chromosome_renaming.txt
+  echo "Old_Name	New_Name" >> ../chromosome_renaming.txt
   count=1
   for filename in *; do
     new_name="${species}_${haplotype}_Chr$count"
     # Rename the file
     mv "$filename" "$new_name"
-    echo "$filename	$new_name" >> chromosome_renaming.txt
+    echo "$filename	$new_name" >> ../chromosome_renaming.txt
     ((count++))
   done
   echo "Files renamed"
