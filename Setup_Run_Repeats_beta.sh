@@ -95,7 +95,7 @@ split_fasta() {
   done
   echo "Files renamed"
   
-  # check chromosome lengths, find all greater than 200Mbp and split into 200Mbp parts
+  # check chromosome lengths, find all greater than 400Mbp and split into 400Mbp parts
   find -type f -size +400000000c  > ../list_long_chrnum.txt
 
   while IFS= read -r Chr; 
