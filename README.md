@@ -132,8 +132,9 @@ cat << EOF > SPP_repeats.sh
 #SBATCH --mem=128000M
 
 module load StdEnv/2020
+module load seqkit/2.3.1
 module load emboss/6.6.0
-module load r/4.1.2
+module load r/4.3.1
 
 srun Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -m m
 
