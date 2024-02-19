@@ -445,7 +445,7 @@ run_all(){
   Rscript ${path_name}/input_chromosomes/${species}/Summary_plots.R 
   
   # list and remove empty folders
-  cd ${path_name}/output_chromosomes/${species}
+  cd ${path_name}/output_chromosomes/${species}_${haplotype}
   find . -type d -empty -print
   find . -type d -empty -delete
 
