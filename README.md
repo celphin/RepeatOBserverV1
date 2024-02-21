@@ -168,14 +168,14 @@ The program removes any scaffolds or chromosomes less than 3Mbp and chromosomes 
 You can try restarting the script with the exact same submission as before and it will start where it left off if it did not finish due to time restraints. 
 
 #### Output folders and summary files that you should find in the directory above, if the whole program worked:
-|Main folders| Description |
+|Main folders| Description (more details below) |
 |-----------------| ------------|
 | DNAwalks | 1D and 2D DNAwalks |
 | histograms | histogram centromere predictions and plots |
 | output_data | Raw data files including Shannon diversity, DNAwalks, Fourier transforms |
 | Shannon_div | Shannon diversity plots for each chromosome |
 | spectra | Heat maps of the Fourier transform output |
-| isochores | CG isochore plots made with the EMBOSS program |
+| isochores | CG isochores plot made with the EMBOSS program, useful to see if centromere positions are associated with isochores |
 
 |Summary files| Description |
 |-----------------| ------------|
@@ -195,13 +195,13 @@ You can try restarting the script with the exact same submission as before and i
 #### histograms contains:
 |Folder/file name | Description |
 |-----------------| ------------|
-| Centromere_histograms_summary.txt | The predicted centromere positions based on the histograms | 
-| Species_Haplotype_Chr1_histogram_POWER_SUM_seqval_408_s_0.5std_1_35_2000.png | Histogram plots showing counts of where in the genome each repeat length minimized| 
+| Centromere_histograms_summary.txt | The predicted centromere positions for every chromosome based on the histogram output | 
+| Species_Haplotype_Chr1_histogram_....png | Histogram plots showing counts of where in the genome each repeat length minimized| 
 
 #### output_data contains:
 |Folder/file name | Description |
 |-----------------| ------------|
-| Species_Haplotype_Chr1_Histogram_input_408_s_0.5std_1_35_2000.txt | The Fourier window that each repeat length minimized in can be used to build the histograms | 
+| Species_Haplotype_Chr1_Histogram_input_....txt | The Fourier window that each repeat length minimized in can be used to build the histograms | 
 | Species_Haplotype_Chr1_Shannon_div.txt | The raw Shannon diversity data for each 5kbp window in the genome| 
 | Total_dnawalk_every50_Species_Haplotype_Chr1.txt | The raw DNAwalk data sampled every 50bp (see chromosome folders for the complete walk) | 
 | Total_Species_Haplotype_Chr1_All_spec_merged.txt | The Fourier transform output merged for up to 400Mbp (chromosomes >400Mbp will be in parts)| 
@@ -224,11 +224,6 @@ You can try restarting the script with the exact same submission as before and i
 | spectra_parts_2-8 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for short repeat lengths 2-8 bp | All_spec1_Species_Haplotype_Chr1part01_bp15_35seq2501_32542501TRUE.png|
 | spectra_parts_15-35 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for mid repeat lengths 15-35 bp |  All_spec1_Species_Haplotype_Chr1part01_bp2_8seq2501_32542501TRUE.png|
 | spectra_parts_35-2000 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for long repeat lengths 35-2000 bp |  All_spec1_Species_Haplotype_Chr1part01_bp35_2000seq2501_32542501TRUE.png|
-
-#### isochores contains:
-|Folder/file name | Description |
-|-----------------| ------------|
-| Species_Haplotype_Chr1part01.fasta_png.1.png | CG isochores plot made with the EMBOSS program, useful to see if centromere positions are associated with isochores |
 
 
 #### Gaps in chromosomes and missing data:\
