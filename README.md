@@ -168,17 +168,28 @@ The program removes any scaffolds or chromosomes less than 3Mbp and chromosomes 
 You can try restarting the script with the exact same submission as before and it will start where it left off if it did not finish due to time restraints. 
 
 #### Output Folders/Subfolders that you should find in the directory above, if the whole program worked:
-|Main Folder files| Description |
+|Main files| Description |
 |-----------------| ------------|
 | chromosome_renaming.txt | New chromosome names assigned to each chromosome in the program |
 | Species_Haplotype_Histograms.png | All chromosomes histograms plotted in one figure |
 | Species_Haplotype_Shannon_div.png|  All chromosomes Shannon_div plotted in one figure |
 | Species_Haplotype_rolling_mean_500Kbp_Shannon_div.png | All chromosomes Shannon_div in 500kbp rolling windows plotted in one figure |
 
+|Main folders| Description |
+|-----------------| ------------|
+| DNAwalks | 1D and 2D DNAwalks |
+| histograms | histogram centromere predictions and plots |
+| output_data | Raw data files including Shannon diversity, DNAwalks, Fourier transforms |
+| Shannon_div | Shannon diversity plots for each chromosome |
+| spectra | Heat maps of the Fourier transform output |
+| isochores | CG isochore plots made with the EMBOSS program |
+
+### Subfolders described:
+
 #### DNAwalks contains:
 |Folder/file name | Description | Example file| 
 |-----------------| ------------|-------------|
-| 1D | 1D CG and AT DNAwalks | Species_Haplotype_Chr1_DNAwalk1D_AT_total.png |
+| 1D | 1D CG and AT DNAwalks, rainbow colours change every 10Kbp | Species_Haplotype_Chr1_DNAwalk1D_AT_total.png |
 | 2D | 2D DNAwalks, the 1D walks plotted against each other| Species_Haplotype_Chr1_DNAwalk2D_total.png |
 
 #### histograms contains:
