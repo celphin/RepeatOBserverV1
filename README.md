@@ -184,7 +184,7 @@ Note: chromosomes are named differently than in the original fasta file and you 
 
 #### Missing data
 You can use the 'tree' command in the folder above to see all subfolders and files described below. Folders that are  missing from the list above did not finish.
-The program removes any scaffolds or chromosomes less than 3Mbp and chromosomes <5Mbp will not work for the larger Shannon windows. 
+The program removes any scaffolds or chromosomes less than 5Mbp. 
 You can try restarting the script with the exact same submission as before and it will start where it left off if it did not finish due to time restraints. 
 
 #### Output folders and summary files that you should find in the directory above, if the whole program worked:

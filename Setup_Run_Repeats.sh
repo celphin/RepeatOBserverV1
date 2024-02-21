@@ -87,8 +87,8 @@ split_fasta() {
   
   # split the assembly fasta file into one fasta file per chromosome
   awk '/^>/ { file=substr($1,2) ".fasta" } { print > file }'  ../${species}_2.fasta
-  # remove any chromosomes or scaffolds that are less than 3Mbp 
-  find -type f -size -3000000c -delete
+  # remove any chromosomes or scaffolds that are less than 5Mbp 
+  find -type f -size -5000000c -delete
   echo "The resulting chromosome files are: "
   ls    
   
