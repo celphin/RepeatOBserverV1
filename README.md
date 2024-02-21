@@ -160,14 +160,14 @@ Summary plots and output files can be found in:
    ```
 cd <your-starting-directory>/output_chromosomes/Species_Haplotype/Summary_output
    ```
-Note: chromosomes are named differently than in the original fasta file and you can find the new names in chromosome_renaming.txt \
+Note: chromosomes are named differently than in the original fasta file and you can find the new names in chromosome_renaming.txt 
 
 #### Missing data
 You can use the 'tree' command in the folder above to see all subfolders and files described below. Folders that are  missing from the list above did not finish.
 The program removes any scaffolds or chromosomes less than 3Mbp and chromosomes <5Mbp will not work for the larger Shannon windows. 
-You can try restarting the script with the exact same submission as before and it will start where it left off if it did not finish due to time restraints. \
+You can try restarting the script with the exact same submission as before and it will start where it left off if it did not finish due to time restraints. 
 
-Output Folders/Subfolders that you should find in the directory above, if the whole program worked:
+#### Output Folders/Subfolders that you should find in the directory above, if the whole program worked:
 |Main Folder files| Description |
 |-----------------| ------------|
 | chromosome_renaming.txt | New chromosome names assigned to each chromosome in the program |
@@ -175,19 +175,19 @@ Output Folders/Subfolders that you should find in the directory above, if the wh
 | Species_Haplotype_Shannon_div.png|  All chromosomes Shannon_div plotted in one figure |
 | Species_Haplotype_rolling_mean_500Kbp_Shannon_div.png | All chromosomes Shannon_div in 500kbp rolling windows plotted in one figure |
 
-DNAwalks contains:
+#### DNAwalks contains:
 |Folder/file name | Description | Example file| 
 |-----------------| ------------|-------------|
 | 1D | 1D CG and AT DNAwalks | Species_Haplotype_Chr1_DNAwalk1D_AT_total.png |
 | 2D | 2D DNAwalks, the 1D walks plotted against each other| Species_Haplotype_Chr1_DNAwalk2D_total.png |
 
-histograms contains:
+#### histograms contains:
 |Folder/file name | Description |
 |-----------------| ------------|
 | Centromere_histograms_summary.txt | The predicted centromere positions based on the histograms | 
 | Species_Haplotype_Chr1_histogram_POWER_SUM_seqval_408_s_0.5std_1_35_2000.png | Histogram plots showing counts of where in the genome each repeat length minimized| 
 
-output_data contains:
+#### output_data contains:
 |Folder/file name | Description |
 |-----------------| ------------|
 | Species_Haplotype_Chr1_Histogram_input_408_s_0.5std_1_35_2000.txt | The Fourier window that each repeat length minimized in can be used to build the histograms | 
@@ -195,7 +195,7 @@ output_data contains:
 | Total_dnawalk_every50_Species_Haplotype_Chr1.txt | The raw DNAwalk data sampled every 50bp (see chromosome folders for the complete walk) | 
 | Total_Species_Haplotype_Chr1_All_spec_merged.txt | The Fourier transform output merged for up to 400Mbp (chromosomes >400Mbp will be in parts)| 
 
-Shannon_div contains:
+#### Shannon_div contains:
 |Folder/file name | Description | Example file|  
 |-----------------| ------------|-------------|
 | Main folder | The predicted centromere predictions using Shannon diversity with varying rolling mean window sizes, columns are: # of windows averaged, Centromere_prediction, Total_chr_length, Spp, Chr | Centromere_summary_Shannon_1000.txt|
@@ -206,7 +206,7 @@ Shannon_div contains:
 | Shannon_div_5Mbp | Shannon diversity values averaged with rolling window across 1000 windows (5Mbp region)| Species_Haplotype_Chr1_roll_mean_Shannon_1000.png|
 | Shannon_div_window |  Rolling mean of Shannon diversity values with window size determined by genome size | Species_Haplotype_Chr1_Shannon_div_window210.png |
 
-spectra contains:
+#### spectra contains:
 |Folder/file name | Description | Example file| 
 |-----------------| ------------|-------------|
 | spectra_total_merged | Heat maps of the Fourier transforms of the whole chromosomes (up to 400 Mbp) for long repeat lengths 35-2000 bp | Species_Haplotype_Chr1_All_spec_bp35_2000seq1_6510TRUE.png|
@@ -214,9 +214,9 @@ spectra contains:
 | spectra_parts_15-35 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for mid repeat lengths 15-35 bp |  All_spec1_Species_Haplotype_Chr1part01_bp2_8seq2501_32542501TRUE.png|
 | spectra_parts_35-2000 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for long repeat lengths 35-2000 bp |  All_spec1_Species_Haplotype_Chr1part01_bp35_2000seq2501_32542501TRUE.png|
 
-isochores contains:
-|Folder/file name | Description |  
-|-----------------| ------------|-------------|
+#### isochores contains:
+|Folder/file name | Description |
+|-----------------| ------------|
 | BUR0_H0_Chr1part01.fasta_png.1.png | CG isochores plot made with the EMBOSS program, useful to see if centromere positions are associated with isochores |
 
 
