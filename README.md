@@ -167,14 +167,7 @@ You can use the 'tree' command in the folder above to see all subfolders and fil
 The program removes any scaffolds or chromosomes less than 3Mbp and chromosomes <5Mbp will not work for the larger Shannon windows. 
 You can try restarting the script with the exact same submission as before and it will start where it left off if it did not finish due to time restraints. 
 
-#### Output Folders/Subfolders that you should find in the directory above, if the whole program worked:
-|Main files| Description |
-|-----------------| ------------|
-| chromosome_renaming.txt | New chromosome names assigned to each chromosome in the program |
-| Species_Haplotype_Histograms.png | All chromosomes histograms plotted in one figure |
-| Species_Haplotype_Shannon_div.png|  All chromosomes Shannon_div plotted in one figure |
-| Species_Haplotype_rolling_mean_500Kbp_Shannon_div.png | All chromosomes Shannon_div in 500kbp rolling windows plotted in one figure |
-
+#### Output folders and summary files that you should find in the directory above, if the whole program worked:
 |Main folders| Description |
 |-----------------| ------------|
 | DNAwalks | 1D and 2D DNAwalks |
@@ -183,6 +176,13 @@ You can try restarting the script with the exact same submission as before and i
 | Shannon_div | Shannon diversity plots for each chromosome |
 | spectra | Heat maps of the Fourier transform output |
 | isochores | CG isochore plots made with the EMBOSS program |
+
+|Summary files| Description |
+|-----------------| ------------|
+| chromosome_renaming.txt | New chromosome names assigned to each chromosome in the program |
+| Species_Haplotype_Histograms.png | All chromosomes histograms plotted in one figure |
+| Species_Haplotype_Shannon_div.png|  All chromosomes Shannon_div plotted in one figure |
+| Species_Haplotype_rolling_mean_500Kbp_Shannon_div.png | All chromosomes Shannon_div in 500kbp rolling windows plotted in one figure |
 
 ### Subfolders described:
 
