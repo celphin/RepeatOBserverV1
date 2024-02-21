@@ -108,6 +108,8 @@ Changes include:
 
 Note that you should not get any different results but restarting the program with the old script may no longer work. 
 
+Example new plot:
+
 ![Example plot showing all chromosomes in Arabidopsis][product-all_chromosomes]
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
