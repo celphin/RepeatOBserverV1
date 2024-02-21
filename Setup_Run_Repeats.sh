@@ -193,6 +193,8 @@ cat << EOF >> pre-repeats.sh
 # make R script with correct input
 cat << EOF1 > repeats_fourier.R
 
+print("repeats_fourier.R starting")
+
 library(RepeatOBserverV1)
 inpath=\${qq}\${pathname}/chromosome_files/\${qq}
 fname=\${qq}\${SPP}\${qq}
@@ -230,6 +232,7 @@ for (nam in nam_list1){
 #-----------------------
 # try to run writing of summary files on different cpu
 
+print("write_all_spec starting")
 nam_write_all_spec <- function(x, nam_list1=nam_list1, chr_list=chr_list, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu){
   library(RepeatOBserverV1)
   nam <<- nam_list1[x]
@@ -242,10 +245,13 @@ x_cpu=2
 cl <- parallel::makeCluster(x_cpu)
 results1 <- parallel::parSapply(cl, base::seq_along(c(1:length(nam_list1))), nam_write_all_spec, nam_list1=nam_list1, chr_list=chr_list, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu)
 
+print("write_all_spec complete")
+
 #-----------------------
 # merge chromosome parts on different cpu
 uni_chr_list <- unique(chr_list)
 
+print("join_parts starting")
 parts_join <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
   library(RepeatOBserverV1)
   chromosome <<- uni_chr_list[x]
@@ -258,8 +264,11 @@ x_cpu=2
 cl <- parallel::makeCluster(x_cpu)
 results2 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), parts_join, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
 
+print("join_parts complete")
+
 #----------------------------------
 # plot centromeres 
+print("centromere summary starting")
 
 centromere_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
   library(RepeatOBserverV1)
@@ -273,8 +282,12 @@ x_cpu=\${cpu}
 cl <- parallel::makeCluster(x_cpu)
 results3 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), centromere_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
 
+print("centromere summary complete")
+
 #----------------------------------
 # plot chromosomes - summary plots
+
+print("summary plots starting")
 
 chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
   library(RepeatOBserverV1)
@@ -287,6 +300,7 @@ x_cpu=\${cpu}
 cl <- parallel::makeCluster(x_cpu)
 results4 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
 
+print("summary plots complete")
 
 print("repeats_fourier.R finished running")
 EOF1
@@ -298,6 +312,8 @@ cat << EOF >> pre-repeats.sh
 
 # make R script for summary plots
 cat << EOF2 > Summary_plots.R
+
+print("Summary_plots.R starting")
 
 library(RepeatOBserverV1)
 inpath=\${qq}\${pathname}/chromosome_files/\${qq}
@@ -325,6 +341,7 @@ uni_chr_list <- unique(chr_list)
 #----------------------------------
 # Plot each chromosome DNA walk and fourier transforms again
 
+print("summary plots 2 starting")
 chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
   library(RepeatOBserverV1)
   chromosome <<- uni_chr_list[x]
@@ -335,8 +352,12 @@ chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpat
 x_cpu=\${cpu}
 cl <- parallel::makeCluster(x_cpu)
 results4 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
+
+print("summary plots 2 complete")
 #----------------------------------
 # try to plot centromeres again
+
+print("centromere summary 2 starting")
 
 centromere_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
   library(RepeatOBserverV1)
@@ -350,9 +371,15 @@ x_cpu=\${cpu}
 cl <- parallel::makeCluster(x_cpu)
 results3 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), centromere_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
 
+print("centromere summary 2 complete")
+
 #---------------------------------
+print("plot all chromosomes starting")
+
 # plot all chromosomes shannon diversity and histograms in one plot
 plot_all_chromosomes(fname=fname, inpath=inpath, outpath=outpath)
+
+print("plot all chromosomes complete")
 
 print("Summary_plots.R finished running")
 EOF2
@@ -468,9 +495,9 @@ run_all(){
 
   Rscript ${path_name}/input_chromosomes/${species}_${haplotype}/repeats_fourier.R 
 
-  ${path_name}/post-repeats.sh "${species}_${haplotype}"
-  
   Rscript ${path_name}/input_chromosomes/${species}_${haplotype}/Summary_plots.R 
+  
+  ${path_name}/post-repeats.sh "${species}_${haplotype}"
   
   # list and remove empty folders
   cd ${path_name}/output_chromosomes/${species}_${haplotype}
