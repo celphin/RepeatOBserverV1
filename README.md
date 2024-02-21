@@ -108,6 +108,10 @@ Changes include:
 
 Note that you should not get any different results but restarting the program with the old script may no longer work. 
 
+![Example plot showing all chromosomes in Arabidopsis][product-all_chromosomes]
+
+<p align="right">(<a href="#getting-started">back to top</a>)</p>
+
 ### Basic run 
 Download a copy of the Setup_Run_Repeats.sh script from this github repo into the directory that you want to run the code in. 
 
@@ -806,6 +810,7 @@ results2 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_pl
 [product-DNAwalk]: images/DNAwalk.png
 [product-repeat_lengths]: images/repeat_lengths.png
 [product-chromosome-subset]: images/chromosome-subset.png
+[product-all_chromosomes]: images/all_chromosomes.png
 [product-example]: images/Example_test_result.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
