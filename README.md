@@ -37,6 +37,7 @@
         <li><a href="#software-needed">Software Needed</a></li>
         <li><a href="#r-package-installation">R Package Installation</a></li>
         <li><a href="#basic-run">Basic run</a></li>
+        <li><a href="#output">Output</a></li>
       </ul>
     </li>
     <li><a href="#citation">Citation</a></li>
@@ -60,11 +61,13 @@ You can learn more about the interpretations of the plots in our manuscript here
 The following software are need to run the automatic RepeatOBserver script: 
 
 - seqkit/2.3.1 : https://bioinf.shenwei.me/seqkit/
-- emboss/6.6.0 : https://emboss.sourceforge.net/download/
 - r/4.1.2 : https://cran.r-project.org/bin/windows/base/old/
+- (optional to see isochores) emboss/6.6.0 : https://emboss.sourceforge.net/download/
 
 Newer versions of these software may work but the program has not yet been tested throughly in them. 
-If you are unable to install any of the programs above you can run the RepeatOBserver code in R but the automated bash script will not work for you (see <a href="#troubleshooting">Troubleshooting</a> at the end of this page for details on how to run the code without this script).
+If you are unable to install any of the programs above you can run the RepeatOBserver code in R but 
+the automated bash script will not work for you (see <a href="#troubleshooting">Troubleshooting</a> at 
+the end of this page for details on how to run the code without this script).
 
 Example software installation (using Compute Canada modules):
   ```sh
@@ -103,14 +106,14 @@ Make sure the script is executable and setup to run on unix.
    chmod +x Setup_Run_Repeats.sh
    dos2unix Setup_Run_Repeats.sh
    ```
-Move your chromosome scale fasta file into a directory that you want to run RepeatOBserverV1 in. Make sure to unzip/gunzip the file.
-In this directory, with your desired reference genome, you can run the default RepeatOBserverV1 commands automatically with the following command:
+Move your chromosome scale fasta file (needs to contain more than one chromosome, ie. a genome) into a directory 
+that you want to run RepeatOBserverV1 in. Make sure to unzip/gunzip the file.
+In this directory, with your desired reference genome, you can run the default RepeatOBserverV1 commands 
+automatically with the following command:
 
    ```sh
-   sh Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -m m 
+   sh Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -m m -g FALSE
    ```
-Note that if you need to rerun the script above you will need to remove all the chromosomes in:
-./input_chromosomes/chromosome_files/
 
 Necessary parameters:
 |Parameter | Usage | Example Input| 
@@ -118,10 +121,12 @@ Necessary parameters:
 | -i | Species Name | Fagopyrum (cannot contain an _ or space)|
 | -f | Reference genome fasta file| Fagopyrum_Main.fasta|
 | -h| Haplotype (string) | H0 (cannot contain an _ or space)| 
-| -c | cpus available (any integer value) | 20  |
-| -m | memory available (MB) | 128000|
+| -c | cpus available (any integer value) | 20 |
+| -m | memory available (MB) | 128000 |
+| -g | FALSE to run for AT DNAwalk or TRUE to run for CG DNAwalk | FALSE |
 
-If you require an allocation to get enough memory or cpu (125G for 15 CPU is best) on your server, here is a slurm template to follow:
+If you require an allocation to get enough memory or cpu (125G for 15 CPU is best) on your server, 
+here is a slurm template to follow:
    ```sh
 cat << EOF > SPP_repeats.sh
 #!/bin/bash
@@ -136,22 +141,99 @@ module load seqkit/2.3.1
 module load emboss/6.6.0
 module load r/4.3.1
 
-srun Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -m m
+srun Setup_Run_Repeats.sh -i SpeciesName -f Reference_Genome.fasta -h H0 -c c -m m -g FALSE
 
 EOF
 
 sbatch SPP_repeats.sh
    ```
-Summary plots and output files can be found in:
-   ```
-cd <your-starting-directory>/output_chromosomes/SpeciesName/Summary_output
-   ```
+
 Some example/test code can be found <a href="https://github.com/celphin/RepeatOBserverV1/blob/main/Example_code/Example_test_code.R">here.</a>
 After running the Wine genome you should get the following plot for chromosome 7 repeat lengths 15 to 35 bp. 
 ![Example Results Wine][product-example]
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
+### Output 
+
+Summary plots and output files can be found in:
+   ```
+cd <your-starting-directory>/output_chromosomes/Species_Haplotype/Summary_output
+   ```
+Note: chromosomes are named differently than in the original fasta file and you can find the new names in chromosome_renaming.txt \
+
+#### Missing data
+You can use the 'tree' command in the folder above to see all subfolders and files described below. Folders that are  missing from the list above did not finish.
+The program removes any scaffolds or chromosomes less than 3Mbp and chromosomes <5Mbp will not work for the larger Shannon windows. 
+You can try restarting the script with the exact same submission as before and it will start where it left off if it did not finish due to time restraints. \
+
+Output Folders/Subfolders that you should find in the directory above, if the whole program worked:
+|Main Folder files| Description |
+|-----------------| ------------|
+| chromosome_renaming.txt | New chromosome names assigned to each chromosome in the program |
+| Species_Haplotype_Histograms.png | All chromosomes histograms plotted in one figure |
+| Species_Haplotype_Shannon_div.png|  All chromosomes Shannon_div plotted in one figure |
+| Species_Haplotype_rolling_mean_500Kbp_Shannon_div.png | All chromosomes Shannon_div in 500kbp rolling windows plotted in one figure |
+
+DNAwalks contains:
+|Folder/file name | Description | Example file| 
+|-----------------| ------------|-------------|
+| 1D | 1D CG and AT DNAwalks | Species_Haplotype_Chr1_DNAwalk1D_AT_total.png |
+| 2D | 2D DNAwalks, the 1D walks plotted against each other| Species_Haplotype_Chr1_DNAwalk2D_total.png |
+
+histograms contains:
+|Folder/file name | Description |
+|-----------------| ------------|
+| Centromere_histograms_summary.txt | The predicted centromere positions based on the histograms | 
+| Species_Haplotype_Chr1_histogram_POWER_SUM_seqval_408_s_0.5std_1_35_2000.png | Histogram plots showing counts of where in the genome each repeat length minimized| 
+
+output_data contains:
+|Folder/file name | Description |
+|-----------------| ------------|
+| Species_Haplotype_Chr1_Histogram_input_408_s_0.5std_1_35_2000.txt | The Fourier window that each repeat length minimized in can be used to build the histograms | 
+| Species_Haplotype_Chr1_Shannon_div.txt | The raw Shannon diversity data for each 5kbp window in the genome| 
+| Total_dnawalk_every50_Species_Haplotype_Chr1.txt | The raw DNAwalk data sampled every 50bp (see chromosome folders for the complete walk) | 
+| Total_Species_Haplotype_Chr1_All_spec_merged.txt | The Fourier transform output merged for up to 400Mbp (chromosomes >400Mbp will be in parts)| 
+
+Shannon_div contains:
+|Folder/file name | Description | Example file|  
+|-----------------| ------------|-------------|
+| Main folder | The predicted centromere predictions using Shannon diversity with varying rolling mean window sizes, columns are: # of windows averaged, Centromere_prediction, Total_chr_length, Spp, Chr | Centromere_summary_Shannon_1000.txt|
+| Shannon_div_5kbp | Raw Shannon diversity values (no averaging) for each 5kbp Fourier window | Species_Haplotype_Chr1_Shannon_plot_norm.png|
+| Shannon_div_500kbp | Shannon diversity values averaged with rolling window across 100 windows (500kbp region) | Species_Haplotype_Chr1_roll_mean_Shannon_100.png|
+| Shannon_div_1.25Mbp | Shannon diversity values averaged with rolling window across 250 windows (1.25Mbp region)| Species_Haplotype_Chr1_roll_mean_Shannon_250.png|
+| Shannon_div_2.5Mbp | Shannon diversity values averaged with rolling window across 500 windows (2.5Mbp region)| Species_Haplotype_Chr1_roll_mean_Shannon_500.png|
+| Shannon_div_5Mbp | Shannon diversity values averaged with rolling window across 1000 windows (5Mbp region)| Species_Haplotype_Chr1_roll_mean_Shannon_1000.png|
+| Shannon_div_window |  Rolling mean of Shannon diversity values with window size determined by genome size | Species_Haplotype_Chr1_Shannon_div_window210.png |
+
+spectra contains:
+|Folder/file name | Description | Example file| 
+|-----------------| ------------|-------------|
+| spectra_total_merged | Heat maps of the Fourier transforms of the whole chromosomes (up to 400 Mbp) for long repeat lengths 35-2000 bp | Species_Haplotype_Chr1_All_spec_bp35_2000seq1_6510TRUE.png|
+| spectra_parts_2-8 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for short repeat lengths 2-8 bp | All_spec1_Species_Haplotype_Chr1part01_bp15_35seq2501_32542501TRUE.png|
+| spectra_parts_15-35 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for mid repeat lengths 15-35 bp |  All_spec1_Species_Haplotype_Chr1part01_bp2_8seq2501_32542501TRUE.png|
+| spectra_parts_35-2000 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for long repeat lengths 35-2000 bp |  All_spec1_Species_Haplotype_Chr1part01_bp35_2000seq2501_32542501TRUE.png|
+
+isochores contains:
+|Folder/file name | Description |  
+|-----------------| ------------|-------------|
+| BUR0_H0_Chr1part01.fasta_png.1.png | CG isochores plot made with the EMBOSS program, useful to see if centromere positions are associated with isochores |
+
+
+#### Gaps in chromosomes and missing data:\
+If you have many or large gaps in your genome, the centromere predictions using Shannon diversity windows may not be accurate.
+You can check for gaps or unusual characters in your genome with the following commands:
+
+   ```sh
+# use seqkit to split into 60bp lines
+module load seqkit/2.3.1
+seqkit seq -w 60 HanPSC8rmgaps.fasta > HanPSC8rmgaps2.fasta
+
+# search for any non-nucleotide characters
+grep [^ATCGatcg] HanPSC8rmgaps2.fasta
+   ```
+
+<p align="right">(<a href="#getting-started">back to top</a>)</p>
 
 <!-- CITATION -->
 ## Citation
