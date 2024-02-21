@@ -14,6 +14,7 @@ run_chloroplast(
   fftlength = 5000,
   All_walk = NULL,
   ptset = NULL,
+  AT_flag = TRUE,
   sample_every = 1,
   walkflag = FALSE,
   atflag = TRUE,

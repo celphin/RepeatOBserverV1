@@ -8,6 +8,7 @@ run_plot_chromosome_parallel(
   nam = nam,
   fname = fname,
   inpath = inpath,
+  AT_flag = TRUE,
   outpath = outpath,
   atflag = TRUE,
   pflag = FALSE,

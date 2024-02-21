@@ -9,6 +9,7 @@ run_chromosome_loop(
   nam,
   fname,
   atflag,
+  AT_flag,
   startgroup,
   majorlen,
   length_majorgroup,

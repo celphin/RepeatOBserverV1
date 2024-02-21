@@ -9,6 +9,7 @@ run_long_repeats_NEW(
   fname = fname,
   inpath = inpath,
   outpath = outpath,
+  AT_flag = TRUE,
   atflag = TRUE,
   pflag = FALSE,
   plotflag = FALSE,

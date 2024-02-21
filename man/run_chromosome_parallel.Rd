@@ -11,6 +11,7 @@ run_chromosome_parallel(
   outpath = outpath,
   startgroup = 1,
   atflag = TRUE,
+  AT_flag = TRUE,
   majorlen = 5e+06,
   length_majorgroup = 1e+06,
   name_majorgroup = "1Mbp",

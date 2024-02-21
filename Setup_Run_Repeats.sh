@@ -20,7 +20,7 @@ run() {
   #Reads input from original send, 
   #TO DO: modify to account for CPU
 get_input() {
-  while getopts ":i:f:h:c:m:" opt; do
+  while getopts ":i:f:h:c:m:g:" opt; do
     case $opt in
      i)
         species="$OPTARG"
@@ -29,13 +29,16 @@ get_input() {
         fasta_file="$OPTARG"
         ;;
      h) 
-        haplotype="$OPTARG"
+        Haplotype="$OPTARG"
         ;;
      c)
         cpu="$OPTARG"
         ;;
      m)
         memory="$OPTARG"
+        ;;
+     g)
+        CGflag="$OPTARG"
         ;;
       \?)
         echo "Invalid option: -$OPTARG" >&2
@@ -51,13 +54,20 @@ get_input() {
 
 #Set up directories:
 set_up_directories() {
+  # change haplotype name if CGflag=TRUE
+  if [ ${CGflag} = TRUE ]
+  then
+    haplotype=${Haplotype}-CG
+  else
+    haplotype=${Haplotype}-AT
+  fi
+
   path_name=$(pwd)
   mkdir output_chromosomes
   mkdir input_chromosomes; cd input_chromosomes
-  mkdir $species; cd $species
+  mkdir ${species}_${haplotype}; cd ${species}_${haplotype}
   cp $path_name/$fasta_file .
   echo "Running in directory ${path_name}"
-
 }
 
 split_fasta() {
@@ -77,30 +87,44 @@ split_fasta() {
   
   # split the assembly fasta file into one fasta file per chromosome
   awk '/^>/ { file=substr($1,2) ".fasta" } { print > file }'  ../${species}_2.fasta
-  # remove any chromosomes or scaffolds that are less than 1Mbp 
-  find -type f -size -1000000c -delete
+  # remove any chromosomes or scaffolds that are less than 3Mbp 
+  find -type f -size -3000000c -delete
   echo "The resulting chromosome files are: "
   ls    
   
-  # rename parts
+  # rename chromosomes
+  touch ../chromosome_renaming.txt
+  echo "Old_Name	New_Name" >> ../chromosome_renaming.txt
   count=1
   for filename in *; do
-    new_name="${species}_${haplotype}_Chr$count.fasta"
+    new_name="${species}_${haplotype}_Chr$count"
     # Rename the file
     mv "$filename" "$new_name"
+    echo "$filename	$new_name" >> ../chromosome_renaming.txt
     ((count++))
   done
   echo "Files renamed"
+  
+  # check chromosome lengths, find all greater than 400Mbp and split into 400Mbp parts
+  find -type f -size +400000000c  > ../list_long_chrnum.txt
 
-  # loop to split long chromosomes
+  while IFS= read -r Chr; 
+  do
+  split -l 6666660 ${Chr} ${Chr}- --numeric-suffixes=1
+  rm ${Chr}
+  done < ../list_long_chrnum.txt
+  wc -c *
+  
+  # rename parts
+  # loop to split long (>100Mbp) chromosomes into parts
   # any chromosomes over 100Mbp long will be run in 100Mbp sections and rejoined
   ls > ../list_chromosomes.txt
   sed 's/.fasta//g' ../list_chromosomes.txt > ../list_chrnum.txt
 
   while IFS= read -r Chr; 
   do
-  split -l 1666666 ${Chr}.fasta ${Chr}part --numeric-suffixes=1
-  rm ${Chr}.fasta
+  split -l 1666666 ${Chr} ${Chr}part --numeric-suffixes=1
+  rm ${Chr}
   done < ../list_chrnum.txt
 
   wc -c *
@@ -116,7 +140,7 @@ split_fasta() {
 #Writes and builds pre-repeats script in three parts:
   #1: General set up
   #2: Make Repeats_Fourier.R
-  #3: Make Centromere_Histogram.R
+  #3: Make Summary_plots.R
 build_pre_repeats() {
     # The following code creates a script that runs the code needed pre-repeats analysis
   #cat << EOF done in several parts due to max length
@@ -130,6 +154,8 @@ cat << EOF > pre-repeats.sh
 pathname=\$1
 SPP=\$2
 cpu=\$3
+CGflag=\$4
+
 cd \${pathname}
 echo "need to be in: \${pathname}"
 echo "Currently in: \$(pwd)"
@@ -168,10 +194,114 @@ cat << EOF >> pre-repeats.sh
 cat << EOF1 > repeats_fourier.R
 
 library(RepeatOBserverV1)
-
 inpath=\${qq}\${pathname}/chromosome_files/\${qq}
 fname=\${qq}\${SPP}\${qq}
+#----------------------------------------
 
+if (\${CGflag}) {
+AT_flag=FALSE
+} else {
+AT_flag=TRUE
+}
+
+outpath="${path_name}/output_chromosomes"
+x_cpu=\${cpu} 
+pflag=FALSE
+writeflag=FALSE
+plotflag=FALSE
+atflag=TRUE
+
+nam_list0 <- list.files(inpath)
+nam_list1 <- tools::file_path_sans_ext(nam_list0)
+nam_list1
+nam_list2 <- stringr::str_split(nam_list1, "_", simplify =TRUE)
+nam_list2
+nam_list3 <- stringr::str_split(nam_list2[,3], "part", simplify =TRUE)
+nam_list3
+chr_list <- nam_list3[,1]
+chr_list
+
+#--------------------
+# run intial spectra if directories do not exist
+for (nam in nam_list1){
+ run_plot_chromosome_parallel(nam=nam, fname=fname, inpath=inpath, outpath=outpath, atflag=atflag, AT_flag=AT_flag, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu)
+}
+
+#-----------------------
+# try to run writing of summary files on different cpu
+
+nam_write_all_spec <- function(x, nam_list1=nam_list1, chr_list=chr_list, fname=fname, inpath=inpath, outpath=outpath, atflag=atflag, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu){
+  library(RepeatOBserverV1)
+  nam <<- nam_list1[x]
+  print(nam)
+  chromosome <- chr_list[x]
+  print(chromosome)
+  write_All_spec_DNAwalk(nam=nam, fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath)
+}
+x_cpu=2
+cl <- parallel::makeCluster(x_cpu)
+results1 <- parallel::parSapply(cl, base::seq_along(c(1:length(nam_list1))), nam_write_all_spec, nam_list1=nam_list1, chr_list=chr_list, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu)
+
+#-----------------------
+# merge chromosome parts on different cpu
+uni_chr_list <- unique(chr_list)
+
+parts_join <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
+  library(RepeatOBserverV1)
+  chromosome <<- uni_chr_list[x]
+  print(chromosome)
+  merge_spectra(fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath)
+  join_chromosome_parts(fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath)
+}
+
+x_cpu=2
+cl <- parallel::makeCluster(x_cpu)
+results2 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), parts_join, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
+
+#----------------------------------
+# plot centromeres 
+
+centromere_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
+  library(RepeatOBserverV1)
+  chromosome <<- uni_chr_list[x]
+  print(chromosome)
+  run_diversity_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
+  run_summary_hist(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
+}
+
+x_cpu=\${cpu}
+cl <- parallel::makeCluster(x_cpu)
+results3 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), centromere_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
+
+#----------------------------------
+# plot chromosomes - summary plots
+
+chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
+  library(RepeatOBserverV1)
+  chromosome <<- uni_chr_list[x]
+  print(chromosome)
+  run_summary_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
+}
+
+x_cpu=\${cpu}
+cl <- parallel::makeCluster(x_cpu)
+results4 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
+
+
+print("repeats_fourier.R finished running")
+EOF1
+echo "repeats_fourier.R made"
+EOF
+
+#Part 3: make Summary plots script
+cat << EOF >> pre-repeats.sh
+
+# make R script for summary plots
+cat << EOF2 > Summary_plots.R
+
+library(RepeatOBserverV1)
+inpath=\${qq}\${pathname}/chromosome_files/\${qq}
+fname=\${qq}\${SPP}\${qq}
 #----------------------------------------
 
 outpath="${path_name}/output_chromosomes"
@@ -190,99 +320,48 @@ nam_list3
 chr_list <- nam_list3[,1]
 chr_list
 
-
-
-#--------------------
-# run intial spectra if directories do not exist
-for (nam in nam_list1){
- run_plot_chromosome_parallel(nam=nam, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu)
-}
-
-#-----------------------
-# try to run writing of summary files on different cpu
-
-nam_write_all_spec <- function(x, nam_list1=nam_list1, chr_list=chr_list, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu){
-  library(RepeatOBserverV1)
-  nam <<- nam_list1[x]
-  print(nam)
-  chromosome <- chr_list[x]
-  print(chromosome)
-  write_All_spec_DNAwalk(nam=nam, fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath)
-}
-x_cpu=2
-cl <- parallel::makeCluster(x_cpu)
-results1 <- parallel::parSapply(cl, base::seq_along(c(1:length(nam_list1))), nam_write_all_spec, nam_list1=nam_list1, chr_list=chr_list, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu)
-
-#-----------------------
-
-# run chromosomes on different cpu
 uni_chr_list <- unique(chr_list)
+
+#----------------------------------
+# Plot each chromosome DNA walk and fourier transforms again
 
 chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
   library(RepeatOBserverV1)
   chromosome <<- uni_chr_list[x]
   print(chromosome)
-  merge_spectra(fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath)
-  join_chromosome_parts(fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath)
-  run_summary_hist(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
-  run_diversity_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
   run_summary_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
 }
-x_cpu=1
-cl <- parallel::makeCluster(x_cpu)
-results2 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary,uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
-print("repeats_fourier.R finished running")
-EOF1
-echo "repeats_fourier.R made"
-EOF
 
-#Part3: make centromere histogram script
-cat << EOF >> pre-repeats.sh
-cat << EOF2 > centromere_histogram.R
-library(RepeatOBserverV1)
-
-inpath=\${qq}\${pathname}/chromosome_files/\${qq}
-fname=\${qq}\${SPP}\${qq}
-
-#----------------------------------------
-
-outpath="${path_name}/output_chromosomes"
 x_cpu=\${cpu}
-pflag=FALSE
-writeflag=FALSE
-plotflag=FALSE
+cl <- parallel::makeCluster(x_cpu)
+results4 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
+#----------------------------------
+# try to plot centromeres again
 
-nam_list0 <- list.files(inpath)
-nam_list1 <- tools::file_path_sans_ext(nam_list0)
-nam_list1
-nam_list2 <- stringr::str_split(nam_list1, "_", simplify =TRUE)
-nam_list3 <- stringr::str_split(nam_list2[,3], "part", simplify =TRUE)
-chr_list <- nam_list3[,1]
-chr_list
-
-# run chromosomes on different cpu
-uni_chr_list <- unique(chr_list)
-
-chromosome_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
+centromere_summary <-  function(x, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath){
   library(RepeatOBserverV1)
   chromosome <<- uni_chr_list[x]
   print(chromosome)
-  run_summary_hist(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
-  run_summary_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
   run_diversity_plots(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
+  run_summary_hist(chromosome=chromosome, fname=fname, inpath=inpath, outpath=outpath)
 }
 
+x_cpu=\${cpu}
 cl <- parallel::makeCluster(x_cpu)
-results2 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), chromosome_summary,uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
-print("centromere_histogram.R finished running")
-EOF2
-echo "centromere_histogram.R made"
-echo "pre-repeats.sh finished running"
+results3 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), centromere_summary, uni_chr_list=uni_chr_list, fname=fname, inpath=inpath, outpath=outpath)
 
+#---------------------------------
+# plot all chromosomes shannon diversity and histograms in one plot
+plot_all_chromosomes(fname=fname, inpath=inpath, outpath=outpath)
+
+print("Summary_plots.R finished running")
+EOF2
+
+echo "Summary_plots.R made"
 EOF
+
 chmod +x pre-repeats.sh
 echo "pre-repeats.sh file made"
-
 }
 
 build_post_repeats() {
@@ -297,40 +376,46 @@ cd ${path_name}/output_chromosomes/\${SPP_Hap}/
 mkdir Summary_output; cd Summary_output
 cd ${path_name}/output_chromosomes/\${SPP_Hap}/Summary_output
 #-----------
+mkdir spectra; cd spectra
 mkdir spectra_parts_35-2000
-cp -v -u  ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/largeimages.png/All_spec1_*_Chr*_bp35_2000seq2501_*TRUE.png ./spectra_parts_35-2000
-
 mkdir spectra_parts_15-35
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/largeimages.png/All_spec1_*_Chr*_bp15_35seq2501_*TRUE.png ./spectra_parts_15-35
-
 mkdir spectra_parts_2-8
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/largeimages.png/All_spec1_*_Chr*_bp2_8seq2501_*TRUE.png ./spectra_parts_2-8
+mkdir spectra_total_merged; cd ..
 
-#------------------------------
-mkdir spectra_total_merged
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*All_spec_bp35_2000*.png ./spectra_total_merged
+cp -v -u  ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/largeimages.png/All_spec1_*_Chr*_bp35_2000seq2501_*TRUE.png ./spectra/spectra_parts_35-2000
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/largeimages.png/All_spec1_*_Chr*_bp15_35seq2501_*TRUE.png ./spectra/spectra_parts_15-35
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/largeimages.png/All_spec1_*_Chr*_bp2_8seq2501_*TRUE.png ./spectra/spectra_parts_2-8
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*All_spec_bp35_2000*.png ./spectra/spectra_total_merged
+
+#--------------------------
 mkdir histograms
-cp -v -u  ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/*POWER_SUM*s_0.5std_1*.pdf ./histograms/
-mkdir DNAwalks
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*DNAwalk*.png ./DNAwalks
-#----------
-#Make shannon_div directories: 100,1000, 250, 500
-mkdir Shannon_div
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/\${SPP_Hap}_Chr*_Shannon_plot_norm.png ./Shannon_div
-mkdir Shannon_div_100
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_100.png ./Shannon_div_100
-mkdir Shannon_div_1000
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_1000.png ./Shannon_div_1000
-mkdir Shannon_div_250
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_250.png ./Shannon_div_250
-mkdir Shannon_div_500
-cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_500.png ./Shannon_div_500
-
-#-------------
+cp -v -u  ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/*_histogram_POWER_SUM_seqval_*s_0.5std_1*.png ./histograms/
 
 rm Centromere_summary.txt
-cat ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/Centromere_*.txt > Centromere_summary.txt
-#more Centromere_summary.txt
+cat ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/Centromere_*.txt > ./histograms/Centromere_histograms_summary.txt
+
+#-----------------
+mkdir DNAwalks; cd DNAwalks
+mkdir 2D
+mkdir 1D; cd ..
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*DNAwalk2D*.png ./DNAwalks/2D
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*DNAwalk1D*.png ./DNAwalks/1D
+
+#----------
+#Make shannon_div directories: 100,1000, 250, 500
+
+mkdir Shannon_div; cd Shannon_div
+
+mkdir Shannon_div_5kbp
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/\${SPP_Hap}_Chr*_Shannon_plot_norm.png ./Shannon_div_5kbp
+mkdir Shannon_div_500kbp
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_100.png ./Shannon_div_500kbp
+mkdir Shannon_div_5Mbp
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_1000.png ./Shannon_div_5Mbp
+mkdir Shannon_div_1.25Mbp
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_250.png ./Shannon_div_1.25Mbp
+mkdir Shannon_div_2.5Mbp
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_500.png ./Shannon_div_2.5Mbp
 
 rm Centromere_summary_Shannon.txt
 cat ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*Centromere_MIN_Shannon.txt > Centromere_summary_Shannon.txt
@@ -342,33 +427,60 @@ grep "cent500 " Centromere_summary_Shannon.txt > Centromere_summary_Shannon_500.
 grep "cent1000 " Centromere_summary_Shannon.txt > Centromere_summary_Shannon_1000.txt
 
 grep "centwind " Centromere_summary_Shannon_35_no_telo.txt > Centromere_summary_Shannon_wind_35_no_telo.txt
-
 mkdir Shannon_div_window
 cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*Shannon_div_window*.png ./Shannon_div_window
+
+cd ..
+
+#-------------
+# copy over the raw Shannon and Histogram data
+
+mkdir output_data
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/Total_dnawalk_every50_\${SPP_Hap}_Chr*.txt ./output_data
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/Total_\${SPP_Hap}_Chr*_All_spec_merged.txt ./output_data
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/\${SPP_Hap}_Chr*_Shannon_div.txt ./output_data
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/\${SPP_Hap}_Chr*_Histogram_input*.txt ./output_data
+
+#------------------------
+# copy over chromosome renaming table
+cp -v -u ${path_name}/input_chromosomes/\${SPP_Hap}/chromosome_renaming.txt .
+
+#-------------------------
+mkdir isochores
+cp -v -u ${path_name}/input_chromosomes/${SPP_Hap}/isochore/*.png ./isochores
+
 EOF
 
 chmod +x post-repeats.sh
 echo "post-repeats.sh file made"
+
 }
+
+############################################
 
 run_all(){
   
-############################################
-
   cd ${path_name}
 
-  ${path_name}/pre-repeats.sh "${path_name}/input_chromosomes/${species}" "${species}_H0" "${cpu}"
+  ${path_name}/pre-repeats.sh "${path_name}/input_chromosomes/${species}_${haplotype}" "${species}_${haplotype}" "${cpu}" "${CGflag}"
 
-  cd ${path_name}/input_chromosomes/${species}
+  cd ${path_name}/input_chromosomes/${species}_${haplotype}
 
-  Rscript ${path_name}/input_chromosomes/${species}/repeats_fourier.R 
-  Rscript ${path_name}/input_chromosomes/${species}/centromere_histogram.R
+  Rscript ${path_name}/input_chromosomes/${species}_${haplotype}/repeats_fourier.R 
 
-  ${path_name}/post-repeats.sh "${species}_H0"
+  ${path_name}/post-repeats.sh "${species}_${haplotype}"
+  
+  Rscript ${path_name}/input_chromosomes/${species}_${haplotype}/Summary_plots.R 
+  
+  # list and remove empty folders
+  cd ${path_name}/output_chromosomes/${species}_${haplotype}
+  find . -type d -empty -print
+  find . -type d -empty -delete
 
   echo "RepeatOBserverV1 complete"
 }
 
 
 run "$@"
+
 

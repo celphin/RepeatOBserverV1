@@ -10,6 +10,7 @@ run_plot_chromosome(
   inpath = inpath,
   outpath = outpath,
   atflag = TRUE,
+  AT_flag = TRUE,
   pflag = FALSE,
   plotflag = FALSE,
   writeflag = FALSE

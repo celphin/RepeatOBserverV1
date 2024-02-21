@@ -15,6 +15,7 @@ walk_and_plot(
   All_walk = NULL,
   walkflag = TRUE,
   fracflag = FALSE,
+  AT_flag = TRUE,
   atflag = TRUE,
   spar = 0.6,
   startval = 1,

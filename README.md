@@ -36,6 +36,7 @@
       <ul>
         <li><a href="#software-needed">Software Needed</a></li>
         <li><a href="#r-package-installation">R Package Installation</a></li>
+        <li><a href="#version-changes">Version changes</a></li>
         <li><a href="#basic-run">Basic run</a></li>
         <li><a href="#output">Output</a></li>
       </ul>
@@ -95,8 +96,21 @@ To install the R package "RepeatOBserverV1", you will first need to install the 
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
 
+### Version changes
+
+Feb 20th, 2024 : The older Setup_Run_Repeats_preFeb20.sh may still work but it is ideal to rerun the program from scratch (i.e. reinstall library and delete folders). 
+Changes include:
+- Ablity to run longer chromosomes in 400Mbp parts
+- An easier to use CGwalk and transform option
+- A changing in the output file structure and matching output documentation below
+- A list of the original chromosome names and what they have been renamed in the program
+- Summary plots showing all the chromosomes in one plot
+
+Note that you should not get any different results but restarting the program with the old script may no longer work. 
+
 ### Basic run 
 Download a copy of the Setup_Run_Repeats.sh script from this github repo into the directory that you want to run the code in. 
+
    ```sh
 wget https://raw.githubusercontent.com/celphin/RepeatOBserverV1/main/Setup_Run_Repeats.sh
    ```

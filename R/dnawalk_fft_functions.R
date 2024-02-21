@@ -1,4 +1,4 @@
-# RepeatOBserver
+# RepeatOBserverV1
 #-----------------------------
 # functions
 
@@ -340,7 +340,6 @@ seq_to_dnawalk<-function(x){
 
   ATval<- base::rep(0,base::length(base::c(x)))
   CGval<- base::rep(0,base::length(base::c(x)))
-  GAval<- base::rep(0,base::length(base::c(x)))
   MAGval<- base::rep(0,base::length(base::c(x)))
 
   Cindices<-base::grep("c",x=x)
@@ -357,11 +356,6 @@ seq_to_dnawalk<-function(x){
   CGval[Gindices]<- (-1);  MAGval[Gindices]<- -1
   CGval[Aindices]<-  0
   CGval[Tindices]<-  0
-
-  GAval[Cindices]<-  0
-  GAval[Gindices]<- (-1);  MAGval[Gindices]<- -1
-  GAval[Aindices]<-  1;  MAGval[Cindices]<-  1
-  GAval[Tindices]<-  0
 
   Walklist<-base::list(atwalk=ATval,cgwalk=CGval,dnawalk=MAGval)
   base::return(Walklist)
@@ -380,7 +374,7 @@ seq_to_dnawalk<-function(x){
 #' @export
 walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
                         sample_every=1,fullname=NULL,All_walk=NULL,
-                        walkflag=TRUE,fracflag=FALSE,
+                        walkflag=TRUE,fracflag=FALSE, AT_flag=TRUE,
                         atflag=TRUE, spar=0.6,startval=1,endval=NULL,
                         printlong=FALSE,waxflag=FALSE,
                         freqerrorflag=TRUE,pflag=TRUE,plotflag=TRUE,
@@ -429,7 +423,7 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
 
   if(mindna<base::length(wax)|| (!base::is.null(seqlen) && (seqlen <= base::length(wax))) ){
     len<-base::length(atwalk)
-    if(!atflag){
+    if(!AT_flag){
       foo<-atwalk
       atwalk<-cgwalk
       cgwalk<-foo    #this reversal could cause mixup when plotting cg-AT plots
@@ -1804,7 +1798,7 @@ largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi,rangebp=NULL,ra
 #' @export
 run_chloroplast<-function(nam=nam, fname=fname, outpath=outpath, inpath=inpath,
                           startval=NULL,endval=NULL,fftlength=5000,
-                          All_walk=NULL,ptset=NULL,
+                          All_walk=NULL,ptset=NULL,AT_flag=TRUE,
                           sample_every=1,walkflag=FALSE,atflag=TRUE,waxflag=TRUE,
                           printlong=FALSE,printdna=FALSE,pflag=TRUE,plotflag=TRUE,
                           writeflag=TRUE){
@@ -1868,7 +1862,7 @@ run_chloroplast<-function(nam=nam, fname=fname, outpath=outpath, inpath=inpath,
   # 3.1, 2.2
   main= base::paste(genname1,"\n",shortname," ",sample_every,"_",fftlength)
   spectinfo<-walk_and_plot(tdna=dn,main=main,seqlen=fftlength,sample_every=sample_every,fullname=sname,ptset=ptset,
-                           All_walk=All_walk, spar=1,startval=startval,endval=endval,walkflag=walkflag,
+                           All_walk=All_walk, spar=1,startval=startval,endval=endval,walkflag=walkflag,AT_flag=AT_flag,
                            atflag=atflag,waxflag=waxflag,printlong=printlong,pflag=pflag,plotflag=plotflag,writeflag=writeflag)
 
   spectimage<-spectinfo[[2]];
@@ -2398,6 +2392,7 @@ run_barplots_chromosome <-function(All_spec=All_spec, chromosome=chromosome,fnam
 
     N_at_bp<-pow_list$N
     base::sink()
+
     if(atflag){
       base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_sum_by_bp_std_",numrange,"_s_",numstd2,"std_",
                                                                            numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
@@ -2408,31 +2403,51 @@ run_barplots_chromosome <-function(All_spec=All_spec, chromosome=chromosome,fnam
     base::cat("\n1/repeat length ",repeat_val," numrange",numrange,"\nbp sum mean N")
     for(j in 1:base::length(sum_at_bp)) base::cat("\n",names(sum_at_bp)[j],sum_at_bp[j],mean_at_bp[j],N_at_bp[j])
     base::sink()
-    #}
-
   }
+  grDevices::dev.off()
 
   if(atflag){
-    base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_",numrange,"_s_",numstd2,"std_",numstd,
+    base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_Histogram_input_",numrange,"_s_",numstd2,"std_",numstd,
                                                                  "_",repeat_range[1],"_",repeat_range[2],".txt")))
   } else {
-    base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_CG_",numrange,"_s_",numstd2,"std_",numstd,
+    base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_Histogram_input_CG_",numrange,"_s_",numstd2,"std_",numstd,
                                                                  "_",repeat_range[1],"_",repeat_range[2],".txt")))
   }
-  base::cat("\ngoodrepeat min_mean_seqval max_mean_seqval min_powsum_seqval max_powsum_seqval min_N_seqval max_N_seqval\n")
+
+  # add single value at end of chromosome to fix plotting - remove any values greater than or less than 1Mbp from ends
+  min_powsum_seqval_list <- c(0, min_powsum_seqval_list, full_length)
+  min_mean_seqval_list <- c(0, min_mean_seqval_list, full_length)
+  min_N_seqval_list <- c(0, min_N_seqval_list, full_length)
+  max_mean_seqval_list <- c(0, max_mean_seqval_list, full_length)
+  max_powsum_seqval_list <- c(0, max_powsum_seqval_list, full_length)
+  max_N_seqval_list <- c(0, max_N_seqval_list, full_length)
+  goodrepeats <- c(0, goodrepeats, full_length)
+
+  base::cat("goodrepeat min_mean_seqval max_mean_seqval min_powsum_seqval max_powsum_seqval min_N_seqval max_N_seqval\n")
   for(j in 1:base::length(min_powsum_seqval_list)) {
     base::cat(goodrepeats[j],
               min_mean_seqval_list[j],max_mean_seqval_list[j],
               min_powsum_seqval_list[j],max_powsum_seqval_list[j],
               min_N_seqval_list[j],max_N_seqval_list[j],"\n")
   }
-  grDevices::dev.off()
+  base::sink()
+
+  # write all histograms out to pdf file
   if(atflag){
-    grDevices::pdf(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_",numrange,"_s_",numstd2,"std_",numstd,
+    grDevices::pdf(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_Histograms_",numrange,"_s_",numstd2,"std_",numstd,
                                                                      "_",repeat_range[1],"_",repeat_range[2],".pdf")))
   } else {
-    grDevices::pdf(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_CG_",numrange,"_s_",numstd2,"std_",numstd,
+    grDevices::pdf(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_Histogram_CG_",numrange,"_s_",numstd2,"std_",numstd,
                                                                      "_",repeat_range[1],"_",repeat_range[2],".pdf")))
+  }
+
+  # make summary file with mean, min, max of the histograms
+  if(atflag){
+    base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_Histogram_Summary_",numrange,"_s_",numstd2,"std_",numstd,
+                                                                 "_",repeat_range[1],"_",repeat_range[2],".txt")))
+  } else {
+    base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_Histogram_Summary_CG_",numrange,"_s_",numstd2,"std_",numstd,
+                                                                 "_",repeat_range[1],"_",repeat_range[2],".txt")))
   }
 
   base::cat("\n Mean:     Min summary\n");base::print(base::summary(min_mean_seqval_list))
@@ -2441,14 +2456,6 @@ run_barplots_chromosome <-function(All_spec=All_spec, chromosome=chromosome,fnam
   base::cat("\n Mean:     Max summary\n");base::print(base::summary(max_mean_seqval_list))
   base::cat("\n Power Sum:Max summary\n");base::print(base::summary(max_powsum_seqval_list))
   base::cat("\n N:        Max summary\n");base::print(base::summary(max_N_seqval_list))
-
-  # add single value at end of chromosome to fix plotting - remove any values greater than or less than 1Mbp from ends
-  min_powsum_seqval_list <- c(min_powsum_seqval_list, full_length)
-  min_mean_seqval_list <- c(min_mean_seqval_list, full_length)
-  min_N_seqval_list <- c(min_N_seqval_list, full_length)
-  max_mean_seqval_list <- c(max_mean_seqval_list, full_length)
-  max_powsum_seqval_list <- c(max_powsum_seqval_list, full_length)
-  max_N_seqval_list <- c(max_N_seqval_list, full_length)
 
   aips<-graphics::hist(min_powsum_seqval_list,breaks=binnum,xaxp=base::c(0,full_length,binnum),xlab="",xlim=xlim,
                     main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
@@ -2486,17 +2493,17 @@ run_barplots_chromosome <-function(All_spec=All_spec, chromosome=chromosome,fnam
                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMax N:         midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
+  base::sink()
+  grDevices::dev.off() # histograms pdf
+
+  # write out the barplot centromere value
   maxcount_min_powsum <- aips$mids[base::which(aips$counts==base::max(aips$counts))]
-
   barplot_cent_data <- t(as.matrix(c(fname, chromosome, maxcount_min_powsum, full_length)))
-
   utils::write.table(barplot_cent_data, file=file.path(outpathbarplot, base::paste0("Centromere_",chromnam,"_MIN_POWER_SUM_",numrange,"_s_",numstd2,"std_",numstd,
                                                                                   "_",repeat_range[1],"_",repeat_range[2],".txt")),
                      append = FALSE, sep = " ", dec = ".", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-  base::sink()
-  grDevices::dev.off()
-
+  # plot power sum min in png image
   grDevices::png(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_histogram_POWER_SUM_seqval_",numrange,"_s_",numstd2,"std_",numstd,
                                                                    "_",repeat_range[1],"_",repeat_range[2],".png")), width = 1500, height = 500)
   graphics::hist(min_powsum_seqval_list,breaks=40,xaxp=base::c(0,full_length,40),xlab="",xlim=xlim,
@@ -2519,7 +2526,7 @@ run_barplots_chromosome <-function(All_spec=All_spec, chromosome=chromosome,fnam
 #' function()
 #' @export
 run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
-                         startgroup=1, atflag=TRUE,
+                         startgroup=1, atflag=TRUE, AT_flag=TRUE,
                          majorlen=5000000,
                          length_majorgroup=1000000, name_majorgroup="1Mbp",
                          length_submajor=500000, name_submajorgroup="500Kbp",
@@ -2620,13 +2627,13 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
               main= base::paste(genname1,"\n",shortname)
               spectinfo<-walk_and_plot(tdna=tdna,main=main,rng=base::c(j,j+inc-1),seqlen=length_fftgroup,
                                        fullname=fullname, spar=1,startval=(startval+stval+j-2),walkflag=FALSE,waxflag=TRUE,
-                                       pflag=FALSE,plotflag=plotflag,writeflag=writeflag,atflag=atflag)
+                                       pflag=FALSE,plotflag=plotflag,writeflag=writeflag,atflag=atflag, AT_flag=AT_flag)
             } else {
               genname1<- base::paste0("rng=base::c(",j,"_" ,length_submajor,")"," ",(startval+stval+j-2),"_" ,(startval+stval+length_submajor) ,")")
               main= base::paste(genname1,"\n",shortname)
               spectinfo<-walk_and_plot(tdna,main=main,rng=base::c(j,j+inc-1),seqlen=5000,
                                        fullname=fullname, spar=1,startval=(startval+stval+j-1),walkflag=FALSE,waxflag=TRUE,
-                                       plotflag=plotflag,writeflag=writeflag)
+                                       plotflag=plotflag,writeflag=writeflag, atflag=atflag, AT_flag=AT_flag)
 
             }
             peaks<-spectinfo[[1]];
@@ -2744,7 +2751,6 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
             run_sum_Fractal(fracdim_list=fractal_dimlist[s1:base::length(fractal_dimlist)], numrange= numrange,pflag=TRUE,main=main)
             grDevices::dev.off()
           }
-
         }   #end test for null concat_majorlist_tot
       }
       list2<-base::list(concat_majorlist_tot)
@@ -3277,7 +3283,7 @@ Nested_Palindrome<-function(tdna,iterate=1,N=1, finversion=TRUE){
 #' function()
 #' @export
 run_plot_chromosome <-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
-                               atflag=TRUE, pflag=FALSE, plotflag=FALSE, writeflag=FALSE){
+                               atflag=TRUE, AT_flag=TRUE, pflag=FALSE, plotflag=FALSE, writeflag=FALSE){
 
   base::dir.create(outpath, showWarnings = FALSE)
   in_name<- base::paste0(inpath,nam,".fasta")    #
@@ -3304,7 +3310,7 @@ run_plot_chromosome <-function(nam=nam, fname=fname, inpath=inpath, outpath=outp
   base::cat("\nSamplesize is", samplesize,"\n")
 
   # builds the files for spectrum - 0.5, 1.5, 4.5Mbp at a time
-  twolists<-run_chromosome(nam=nam, fname=fname, inpath=inpath, outpath=outpath, atflag=atflag, majorlen=5000000, length_majorgroup=1000000, name_majorgroup="1Mbp",plotflag = plotflag, writeflag=writeflag, samplesize=samplesize)
+  twolists<-run_chromosome(nam=nam, fname=fname, inpath=inpath, outpath=outpath, atflag=atflag, AT_flag=AT_flag, majorlen=5000000, length_majorgroup=1000000, name_majorgroup="1Mbp",plotflag = plotflag, writeflag=writeflag, samplesize=samplesize)
   All_list<-twolists$All_list
   fullwalk_list<-twolists$fullwalklist
 
@@ -3341,7 +3347,7 @@ run_plot_chromosome <-function(nam=nam, fname=fname, inpath=inpath, outpath=outp
 #' function()
 #' @export
 #' @export
-run_chromosome_loop <- function(x, nam, fname, atflag, startgroup,majorlen,length_majorgroup, name_majorgroup,
+run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majorlen, length_majorgroup, name_majorgroup,
                                 length_submajor, name_submajorgroup,
                                 length_fftgroup,   name_fftgroup,
                                 length_minor, submajor_nam, pflag,
@@ -3429,7 +3435,7 @@ run_chromosome_loop <- function(x, nam, fname, atflag, startgroup,majorlen,lengt
             main= base::paste(genname1,"\n",shortname)
             spectinfo<-walk_and_plot(tdna=tdna,main=main,rng=base::c(j,j+inc-1),seqlen=length_fftgroup,
                                      fullname=fullname, spar=1,startval=(startval+stval+j-2),walkflag=FALSE,waxflag=TRUE,
-                                     pflag=FALSE,plotflag=plotflag,writeflag=writeflag,atflag=atflag)
+                                     pflag=FALSE,plotflag=plotflag,writeflag=writeflag,atflag=atflag, AT_flag=AT_flag)
           } else {
             # end of region values
             # base::cat("\nrun_chromosome: running ",
@@ -3438,7 +3444,7 @@ run_chromosome_loop <- function(x, nam, fname, atflag, startgroup,majorlen,lengt
             main= base::paste(genname1,"\n",shortname)
             spectinfo<-walk_and_plot(tdna,main=main,rng=base::c(j,j+inc-1),seqlen=5000,
                                      fullname=fullname, spar=1,startval=(startval+stval+j-1),walkflag=FALSE,waxflag=TRUE,
-                                     plotflag=plotflag,writeflag=writeflag)
+                                     plotflag=plotflag,writeflag=writeflag, atflag=atflag, AT_flag=AT_flag)
 
           }
           peaks<-spectinfo[[1]];
@@ -3710,7 +3716,7 @@ run_chromosome_loop <- function(x, nam, fname, atflag, startgroup,majorlen,lengt
 #' function()
 #' @export
 run_chromosome_parallel<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
-                                  startgroup=1, atflag=TRUE, majorlen=5000000,
+                                  startgroup=1, atflag=TRUE, AT_flag=TRUE, majorlen=5000000,
                                   length_majorgroup=1000000, name_majorgroup="1Mbp",
                                   length_submajor=500000, name_submajorgroup="500Kbp",
                                   length_fftgroup=5000,   name_fftgroup="5Kbp",
@@ -3753,7 +3759,7 @@ run_chromosome_parallel<-function(nam=nam, fname=fname, inpath=inpath, outpath=o
   ncpu=full_length/5000000
   cl <- parallel::makeCluster(x_cpu)
   results <- parallel::parSapply(cl, base::seq_along(start_seq), run_chromosome_loop, nam=nam,
-                       fname=fname, atflag=atflag, startgroup=startgroup, majorlen=majorlen,
+                       fname=fname, atflag=atflag, AT_flag=AT_flag, startgroup=startgroup, majorlen=majorlen,
                        length_majorgroup=length_majorgroup, name_majorgroup=name_majorgroup,
                        length_submajor=length_submajor, name_submajorgroup=name_submajorgroup,
                        length_fftgroup=length_fftgroup,   name_fftgroup=name_fftgroup,
@@ -3784,7 +3790,7 @@ run_chromosome_parallel<-function(nam=nam, fname=fname, inpath=inpath, outpath=o
 #' @examples
 #' function()
 #' @export
-run_plot_chromosome_parallel <-function(nam=nam, fname=fname, inpath=inpath,
+run_plot_chromosome_parallel <-function(nam=nam, fname=fname, inpath=inpath, AT_flag=TRUE,
                                         outpath=outpath, atflag=TRUE,  pflag=FALSE, plotflag=FALSE,
                                         writeflag=FALSE, x_cpu=x_cpu){
   splitname<-base::unlist(stringr::str_split(nam,"_"))
@@ -3800,7 +3806,7 @@ run_plot_chromosome_parallel <-function(nam=nam, fname=fname, inpath=inpath,
     dn1<-dna_1_to_wax(dna_1)   #base::length(dn) base::nchar(dn)
     full_length<-base::length(dn1)
 
-    #this runs CG contant
+    #this runs CG content
     winbox<-1*1e6
     #walklist<- CG_AT_content(dn1,nam,winbox=winbox)
 
@@ -3818,7 +3824,7 @@ run_plot_chromosome_parallel <-function(nam=nam, fname=fname, inpath=inpath,
     base::cat("\nSamplesize is", samplesize,"\n")
 
     # builds the files for spectrum - 0.5, 1.5, 4.5Mbp at a time
-    twolists<-run_chromosome_parallel(nam=nam, fname=fname, inpath=inpath, outpath=outpath, atflag=atflag,
+    twolists<-run_chromosome_parallel(nam=nam, fname=fname, inpath=inpath, outpath=outpath, atflag=atflag, AT_flag=AT_flag,
                                       majorlen=5000000,
                                       length_majorgroup=1000000, name_majorgroup="1Mbp",plotflag = plotflag,
                                       writeflag=writeflag, samplesize=samplesize, x_cpu=x_cpu)
@@ -4127,26 +4133,30 @@ run_summary_hist <- function(chromosome=chromosome, fname=fname, inpath=inpath, 
   All_spec1 <- All_spec0[, !is.na(colSums(All_spec0 != 0)) & colSums(All_spec0 != 0) > 0]
 
   # cut telomeres - need to cut exactly one bin though
-   col_length1 <- as.numeric(colnames(All_spec1)[ncol(All_spec1)])
-   All_spec2 <- All_spec1[,-c(1:400,(ncol(All_spec1)-400):ncol(All_spec1))]
-  # cut last bin (Xbp from end ) from histograms ****
+  col_length1 <- as.numeric(colnames(All_spec1)[ncol(All_spec1)])
+  if (ncol(All_spec1)>500) {
+    All_spec2 <- All_spec1[,-c(1:400,(ncol(All_spec1)-400):ncol(All_spec1))]
 
-  col_length2 <- as.numeric(ncol(All_spec2))*5000
-  numbins <-  floor(col_length2/2e+6)
-  total_col <- (numbins*2e+6)/5000
-  All_spec <- All_spec2#[,c(1:total_col)]
+    # cut last bin (Xbp from end ) from histograms ****
 
-  full_length <-  as.numeric(ncol(All_spec))*5000
+    col_length2 <- as.numeric(ncol(All_spec2))*5000
+    numbins <-  floor(col_length2/2e+6)
+    total_col <- (numbins*2e+6)/5000
+    All_spec <- All_spec2#[,c(1:total_col)]
 
-  # setup bins
-  #if(full_length>(50*1e6))numbins<-round(full_length/3e+6) else numbins<-round(full_length/3e+6)
-  binsize<-base::round(full_length/numbins)
-  fftlength<-5000
-  numrange<-base::round(binsize/fftlength)
-  if(full_length>(50*1e6)){numstd_bins<-0.5;numstdred<-1 } else { numstd_bins<-0.5;numstdred<-1 }
+    full_length <-  as.numeric(ncol(All_spec))*5000
+    if (full_length>5e6) {
 
-  run_barplots_chromosome(All_spec=All_spec,chromosome=chromosome,fname=fname,inpath=inpath, outpath=outpath, full_length=full_length, atflag=atflag, numstd=numstdred,  numstd2=numstd_bins, numrange=numrange,repeat_range=base::c(35,2000), binnum=numbins)
+      # setup bins
+      #if(full_length>(50*1e6))numbins<-round(full_length/3e+6) else numbins<-round(full_length/3e+6)
+      binsize<-base::round(full_length/numbins)
+      fftlength<-5000
+      numrange<-base::round(binsize/fftlength)
+      if(full_length>(50*1e6)){numstd_bins<-0.5;numstdred<-1 } else { numstd_bins<-0.5;numstdred<-1 }
 
+      run_barplots_chromosome(All_spec=All_spec,chromosome=chromosome,fname=fname,inpath=inpath, outpath=outpath, full_length=full_length, atflag=atflag, numstd=numstdred,  numstd2=numstd_bins, numrange=numrange,repeat_range=base::c(35,2000), binnum=numbins)
+    }
+  }
 #   #-----------------------------
 #   repeat_list<-base::rownames(All_spec)
 #   if(!base::is.null(repeat_range)) {
@@ -4534,7 +4544,7 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
     Shannon_div_wind_pos <- cbind(genome_pos_wind, Shannon_div_wind)
     cent_wind <- Shannon_div_wind_pos[which(Shannon_div_wind_pos[,2] == min(Shannon_div_wind_pos[,2])),1]
 
-    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Shannon_div_window", wind_factor,".png"), width = 3000, height = 1000)
+    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Shannon_div_window_", wind_factor,".png"), width = 3000, height = 1000)
     plot(genome_pos_wind, Shannon_div_wind, type="l")
     grDevices::dev.off()
 
@@ -4554,66 +4564,62 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
     # moving average across Shannon that shows where min is
     # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
 
-    bin_size <- round((full_length/5000)/5000)
-
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-    cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
-    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_", bin_size, "_roll_mean_Shannon.png"), width = 1500, height = 500)
-    base::plot(genome_pos, roll_mean_Shannon)
-    grDevices::dev.off()
-
     #---------------
-    bin_size=25
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+    if (full_length > 0.5e6){
+      bin_size=25
+      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
-    cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+      cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
 
-    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_25.png"), width = 1500, height = 500)
-    base::plot(genome_pos, roll_mean_Shannon)
-    grDevices::dev.off()
+      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_25.png"), width = 1500, height = 500)
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+    }else{cent25=0}
+    #----------
+    if (full_length > 0.5e6){
+      bin_size=100
+      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+
+      cent100 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+
+      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_100.png"), width = 1500, height = 500)
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+    }else{cent100=0}
+    #----------
+    if (full_length > 1.25e6){
+      bin_size=250
+      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+
+      cent250 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+
+      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_250.png"), width = 1500, height = 500)
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+    }else{cent250=0}
+    #----------
+    if (full_length > 2.5e6){
+      bin_size=500
+      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+
+      cent500 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+
+      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_500.png"), width = 1500, height = 500)
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+    }else{cent500=0}
 
     #----------
-    bin_size=100
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+    if (full_length > 5e6){
+      bin_size=1000
+      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
-    cent100 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+      cent1000 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
 
-    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_100.png"), width = 1500, height = 500)
-    base::plot(genome_pos, roll_mean_Shannon)
-    grDevices::dev.off()
-
-    #----------
-    bin_size=250
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-    cent250 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
-    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_250.png"), width = 1500, height = 500)
-    base::plot(genome_pos, roll_mean_Shannon)
-    grDevices::dev.off()
-
-    #----------
-    bin_size=500
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-    cent500 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
-    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_500.png"), width = 1500, height = 500)
-    base::plot(genome_pos, roll_mean_Shannon)
-    grDevices::dev.off()
-
-
-    #----------
-    bin_size=1000
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-    cent1000 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
-    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_1000.png"), width = 1500, height = 500)
-    base::plot(genome_pos, roll_mean_Shannon)
-    grDevices::dev.off()
+      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_1000.png"), width = 1500, height = 500)
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+    }else{cent1000=0}
 
     #-------------------
     # write out the centromere position
@@ -4817,66 +4823,64 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
       # moving average across Shannon that shows where min is
       # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
 
-      bin_size <- round((full_length/5000)/5000)
-
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-      cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
-      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_", bin_size, "_roll_mean_Shannon.png"), width = 1500, height = 500)
-      base::plot(genome_pos, roll_mean_Shannon)
-      grDevices::dev.off()
-
       #---------------
-      bin_size=25
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+      if (full_length > 0.5e6){
+        bin_size=25
+        roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
-      cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+        cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
 
-      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_25.png"), width = 1500, height = 500)
-      base::plot(genome_pos, roll_mean_Shannon)
-      grDevices::dev.off()
+        grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_25.png"), width = 1500, height = 500)
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+      }else{cent25=0}
+      #----------
+      if (full_length > 0.5e6){
+        bin_size=100
+        roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+
+        cent100 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+
+        grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_100.png"), width = 1500, height = 500)
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+      }else{cent100=0}
 
       #----------
-      bin_size=100
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+      if (full_length > 1.25e6){
+        bin_size=250
+        roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
-      cent100 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+        cent250 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
 
-      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_100.png"), width = 1500, height = 500)
-      base::plot(genome_pos, roll_mean_Shannon)
-      grDevices::dev.off()
-
-      #----------
-      bin_size=250
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-      cent250 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
-      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_250.png"), width = 1500, height = 500)
-      base::plot(genome_pos, roll_mean_Shannon)
-      grDevices::dev.off()
+        grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_250.png"), width = 1500, height = 500)
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+      }else{cent250=0}
 
       #----------
-      bin_size=500
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+      if (full_length > 2.5e6){
+        bin_size=500
+        roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
-      cent500 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+        cent500 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
 
-      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_500.png"), width = 1500, height = 500)
-      base::plot(genome_pos, roll_mean_Shannon)
-      grDevices::dev.off()
-
+        grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_500.png"), width = 1500, height = 500)
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+      }else{cent500=0}
 
       #----------
-      bin_size=1000
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+      if (full_length > 5e6){
+        bin_size=1000
+        roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
-      cent1000 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
+        cent1000 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
 
-      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_1000.png"), width = 1500, height = 500)
-      base::plot(genome_pos, roll_mean_Shannon)
-      grDevices::dev.off()
+        grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_1000.png"), width = 1500, height = 500)
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+      }else{cent1000=0}
 
       #-------------------
       # write out the centromere position
@@ -5019,16 +5023,6 @@ run_diversity_plots_35_2000 <- function(chromosome=chromosome, fname=fname, inpa
     #-----------------------
     # moving average across Shannon that shows where min is
     # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
-
-    bin_size <- round((full_length/5000)/5000)
-
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-    cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
-    grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_", bin_size, "_roll_mean_Shannon_35.png"), width = 1500, height = 500)
-    base::plot(genome_pos, roll_mean_Shannon)
-    grDevices::dev.off()
 
     #---------------
     bin_size=25
@@ -5282,16 +5276,6 @@ run_diversity_plots_35_2000 <- function(chromosome=chromosome, fname=fname, inpa
       # moving average across Shannon that shows where min is
       # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
 
-      bin_size <- round((full_length/5000)/5000)
-
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-      cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
-      grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_", bin_size, "_roll_mean_Shannon_35.png"), width = 1500, height = 500)
-      base::plot(genome_pos, roll_mean_Shannon)
-      grDevices::dev.off()
-
       #---------------
       bin_size=25
       roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
@@ -5472,13 +5456,6 @@ run_diversity_plots_no_telomere <- function(chromosome=chromosome, fname=fname, 
     #-----------------------
     # moving average across Shannon that shows where min is
     # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
-
-    bin_size <- round((full_length/5000)/5000)
-
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-    cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
 
     #---------------
     bin_size=25
@@ -5702,12 +5679,6 @@ run_diversity_plots_no_telomere <- function(chromosome=chromosome, fname=fname, 
       # moving average across Shannon that shows where min is
       # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
 
-      bin_size <- round((full_length/5000)/5000)
-
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-      cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
       #---------------
       bin_size=25
       roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
@@ -5876,12 +5847,6 @@ run_diversity_plots_35_2000_no_telomere <- function(chromosome=chromosome, fname
     #-----------------------
     # moving average across Shannon that shows where min is
     # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
-
-    bin_size <- round((full_length/5000)/5000)
-
-    roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-    cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
 
     #---------------
     bin_size=25
@@ -6104,13 +6069,6 @@ run_diversity_plots_35_2000_no_telomere <- function(chromosome=chromosome, fname
       #-----------------------
       # moving average across Shannon that shows where min is
       # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
-
-      bin_size <- round((full_length/5000)/5000)
-
-      roll_mean_Shannon <- zoo::rollapply(Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
-      cent25 <- base::which(roll_mean_Shannon == base::min(roll_mean_Shannon, na.rm=TRUE))
-
 
       #---------------
       bin_size=25
@@ -6571,7 +6529,7 @@ runs_run_barplots <- function(nam=nam, fname=fname, inpath=inpath, outpath=outpa
 #' function()
 #' @export
 run_long_repeats_NEW <- function(nam=nam, fname=fname, inpath=inpath,
-                                 outpath=outpath, atflag=TRUE, pflag=FALSE, plotflag=FALSE,
+                                 outpath=outpath, AT_flag=TRUE, atflag=TRUE, pflag=FALSE, plotflag=FALSE,
                                  writeflag=FALSE){
 
   in_name<- base::paste0(inpath,nam,".fasta")    #
@@ -6637,7 +6595,7 @@ run_long_repeats_NEW <- function(nam=nam, fname=fname, inpath=inpath,
     All_list<-run_chloroplast(nam=nam,fname=fname, inpath=inpath, outpath=outpath,
                               startval= bp[1] ,endval=bp[2], fftlength=fftlength10,
                               All_walk=All_walk,sample_every=samplesize,
-                              walkflag=FALSE,atflag=TRUE,waxflag=FALSE,printlong=FALSE,
+                              walkflag=FALSE,atflag=atflag,AT_flag=AT_flag, waxflag=FALSE,printlong=FALSE,
                               printdna=FALSE)
 
     All_spec_sub<-All_list[[1]]
@@ -6668,7 +6626,7 @@ run_long_repeats_NEW <- function(nam=nam, fname=fname, inpath=inpath,
         All_listsmall<-run_chloroplast(nam=nam, fname=fname,inpath=inpath, outpath=outpath,
                                        startval= bp2[1] ,endval=	 bp2[2], fftlength=fftlength1,
                                        All_walk=All_walk,sample_every=samplesizesmall,
-                                       walkflag=FALSE,atflag=TRUE,waxflag=FALSE,printlong=FALSE,
+                                       walkflag=FALSE,atflag=atflag, AT_flag=AT_flag, waxflag=FALSE,printlong=FALSE,
                                        printdna=FALSE,pflag=FALSE,plotflag=plotflag,writeflag=writeflag)
 
         All_spec_small<-All_listsmall[[1]]
@@ -6699,7 +6657,7 @@ run_long_repeats_NEW <- function(nam=nam, fname=fname, inpath=inpath,
                               endval=	 base::as.numeric(base::rownames(DNAwalk_long)[base::nrow(DNAwalk_long)]),
                               fftlength=fftlengthlargest,
                               All_walk=DNAwalk_long,sample_every=(-samplesize),
-                              walkflag=FALSE,atflag=TRUE,waxflag=FALSE,printlong=FALSE,
+                              walkflag=FALSE,atflag=atflag, AT_flag=AT_flag, waxflag=FALSE,printlong=FALSE,
                               printdna=FALSE,plotflag=plotflag,writeflag=writeflag)
 
     fractallarge<-All_list[[4]]
@@ -6712,7 +6670,7 @@ run_long_repeats_NEW <- function(nam=nam, fname=fname, inpath=inpath,
                              startval= base::as.numeric(base::rownames(DNAwalk_long)[1]) ,
                              endval=	 base::as.numeric(base::rownames(DNAwalk_long)[base::nrow(DNAwalk_long)]), fftlength=fftlengthlargest,
                              All_walk=DNAwalk_long,sample_every=(-samplesize),
-                             walkflag=FALSE,atflag=TRUE,waxflag=FALSE,printlong=FALSE,
+                             walkflag=FALSE,atflag=atflag, AT_flag=AT_flag,waxflag=FALSE,printlong=FALSE,
                              printdna=FALSE)
   #above uses longer fft window to get complexity
 
@@ -6728,7 +6686,7 @@ run_long_repeats_NEW <- function(nam=nam, fname=fname, inpath=inpath,
                                  startval= base::as.numeric(base::rownames(DNAwalk_long)[1]) ,
                                  endval=	 base::as.numeric(base::rownames(DNAwalk_long)[base::nrow(DNAwalk_long)]), fftlength=fftlen1,
                                  All_walk=DNAwalk_long,sample_every=(-samplesize),
-                                 walkflag=FALSE,atflag=TRUE,waxflag=FALSE,printlong=FALSE,
+                                 walkflag=FALSE,atflag=atflag, AT_flag=AT_flag,waxflag=FALSE,printlong=FALSE,
                                  printdna=FALSE)
     }
   }
@@ -6814,6 +6772,87 @@ run_long_repeats_NEW <- function(nam=nam, fname=fname, inpath=inpath,
                  inmain= base::paste("Individual", fftlengthlarge/1000,"window"))
 
 }
+
+#' plot_all_chromosomes
+#'
+#' plot Shannon and barplots for all chromosomes
+#'
+#' @param fname
+#'
+#' @return plots of all chromosomes
+#'
+#' @examples
+#' function()
+#' @export
+plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
+
+  summary_path <- paste0(outpath,"/", fname, "/", "Summary_output/output_data")
+  file_list <- list.files(summary_path, full.names=TRUE)
+  Histogram_list <- file_list[grep("Histogram", file_list)]
+  Shannon_list <- file_list[grep("Shannon", file_list)]
+
+  #-----------------------------------
+  # join Shannon div data
+  lsd <- lapply(Shannon_list, read.table)
+  sd_chr_list0 <- basename(Shannon_list)
+  sd_chr_list1 <- stringr::str_split(sd_chr_list0, "_", simplify =TRUE)
+  sd_chr_list2 <- sd_chr_list1[,3]
+  names(lsd) <- sd_chr_list2
+  Shannon_div_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
+  colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
+
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Shannon_div.png"), width = 1000, height = 700)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=Shannon_div_total, ggplot2::aes(x=Genome_position, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=Shannon_div))+
+      ggplot2::facet_wrap(~Chromosome, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  # roll mean for  Shannon div data
+  Shannon_div_total$Shannon_roll_mean <- zoo::rollapply(Shannon_div_total$Shannon_div, width = 100, FUN=mean, fill = NA, partial=(100/2))
+
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_rolling_mean_500Kbp_Shannon_div.png"), width = 1000, height = 700)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=Shannon_div_total, ggplot2::aes(x=Genome_position, y=Shannon_roll_mean))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=Shannon_roll_mean))+
+      ggplot2::facet_wrap(~Chromosome, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #-----------------------
+  # join histogram data
+  ldf <- lapply(Histogram_list, read.table)
+  chr_list0 <- basename(Histogram_list)
+  chr_list1 <- stringr::str_split(chr_list0, "_", simplify =TRUE)
+  chr_list2 <- chr_list1[,3]
+  names(ldf) <- chr_list2
+  Histograms_total <- dplyr::bind_rows(ldf, .id = 'chromosome')
+  colnames(Histograms_total) <- c("Chromosome", "Repeat_length", "min_mean_seqval", "max_mean_seqval", "min_powsum_seqval", "max_powsum_seqval", "min_N_seqval", "max_N_seqval")
+  Histograms_total <- Histograms_total[-which(Histograms_total[,8]=="max_N_seqval"),]
+
+  Histograms_total$min_powsum_seqval <- as.numeric(Histograms_total$min_powsum_seqval)
+
+  # http://www.sthda.com/english/wiki/ggplot2-histogram-plot-quick-start-guide-r-software-and-data-visualization
+  # https://www3.nd.edu/~steve/computing_with_data/13_Facets/facets.html
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Histograms.png"), width = 1000, height = 700)
+  print(
+    ggplot2::ggplot(Histograms_total, ggplot2::aes(x=min_powsum_seqval)) +
+      ggplot2::geom_histogram(stat="count", bins=10, position = "stack", colour="black", fill="white")+
+      ggplot2::facet_wrap(~Chromosome, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  #ggplot2::geom_density(alpha=.2, fill="#FF6666")
+  grDevices::dev.off()
+
+}
+
 
 #' DNAwalks_with_genes
 #'
@@ -7569,6 +7608,295 @@ gene_slopes <- function(chromosome=chromosome, fname=fname, inpath=inpath,
   # dev.off()
   #
 }
+
+
+#' PCA_repeats
+#'
+#' Plots a PCA with repeat lengths as variables and genome position as individuals, then forms kmeans groups and colours Shannon div plots based on groups
+#'
+#' @param nam input dataset
+#'
+#' @return output dataset
+#'
+#' @examples
+#' function()
+#' @export
+PCA_repeats <- function(haplotype_path=haplotype_path, Spp_chromosome=Spp_chromosome){
+
+  # requires the folowing libraries
+  library(RepeatOBserverV1)
+  library(corrr)
+  library(ggcorrplot)
+  library(FactoMineR)
+  library(factoextra)
+  library(ggbiplot)
+  library(ggfortify)
+  library(ggplot2)
+  library(dplyr)
+  library(factoextra)
+  library(cluster)
+  library(tidyverse)
+
+
+  #install.packages("corrr")
+  #install.packages("ggcorrplot")
+  #install.packages("FactoMineR")
+  #install.packages("factoextra")
+  #install.packages("tidyr")
+  #install.packages('ggfortify')
+  #install.packages("devtools")
+  #library(devtools)
+  #install_github("vqv/ggbiplot")
+  #install.packages("tidyverse")
+
+  file_list <- list.files(haplotype_path, full.names=TRUE)
+  Shannon_list <- file_list[grep("Shannon", file_list)]
+  Fourier_list <- file_list[grep("Total", file_list)]
+
+  #-----------------------------------
+  # join Fourier data
+  lf <- lapply(Fourier_list, read.table)
+  lft <- lapply(lf, t)
+  lft <- lapply(lft, as.data.frame)
+  f_chr_list0 <- basename(Fourier_list)
+  f_chr_list1 <- stringr::str_split(f_chr_list0, "_", simplify =TRUE)
+  f_chr_list2 <- f_chr_list1[,2]
+  names(lft) <- f_chr_list2
+  Fourier_total <- dplyr::bind_rows(lft, .id = 'Haplotype')
+
+  head(Fourier_total)
+
+  ################################
+  # try to transpose and run on genome position not repeat length
+  # to see what positions in the genome cluster
+
+  # add Haplotype to rowname and remove Haplotype column
+  rownames(Fourier_total) <- paste0((stringr::str_split(rownames(Fourier_total), '501', simplify =TRUE)[,1]),"-", c(1:nrow(Fourier_total)),"_", Fourier_total[,1])
+  Fourier_total <- Fourier_total[,c(2:ncol(Fourier_total))]
+
+  # remove NA values for where they don't line up
+  Fourier_total_rmna <- na.omit(Fourier_total)
+
+  # remove all zero columns
+  Fourier_total_rm0na<- Fourier_total_rmna[which(rowSums(Fourier_total_rmna) != 0),]
+
+  # data normalization
+  data_normalized <- scale(Fourier_total_rm0na)
+  head(data_normalized)
+
+  #################################
+  # pca option - this one works as expected
+  # https://github.com/sinhrks/ggfortify
+
+  Fourier.pca2 <- prcomp(data_normalized, center = TRUE, scale. = TRUE)
+  summary(Fourier.pca2)
+
+  Fourier_total_rm0na$Haplotype <- stringr::str_split(rownames(Fourier_total_rm0na), "_", simplify =TRUE)[,2]
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_PCA2.png"), width = 2000, height = 2000)
+  print(pca.plot <- autoplot(Fourier.pca2,
+                             data = Fourier_total_rm0na,
+                             colour = 'Haplotype',
+                             loadings = TRUE, loadings.colour = 'black',
+                             loadings.label = TRUE, loadings.label.size = 6)+
+          theme_classic())
+  grDevices::dev.off()
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_PCA2_labels.png"), width = 2000, height = 2000)
+  print(pca.plot <- autoplot(Fourier.pca2,
+                             data = Fourier_total_rm0na,
+                             colour = 'Haplotype', shape = FALSE,
+                             label = TRUE, label.size = 3,
+                             loadings = TRUE, loadings.colour = 'black',
+                             loadings.label = TRUE, loadings.label.size = 6)+
+          theme_classic())
+  grDevices::dev.off()
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_PCA_biplot.png"), width = 2000, height = 2000)
+  print( biplot(Fourier.pca2), cex=c(0.01, 0.01))
+  grDevices::dev.off()
+
+
+  #######################################
+  # Clustering in a PCA
+  # https://medium.com/@zullinira23/implementation-of-principal-component-analysis-pca-on-k-means-clustering-in-r-794f03ec15f
+
+  pca2_transform = as.data.frame(-Fourier.pca2$x[,1:2])
+
+  # grDevices::png(file=paste0(haplotype_path, "/Arab_Chr4_PCA_cluster_kchoice.png"), width = 700, height = 700)
+  # print(fviz_nbclust(pca2_transform, kmeans, method = 'wss'))
+  # grDevices::dev.off()
+
+  kmeans_calc <- function(pca2_transform, k){
+    kmeans_pca = kmeans(pca2_transform, centers = k, nstart = 50)
+
+    grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_PCA_clustering_k", k,".png"), width = 1000, height = 1000)
+    print(fviz_cluster(kmeans_pca, data = pca2_transform))
+    grDevices::dev.off()
+
+    # split and add postion names
+    Genome_pos_Haplo <- stringr::str_split(names(kmeans_pca$cluster), "_", simplify =TRUE)
+    Genome_pos <- stringr::str_split(Genome_pos_Haplo[,1], "-", simplify =TRUE)
+    XX <- cbind(Genome_pos_Haplo, Genome_pos, kmeans_pca$cluster)
+    colnames(XX) <- c("Genome_pos", "Haplotype", "Postion", "ID", "Kgroup")
+
+    # make a data frame
+    XX.df <- as.data.frame(XX)
+    head(XX.df)
+
+    # remove the rows that contain X or X1
+    XX.df <- XX.df[-which(XX.df$Postion=="X1"),]
+    XX.df <- XX.df[-which(XX.df$Postion=="X"),]
+
+    # keep only the relevant columns and make wide
+    XX.df <- XX.df[, c(2,3,5)]
+    XXX <- tidyr::pivot_wider(XX.df, names_from = 'Haplotype', values_from = 'Kgroup')
+
+    # remove X from the position column
+    XX.df$Postion <- as.numeric(gsub("X","",as.character(XX.df$Postion)))*1000+501
+    XX.df$Kgroup <- as.numeric(XX.df$Kgroup)
+
+    # plot data
+    grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_PCA_Kmeans_k", k, "_along_genome.png"), width = 1500, height = 700)
+    print(
+      ggplot2::ggplot(data=XX.df, ggplot2::aes(x=Postion, y=Kgroup))+
+        ggplot2::geom_point(ggplot2::aes(x=Postion, y=Kgroup))+
+        ggplot2::facet_wrap(~Haplotype, scales = "free")+
+        ggplot2::theme_classic()
+    )
+    grDevices::dev.off()
+
+    return(XX.df)
+  }
+
+  kmeans_3 <- kmeans_calc(pca2_transform, 3)
+  kmeans_6 <- kmeans_calc(pca2_transform, 6)
+  kmeans_10 <- kmeans_calc(pca2_transform, 10)
+  kmeans_15 <- kmeans_calc(pca2_transform, 15)
+  kmeans_25 <- kmeans_calc(pca2_transform, 25)
+
+  ##################################
+  #---------------------------
+  # join kmeans values
+
+  alldata <- kmeans_3 %>%
+    left_join(kmeans_6, by=c('Haplotype', 'Postion')) %>%
+    left_join(kmeans_10, by=c('Haplotype', 'Postion')) %>%
+    left_join(kmeans_15, by=c('Haplotype', 'Postion')) %>%
+    left_join(kmeans_25, by=c('Haplotype', 'Postion'))
+
+  colnames(alldata) <-  c("Haplotype",  "Postion", "Kgroup.3", "Kgroup.6", "Kgroup.10", "Kgroup.15", "Kgroup.25")
+
+  # write out the data
+  utils::write.table(alldata, file=paste0(haplotype_path, "/", Spp_chromosome,"_Kmeans_info.txt"), append = FALSE, sep = ",",
+                     dec = ".", row.names = FALSE, col.names = TRUE)
+
+
+  #############################
+  # plot Shannon diversity, coloured by PCA group, with line for Shannon cent and barplot cent
+
+  # load Shannon data
+  lsd <- lapply(Shannon_list, read.table)
+  sd_chr_list0 <- basename(Shannon_list)
+  sd_chr_list1 <- stringr::str_split(sd_chr_list0, "_", simplify =TRUE)
+  sd_chr_list2 <- sd_chr_list1[,1]
+  names(lsd) <- sd_chr_list2
+  Shannon_div_total <- dplyr::bind_rows(lsd, .id = 'Haplotype')
+  colnames(Shannon_div_total) <- c("Haplotype", "Postion", "Shannon_div")
+
+  #----------------------------
+  # join kmeans with Shannon data
+
+  alldata_Shannon <- alldata %>%
+    left_join(Shannon_div_total, by=c('Haplotype', 'Postion'))
+
+
+  #------------------------------
+  # plot the data
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_Kmeans6_colours_Shannon.png"), width = 1000, height = 700)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=alldata_Shannon, ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Postion, y=Shannon_div), col=alldata_Shannon$Kgroup.6)+
+      ggplot2::facet_wrap(~Haplotype, ncol=1, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #------------------------------
+  # plot the data
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_Kmeans10_colours_Shannon.png"), width = 1000, height = 700)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=alldata_Shannon, ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Postion, y=Shannon_div), col=alldata_Shannon$Kgroup.10)+
+      ggplot2::facet_wrap(~Haplotype, ncol=1, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #------------------------------
+  # plot the data
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_Kmeans15_colours_Shannon.png"), width = 1000, height = 700)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=alldata_Shannon, ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Postion, y=Shannon_div), col=alldata_Shannon$Kgroup.15)+
+      ggplot2::facet_wrap(~Haplotype, ncol=1, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #--------------------------
+  # plot unique plot for each group
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_K6meansplit_Shannon.png"), width = 2000, height = 1000)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=alldata_Shannon, ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::facet_wrap(~Haplotype+Kgroup.6, ncol=6)+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #--------------------------
+  # plot unique plot for each group
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_K10meansplit_Shannon.png"), width = 2000, height = 1000)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=alldata_Shannon, ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::facet_wrap(~Haplotype+Kgroup.10, ncol=10)+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #--------------------------
+  # plot unique plot for each group
+
+  grDevices::png(file=paste0(haplotype_path, "/", Spp_chromosome,"_K15meansplit_Shannon.png"), width = 3000, height = 1000)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=alldata_Shannon, ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Postion, y=Shannon_div))+
+      ggplot2::facet_wrap(~Haplotype+Kgroup.15, ncol=15)+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+}
+
 
 #----------------------------------------
 # Create documentations for functions above
