@@ -3870,7 +3870,7 @@ run_plot_chromosome_parallel <-function(nam=nam, fname=fname, inpath=inpath, AT_
 #' @examples
 #' function()
 #' @export
-write_All_spec_DNAwalk <- function(nam=nam, fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath, atflag=TRUE,
+write_All_spec_DNAwalk <- function(nam=nam, fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath,
                                    pflag=FALSE, plotflag=FALSE, writeflag=FALSE){
 
   in_name<- base::paste0(inpath,nam,".fasta")    #

@@ -230,7 +230,7 @@ for (nam in nam_list1){
 #-----------------------
 # try to run writing of summary files on different cpu
 
-nam_write_all_spec <- function(x, nam_list1=nam_list1, chr_list=chr_list, fname=fname, inpath=inpath, outpath=outpath, atflag=atflag, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu){
+nam_write_all_spec <- function(x, nam_list1=nam_list1, chr_list=chr_list, fname=fname, inpath=inpath, outpath=outpath, pflag=pflag, plotflag=plotflag,  writeflag=writeflag, x_cpu=x_cpu){
   library(RepeatOBserverV1)
   nam <<- nam_list1[x]
   print(nam)
