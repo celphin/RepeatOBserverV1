@@ -217,7 +217,7 @@ You can try restarting the script with the exact same submission as before and i
 #### isochores contains:
 |Folder/file name | Description |
 |-----------------| ------------|
-| BUR0_H0_Chr1part01.fasta_png.1.png | CG isochores plot made with the EMBOSS program, useful to see if centromere positions are associated with isochores |
+| Species_Haplotype_Chr1part01.fasta_png.1.png | CG isochores plot made with the EMBOSS program, useful to see if centromere positions are associated with isochores |
 
 
 #### Gaps in chromosomes and missing data:\
