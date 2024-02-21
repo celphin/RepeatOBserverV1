@@ -39,7 +39,7 @@ module load seqkit/2.3.1
 module load emboss/6.6.0
 module load r/4.1.2
 
-srun Setup_Run_Repeats.sh -i vinifera -f vinifera.fasta -h H0 -c 15 -m 128000M
+srun Setup_Run_Repeats.sh -i vinifera -f vinifera.fasta -h H0 -c 15 -m 128000M -g FALSE
 
 EOF
 
@@ -71,7 +71,7 @@ module load seqkit/2.3.1
 module load emboss/6.6.0
 module load r/4.1.2
 
-srun Setup_Run_Repeats.sh -i Lemon -f Lemon.fasta -h H0 -c 15 -m 128000M
+srun Setup_Run_Repeats.sh -i Lemon -f Lemon.fasta -h H0 -c 15 -m 128000M -g FALSE
 
 EOF
 
