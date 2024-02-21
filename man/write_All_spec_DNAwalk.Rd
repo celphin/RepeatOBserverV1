@@ -10,7 +10,6 @@ write_All_spec_DNAwalk(
   chromosome = chromosome,
   inpath = inpath,
   outpath = outpath,
-  atflag = TRUE,
   pflag = FALSE,
   plotflag = FALSE,
   writeflag = FALSE
