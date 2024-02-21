@@ -226,17 +226,23 @@ You can try restarting the script with the exact same submission as before and i
 | spectra_parts_35-2000 | Heat maps of the Fourier transforms of 100 Mbp chromosome parts for long repeat lengths 35-2000 bp |  All_spec1_Species_Haplotype_Chr1part01_bp35_2000seq2501_32542501TRUE.png|
 
 
-#### Gaps in chromosomes and missing data:\
+#### Gaps in chromosomes and missing data:
 If you have many or large gaps in your genome, the centromere predictions using Shannon diversity windows may not be accurate.
 You can check for gaps or unusual characters in your genome with the following commands:
 
    ```sh
 # use seqkit to split into 60bp lines
 module load seqkit/2.3.1
-seqkit seq -w 60 HanPSC8rmgaps.fasta > HanPSC8rmgaps2.fasta
+seqkit seq -w 60 genome.fasta > genome.fasta
 
 # search for any non-nucleotide characters
-grep [^ATCGatcg] HanPSC8rmgaps2.fasta
+grep [^ATCGatcg] genome.fasta
+
+# to remove gaps from your genome - replace the n below with the gap character
+# note that this is not a longer good idea since you will lose the information about where your gaps are in the genome
+sed 's/n//g' genome.fasta > genome_rmgaps.fasta
+
+
    ```
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
