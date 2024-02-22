@@ -27,19 +27,19 @@ equicktandem -sequence ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.fa
 
 mv out.txt ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out 
 
-sed -n "23,27p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out
+sed -n "23,$p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out
 #  Start     End  Strand   Score   Size  Count
 #  93852   99234       +    1391      4   1345
 
-# line 24 is first repeat
-linep=$(grep -n " ${repeat_length} " ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out| cut -d ':' -f 1)
-echo $linep
+# line -4 is last largest repeat - so don't search 
+#linep=$(grep -n " ${repeat_length} " ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out| cut -d ':' -f 1)
+#echo $linep
 
 # extract values from output
-emb_start=$(sed -n "${linep},${linep}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out  | tr -s " " "_" | cut -d '_' -f 2)
+emb_start=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 2)
 echo $emb_start
 
-emb_end=$(sed -n "${linep},${linep}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | tr -s " " "_" | cut -d '_' -f 3)
+emb_end=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 3)
 echo $emb_end
 
 #repeatlength=$(sed -n "${linep}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | tr -s " " "_" | cut -d '_' -f 6)
