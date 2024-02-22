@@ -46,7 +46,7 @@ repeatlength=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.o
 echo $repeatlength
 
 # get line numbers associated with character positions
-line_emb_start=$(echo $((emb_start+1/linecount)))
+line_emb_start=$(echo $(((emb_start/linecount)+1)))
 line_emb_end=$(echo $((emb_end/linecount)))
 
 # check fasta at this line
