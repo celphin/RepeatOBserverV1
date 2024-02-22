@@ -289,11 +289,12 @@ dos2unix repeat_seq_finder.sh
    ```
    
 Script inputs (in order with an example):
--Direct the script to your chromosome files: "/home/celphin/scratch/repeats/auto_script/input_chromosomes/NerLuet_H0-AT/chromosome_files"
--Choose the chromosome fasta file that you want to look at the repeat in: "NerLuet_H0-AT_Chr1part01.fasta"
--Define the bp range that you want to search in (this is selected manually using the Fourier heatmaps or filtering for low Shannon diversity values): 13200000 13500000
--Define the upper repeat length you are looking for: 4 (will work for repeats up to 600bp long, it is better to choose a bit larger value from the heatmap if uncertain)
--Define the number of bp per line in your fasta file: 60 (default for RepeatOBserverV1 - change only if you adjusted the chromosome files afterwards)
+
+- Direct the script to your chromosome files: "/home/celphin/scratch/repeats/auto_script/input_chromosomes/NerLuet_H0-AT/chromosome_files"
+- Choose the chromosome fasta file that you want to look at the repeat in: "NerLuet_H0-AT_Chr1part01.fasta"
+- Define the bp range that you want to search in (this is selected manually using the Fourier heatmaps or filtering for low Shannon diversity values): 13200000 13500000
+- Define the upper repeat length you are looking for: 4 (will work for repeats up to 600bp long, it is better to choose a bit larger value from the heatmap if uncertain)
+- Define the number of bp per line in your fasta file: 60 (default for RepeatOBserverV1 - change only if you adjusted the chromosome files afterwards)
 
 Here is an example of running it on an algae repeat visualized using RepeatOBserver 
 
