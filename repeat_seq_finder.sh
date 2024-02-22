@@ -42,18 +42,40 @@ echo $emb_start
 emb_end=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 3)
 echo $emb_end
 
-#repeatlength=$(sed -n "${linep}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | tr -s " " "_" | cut -d '_' -f 6)
-#echo $repeatlength
+repeatlength=$(sed -n "${linep}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | tr -s " " "_" | cut -d '_' -f 6)
+echo $repeatlength
 
 # get line numbers associated with character positions
 line_emb_start=$(echo $((emb_start/linecount)))
 line_emb_end=$(echo $((emb_end/linecount)))
 
 # check fasta at this line
-sed -n "${line_emb_start},${line_emb_end}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.fasta > ${pathname}/${Chromosome_file}_${repeat_length}_${emb_start}-${emb_end}.fasta
+sed -n "${line_emb_start},${line_emb_end}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.fasta > ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta
 
 # print the various values
-echo $(echo $(cat ${pathname}/${Chromosome_file}_${repeat_length}_${emb_start}-${emb_end}.fasta))
-echo $(sed -n "4,4p" ${pathname}/${Chromosome_file}_${repeat_length}_${emb_start}-${emb_end}.fasta)
-echo $(sed -n "4,4p" ${pathname}/${Chromosome_file}_${repeat_length}_${emb_start}-${emb_end}.fasta |cut -c1-${repeat_length})
+echo $(echo $(cat ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta))
+echo $(sed -n "4,14p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta)
+echo $(sed -n "6,6p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta |cut -c1-${repeatlength})
 
+
+# if [ ${repeatlength} < ${linecount} ]
+# then
+# echo $(sed -n "4,4p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta |cut -c1-${repeatlength})
+# else
+# line2count=$(echo $((2*${linecount})))
+# if [ ${repeatlength} < ${line2count}]
+# then
+# lengthdiff=$(echo $((-(${repeatlength}-${line2count}))))
+# echo $(sed -n "4,4p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta)
+# echo $(sed -n "5,5p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta |cut -c1-${lengthdiff})
+# else
+# line3count=$(echo $((3*${linecount})))
+# if [ ${repeatlength} < ${line3count}]
+# then
+# lengthdiff=$(echo $((-(${repeatlength}-${line3count}))))
+# echo $(sed -n "4,4p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta)
+# echo $(sed -n "5,5p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta)
+# echo $(sed -n "6,6p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta |cut -c1-${lengthdiff})
+# fi
+# fi 
+# fi
