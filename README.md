@@ -275,9 +275,10 @@ Using an EMBOSS function (equicktandem), we can find the tandem repeat sequences
 https://bar.utoronto.ca/cgi-bin/emboss/help/equicktandem \
 Note that very imperfect repeats or longer may not show up but short repeats are easy to detect and compare using the following script.
 
-To run this script EMBOSS6.6.0 is required. 
+To run this script EMBOSS6.6.0 and some version of seqkit is required. 
    ```sh
 module load nixpkgs/16.09  gcc/7.3.0 emboss/6.6.0
+module load StdEnv/2020 seqkit/2.3.1
    ```
    
 First download the script:

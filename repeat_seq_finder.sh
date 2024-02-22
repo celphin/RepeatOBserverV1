@@ -53,10 +53,12 @@ line_emb_end=$(echo $((emb_end/linecount)))
 # check fasta at this line
 sed -n "${line_emb_start},${line_emb_end}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.fasta > ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta
 
+#module load StdEnv/2020 seqkit/2.3.1
+seqkit seq -w ${repeatlength} ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta > ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}_2.fasta
+
 # print the various values
-echo $(echo $(cat ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta))
-echo $(sed -n "4,14p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta)
-echo $(sed -n "6,6p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta |cut -c1-${repeatlength})
+echo $(echo $(cat ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}_2.fasta))
+echo $(sed -n "1,$p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}_2.fasta)
 
 #############
 # future ideas to print the whole repeat if ${repeatlength} > ${linecount}
