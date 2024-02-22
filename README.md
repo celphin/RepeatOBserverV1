@@ -39,6 +39,7 @@
         <li><a href="#version-changes">Version changes</a></li>
         <li><a href="#basic-run">Basic run</a></li>
         <li><a href="#output">Output</a></li>
+        <li><a href="#finding-repeat-sequences">Finding repeat sequences</a></li>
       </ul>
     </li>
     <li><a href="#citation">Citation</a></li>
@@ -266,6 +267,53 @@ sed 's/n//g' genome.fasta > genome_rmgaps.fasta
    ```
 
 <p align="right">(<a href="#getting-started">back to top</a>)</p>
+
+
+### Finding repeat sequences
+
+# Using an EMBOSS function (equicktandem) we can find the tandem repeat sequences quickly.
+# https://bar.utoronto.ca/cgi-bin/emboss/help/equicktandem
+# Note that very imperfect repeats or longer may not show up but short repeats are easy to detect and compare.
+
+# To run this script EMBOSS6.6.0 is required. 
+module load nixpkgs/16.09  gcc/7.3.0 emboss/6.6.0
+
+First download the script:
+
+   ```sh
+wget https://raw.githubusercontent.com/celphin/RepeatOBserverV1/main/repeat_seq_finder.sh
+chmod +x repeat_seq_finder.sh
+dos2unix repeat_seq_finder.sh
+   ```
+   
+Script inputs (in order with an example):
+-Direct the script to your chromosome files: "/home/celphin/scratch/repeats/auto_script/input_chromosomes/NerLuet_H0-AT/chromosome_files"
+-Choose the chromosome fasta file that you want to look at the repeat in: "NerLuet_H0-AT_Chr1part01.fasta"
+-Define the bp range that you want to search in (this is selected manually using the Fourier heatmaps or filtering for low Shannon diversity values): 13200000 13500000
+-Define the upper repeat length you are looking for: 4 (will work for repeats up to 600bp long, it is better to choose a bit larger value from the heatmap if uncertain)
+-Define the number of bp per line in your fasta file: 60 (default for RepeatOBserverV1 - change only if you adjusted the chromosome files afterwards)
+
+Here is an example of running it on an algae repeat visualized using RepeatOBserver 
+
+   ```sh
+   
+# Example short run
+../repeat_seq_finder.sh "/home/celphin/scratch/repeats/auto_script/input_chromosomes/NerLuet_H0-AT/chromosome_files" \
+"NerLuet_H0-AT_Chr1part01.fasta" 9600000 9700000 3 60
+# cta
+# tactactactactactactac
+
+#Example of a longer repeat
+./repeat_seq_finder.sh "/home/celphin/scratch/repeats/auto_script/input_chromosomes/NerLuet_H0-AT/chromosome_files" \
+"NerLuet_H0-AT_Chr1part01.fasta" 10000000 10500000 90 60
+
+#cccgcccacgtgatgctgctgttttctcccgctttgacgaggttatagagggtatgatc gtacggggtctggtactgttgtgccccct
+#ccctctcccatgatactgcagcactttcccgtttga cgggaaggtccagggtatgatcctgcggggtctggtactgttgtgccccct
+
+   ```
+
+<p align="right">(<a href="#getting-started">back to top</a>)</p>
+
 
 <!-- CITATION -->
 ## Citation
