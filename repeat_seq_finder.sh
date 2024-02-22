@@ -60,7 +60,7 @@ sed -e "1i\>${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}" ${pathna
 seqkit seq -w ${repeatlength} ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}_1.fasta > ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}_2.fasta
 
 # print the various values
-echo $(echo "$(<${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}_2.fasta)")
+echo "$(<${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}_2.fasta)"
 
 #############
 # future ideas to print the whole repeat if ${repeatlength} > ${linecount}
