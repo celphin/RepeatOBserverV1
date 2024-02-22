@@ -292,7 +292,7 @@ Script inputs (in order with an example):
 
 - Direct the script to your chromosome files: "/home/celphin/scratch/repeats/auto_script/input_chromosomes/NerLuet_H0-AT/chromosome_files"
 - Choose the chromosome fasta file that you want to look at the repeat in: "NerLuet_H0-AT_Chr1part01.fasta"
-- Define the bp range that you want to search in (this is selected manually using the Fourier heatmaps or filtering for low Shannon diversity values): 13200000 13500000
+- Define the bp range that you want to search in (this is selected manually using the Fourier heatmaps or filtering for low Shannon diversity values (start must be 60 or more)): 13200000 13500000
 - Define the upper repeat length you are looking for: 4 (will work for repeats up to 600bp long, it is better to choose a bit larger value from the heatmap if uncertain)
 - Define the number of bp per line in your fasta file: 60 (default for RepeatOBserverV1 - change only if you adjusted the chromosome files afterwards)
 - Define the threshold for calling a tandem repeat (note that longer repeats get lower scores generally so can lower the threshold, 500 reasonable for small and 200 for large repeats)
