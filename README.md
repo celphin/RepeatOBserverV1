@@ -271,13 +271,15 @@ sed 's/n//g' genome.fasta > genome_rmgaps.fasta
 
 ### Finding repeat sequences
 
-# Using an EMBOSS function (equicktandem) we can find the tandem repeat sequences quickly.
-# https://bar.utoronto.ca/cgi-bin/emboss/help/equicktandem
-# Note that very imperfect repeats or longer may not show up but short repeats are easy to detect and compare.
+Using an EMBOSS function (equicktandem), we can find the tandem repeat sequences quickly once the position has been roughly located with RepeatOBserver.\
+https://bar.utoronto.ca/cgi-bin/emboss/help/equicktandem
+Note that very imperfect repeats or longer may not show up but short repeats are easy to detect and compare using the following script.
 
-# To run this script EMBOSS6.6.0 is required. 
+To run this script EMBOSS6.6.0 is required. 
+   ```sh
 module load nixpkgs/16.09  gcc/7.3.0 emboss/6.6.0
-
+   ```
+   
 First download the script:
 
    ```sh
