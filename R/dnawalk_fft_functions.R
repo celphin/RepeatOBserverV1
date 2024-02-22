@@ -4145,7 +4145,7 @@ run_summary_hist <- function(chromosome=chromosome, fname=fname, inpath=inpath, 
     All_spec <- All_spec2#[,c(1:total_col)]
 
     full_length <-  as.numeric(ncol(All_spec))*5000
-    if (full_length>5e6) {
+    if (full_length>5*1e6) {
 
       # setup bins
       #if(full_length>(50*1e6))numbins<-round(full_length/3e+6) else numbins<-round(full_length/3e+6)
