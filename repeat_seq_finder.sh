@@ -42,7 +42,7 @@ echo $emb_start
 emb_end=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 3)
 echo $emb_end
 
-repeatlength=$(sed -n "${linep}p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | tr -s " " "_" | cut -d '_' -f 6)
+repeatlength=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 6)
 echo $repeatlength
 
 # get line numbers associated with character positions
