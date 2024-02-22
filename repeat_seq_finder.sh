@@ -57,6 +57,8 @@ echo $(echo $(cat ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${
 echo $(sed -n "4,14p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta)
 echo $(sed -n "6,6p" ${pathname}/${Chromosome_file}_${repeatlength}_${emb_start}-${emb_end}.fasta |cut -c1-${repeatlength})
 
+#############
+# future ideas to print the whole repeat if ${repeatlength} <> ${linecount}
 
 # if [ ${repeatlength} < ${linecount} ]
 # then
