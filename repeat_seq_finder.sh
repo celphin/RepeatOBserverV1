@@ -5,6 +5,7 @@ start_seq=$3
 end_seq=$4
 repeat_length=$5
 linecount=$6
+threshold=$7
 
 pathname=$(pwd)
 
@@ -23,7 +24,7 @@ echo $line_end
 
 # load emboss and search for repeats of that length
 #module load nixpkgs/16.09  gcc/7.3.0 emboss/6.6.0
-equicktandem -sequence ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.fasta -maxrepeat ${repeat_length} -threshold 500 -outfile out.txt
+equicktandem -sequence ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.fasta -maxrepeat ${repeat_length} -threshold ${threshold} -outfile out.txt
 
 mv out.txt ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out 
 
