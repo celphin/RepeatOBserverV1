@@ -486,7 +486,7 @@ echo "post-repeats.sh file made"
 ############################################
 
 run_all(){
-  
+
   cd ${path_name}
 
   ${path_name}/pre-repeats.sh "${path_name}/input_chromosomes/${species}_${haplotype}" "${species}_${haplotype}" "${cpu}" "${CGflag}"
@@ -495,10 +495,12 @@ run_all(){
 
   Rscript ${path_name}/input_chromosomes/${species}_${haplotype}/repeats_fourier.R 
 
+  ${path_name}/post-repeats.sh "${species}_${haplotype}"
+
   Rscript ${path_name}/input_chromosomes/${species}_${haplotype}/Summary_plots.R 
   
   ${path_name}/post-repeats.sh "${species}_${haplotype}"
-  
+
   # list and remove empty folders
   cd ${path_name}/output_chromosomes/${species}_${haplotype}
   find . -type d -empty -print
