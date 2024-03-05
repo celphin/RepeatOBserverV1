@@ -498,7 +498,7 @@ run_all(){
   ${path_name}/post-repeats.sh "${species}_${haplotype}"
 
   Rscript ${path_name}/input_chromosomes/${species}_${haplotype}/Summary_plots.R 
-  
+
   ${path_name}/post-repeats.sh "${species}_${haplotype}"
 
   # list and remove empty folders
