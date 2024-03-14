@@ -99,7 +99,7 @@ To install the R package "RepeatOBserverV1", you will first need to install the 
 
 ### Version changes
 
-Feb 20th, 2024 : The older Setup_Run_Repeats_preFeb20.sh may still work but it is ideal to rerun the program from scratch (i.e. reinstall library and delete folders). 
+Feb 20th, 2024 : The older Setup_Run_Repeats_preFeb20.sh may still work but it is ideal to rerun the program from scratch (i.e. download the new script, reinstall R library and delete old folders). 
 Changes include:
 - Ablity to run longer chromosomes in 400Mbp parts
 - An easier to use CGwalk and transform option
