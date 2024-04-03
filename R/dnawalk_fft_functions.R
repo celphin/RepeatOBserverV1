@@ -6801,13 +6801,15 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   Shannon_div_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
   colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
 
+  Shannon_div_total$Chrnum <- as.numeric(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+
   grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Shannon_div.png"), width = 1000, height = 700)
   # plot Shannon on one plot
   # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
   print(
     ggplot2::ggplot(data=Shannon_div_total, ggplot2::aes(x=Genome_position, y=Shannon_div))+
       ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=Shannon_div))+
-      ggplot2::facet_wrap(~Chromosome, scales = "free")+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
       ggplot2::theme_classic()
   )
   grDevices::dev.off()
@@ -6821,7 +6823,7 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   print(
     ggplot2::ggplot(data=Shannon_div_total, ggplot2::aes(x=Genome_position, y=Shannon_roll_mean))+
       ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=Shannon_roll_mean))+
-      ggplot2::facet_wrap(~Chromosome, scales = "free")+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
       ggplot2::theme_classic()
   )
   grDevices::dev.off()
@@ -6838,6 +6840,7 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   Histograms_total <- Histograms_total[-which(Histograms_total[,8]=="max_N_seqval"),]
 
   Histograms_total$min_powsum_seqval <- as.numeric(Histograms_total$min_powsum_seqval)
+  Histograms_total$Chrnum <- as.numeric(stringr::str_split(Histograms_total$Chromosome, "r", simplify =TRUE)[,2])
 
   # http://www.sthda.com/english/wiki/ggplot2-histogram-plot-quick-start-guide-r-software-and-data-visualization
   # https://www3.nd.edu/~steve/computing_with_data/13_Facets/facets.html
@@ -6845,7 +6848,7 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   print(
     ggplot2::ggplot(Histograms_total, ggplot2::aes(x=min_powsum_seqval)) +
       ggplot2::geom_histogram(stat="count", bins=10, position = "stack", colour="black", fill="white")+
-      ggplot2::facet_wrap(~Chromosome, scales = "free")+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
       ggplot2::theme_classic()
   )
   #ggplot2::geom_density(alpha=.2, fill="#FF6666")
