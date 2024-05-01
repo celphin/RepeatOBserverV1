@@ -1746,42 +1746,51 @@ largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi,rangebp=NULL,ra
            widths=base::c(((pixw-600)/pixw),1-((pixw-600)/pixw)), heights=base::c(1, 0.25))
   grDevices::dev.off()
 
-  #----------------------------
-  # try alternative scaling based on row sums - like for Shannon diversity
-
-  All_spec <- as.matrix(All_specAve[whichones,c(rangeseq[1]:rangeseq[2])])
-  All_spec_replen_sum <- apply(All_spec, 1, sum, na.rm=TRUE)
-  All_spec_norm <- All_spec/All_spec_replen_sum
-
-
-  if (rapportools::is.boolean(repround)) {rownames(All_spec_norm) <- paste0("1/", base::round(base::as.numeric(stringr::str_split_fixed(base::rownames(All_spec_norm),"/", 2)[,2])))}
-  else {rownames(All_spec_norm) <- paste0("1/", base::round(base::as.numeric(stringr::str_split_fixed(base::rownames(All_spec_norm),"/", 2)[,2]), digits=repround))}
-
-  if (rapportools::is.boolean(part) && part==FALSE) {colnames(newdata0) <- round((c(0:(ncol(newdata0)-1))*5000)/1e6)}
-  else {colnames(newdata0) <- round((c(0:(ncol(newdata0)-1))*5000)/1e6)+((part-1)*100)}
-
-  ofil1<- base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,"diff_norm.png")
-
-  # set intensity values
-  # set intensity values
-  zmeantot<-base::mean((All_spec_norm),na.rm=TRUE)
-  zsd<-stats::sd((All_spec_norm),na.rm=TRUE)
-  zmintot<-zmeantot-(0.8*zsd)
-  zmaxtot<-zmeantot+(6*zsd)
-
-  base::cat("min max sd",zmintot,zmaxtot,zsd)
-  zlimtot<-base::c(zmintot,zmaxtot)
-  base::cat("\nrevised min max  sd",zlimtot,zsd)
-
-  # plotting
-  grDevices::png(filename = ofil1, width = pixw, height = pixh)
-  imagenan(All_spec_norm,lasval=2,
+  grDevices::pdf(filename = base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,".pdf"))
+  imagenan(newdata,lasval=2,
            xma=xma,xline=xline,yline=yline,yma=yma,topyma=topyma,
            zlim=zlimtot,lnumr=lnumr,lnumc=lnumc,main=main,
            col_unit="Genome Position (Mbp)",row_unit="1/Repeat length (1/bp)", zunit="Repeat Abundance",
-           cex.axis = (25*magnif), cex.lab =(25*magnif), cex.main=(25*magnif),
+           cex.axis = (20*magnif), cex.lab =(20*magnif), cex.main=(20*magnif),
            widths=base::c(((pixw-600)/pixw),1-((pixw-600)/pixw)), heights=base::c(1, 0.25))
   grDevices::dev.off()
+
+  #----------------------------
+  # try alternative scaling based on row sums - like for Shannon diversity
+#
+#   All_spec <- as.matrix(All_specAve[whichones,c(rangeseq[1]:rangeseq[2])])
+#   All_spec_replen_sum <- apply(All_spec, 1, sum, na.rm=TRUE)
+#   All_spec_norm <- All_spec/All_spec_replen_sum
+#
+#
+#   if (rapportools::is.boolean(repround)) {rownames(All_spec_norm) <- paste0("1/", base::round(base::as.numeric(stringr::str_split_fixed(base::rownames(All_spec_norm),"/", 2)[,2])))}
+#   else {rownames(All_spec_norm) <- paste0("1/", base::round(base::as.numeric(stringr::str_split_fixed(base::rownames(All_spec_norm),"/", 2)[,2]), digits=repround))}
+#
+#   if (rapportools::is.boolean(part) && part==FALSE) {colnames(newdata0) <- round((c(0:(ncol(newdata0)-1))*5000)/1e6)}
+#   else {colnames(newdata0) <- round((c(0:(ncol(newdata0)-1))*5000)/1e6)+((part-1)*100)}
+#
+#   ofil1<- base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,"diff_norm.png")
+#
+#   # set intensity values
+#   # set intensity values
+#   zmeantot<-base::mean((All_spec_norm),na.rm=TRUE)
+#   zsd<-stats::sd((All_spec_norm),na.rm=TRUE)
+#   zmintot<-zmeantot-(0.8*zsd)
+#   zmaxtot<-zmeantot+(6*zsd)
+#
+#   base::cat("min max sd",zmintot,zmaxtot,zsd)
+#   zlimtot<-base::c(zmintot,zmaxtot)
+#   base::cat("\nrevised min max  sd",zlimtot,zsd)
+
+  # plotting
+  # grDevices::png(filename = ofil1, width = pixw, height = pixh)
+  # imagenan(All_spec_norm,lasval=2,
+  #          xma=xma,xline=xline,yline=yline,yma=yma,topyma=topyma,
+  #          zlim=zlimtot,lnumr=lnumr,lnumc=lnumc,main=main,
+  #          col_unit="Genome Position (Mbp)",row_unit="1/Repeat length (1/bp)", zunit="Repeat Abundance",
+  #          cex.axis = (25*magnif), cex.lab =(25*magnif), cex.main=(25*magnif),
+  #          widths=base::c(((pixw-600)/pixw),1-((pixw-600)/pixw)), heights=base::c(1, 0.25))
+  # grDevices::dev.off()
 
 }
 
@@ -4413,21 +4422,27 @@ run_summary_plots <- function(chromosome=chromosome, fname=fname, inpath=inpath,
   # read in total_DNAwalk
   DNAwalk_long <-base::as.matrix(utils::read.table(paste0(outpath, "/", fname,"/", chromosome,"/Total_dnawalk_every50_",fname, "_", chromosome,".txt"), check.names = FALSE))
 
-  # write to pdf
+  # write to png/pdf
   ofile2 <-  paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk2D_total.png")
   base::cat("\n ouput to", ofile2)
   grDevices::png(file=ofile2)
-
   dnawalk <- as.data.frame(DNAwalk_long)
-
   walk_colours <- NULL
   for (col in grDevices::rainbow(n=round(nrow(dnawalk)/100000))){
     coltmp <- rep(col, 100000)
     walk_colours <- c(walk_colours, coltmp)
   }
-
   plot(dnawalk$AT, dnawalk$CG, col = walk_colours)
+  grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk2D_total.pdf"))
+  dnawalk <- as.data.frame(DNAwalk_long)
+  walk_colours <- NULL
+  for (col in grDevices::rainbow(n=round(nrow(dnawalk)/100000))){
+    coltmp <- rep(col, 100000)
+    walk_colours <- c(walk_colours, coltmp)
+  }
+  plot(dnawalk$AT, dnawalk$CG, col = walk_colours)
   grDevices::dev.off()
 
   #----------
@@ -4435,18 +4450,27 @@ run_summary_plots <- function(chromosome=chromosome, fname=fname, inpath=inpath,
   base::cat("\n ouput to", ofile3)
   grDevices::png(file=ofile3)
   # plot 1D DNAwalk
-
   dnawalk$rownames <- 50*c(1:nrow(dnawalk))
   plot(dnawalk$rownames, dnawalk$AT, col = walk_colours)
-
   grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_AT_total.pdf"))
+  # plot 1D DNAwalk
+  dnawalk$rownames <- 50*c(1:nrow(dnawalk))
+  plot(dnawalk$rownames, dnawalk$AT, col = walk_colours)
+  grDevices::dev.off()
+
+  #-------------
   ofile4 <-  paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_CG_total.png")
   base::cat("\n ouput to", ofile4)
   grDevices::png(file=ofile4)
   # plot 1D DNAwalk
   plot(dnawalk$rownames, dnawalk$CG, col = walk_colours)
+  grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_CG_total.pdf"))
+  # plot 1D DNAwalk
+  plot(dnawalk$rownames, dnawalk$CG, col = walk_colours)
   grDevices::dev.off()
 
 }
@@ -4560,6 +4584,23 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
     plot(genome_pos, Simpson_div)
     grDevices::dev.off()
 
+    #pdfs
+    grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Shannon_div_window_", wind_factor,".pdf"))
+    plot(genome_pos_wind, Shannon_div_wind, type="l")
+    grDevices::dev.off()
+
+    grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Shannon_plot_norm.pdf"))
+    plot(genome_pos, Shannon_div)
+    grDevices::dev.off()
+
+    grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Pielou_div_norm.pdf"))
+    plot(genome_pos, Pielou_div)
+    grDevices::dev.off()
+
+    grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Simpson_div_norm.pdf"))
+    plot(genome_pos, Simpson_div)
+    grDevices::dev.off()
+
     #-----------------------
     # moving average across Shannon that shows where min is
     # https://www.storybench.org/how-to-calculate-a-rolling-average-in-r/
@@ -4574,6 +4615,10 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
       grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_25.png"), width = 1500, height = 500)
       base::plot(genome_pos, roll_mean_Shannon)
       grDevices::dev.off()
+
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_25.pdf"))
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
     }else{cent25=0}
     #----------
     if (full_length > 0.5e6){
@@ -4585,6 +4630,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
       grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_100.png"), width = 1500, height = 500)
       base::plot(genome_pos, roll_mean_Shannon)
       grDevices::dev.off()
+
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_100.pdf"))
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+
     }else{cent100=0}
     #----------
     if (full_length > 1.25e6){
@@ -4596,6 +4646,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
       grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_250.png"), width = 1500, height = 500)
       base::plot(genome_pos, roll_mean_Shannon)
       grDevices::dev.off()
+
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_250.pdf"))
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+
     }else{cent250=0}
     #----------
     if (full_length > 2.5e6){
@@ -4607,6 +4662,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
       grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_500.png"), width = 1500, height = 500)
       base::plot(genome_pos, roll_mean_Shannon)
       grDevices::dev.off()
+
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_500.pdf"))
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+
     }else{cent500=0}
 
     #----------
@@ -4619,6 +4679,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
       grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_1000.png"), width = 1500, height = 500)
       base::plot(genome_pos, roll_mean_Shannon)
       grDevices::dev.off()
+
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_1000.pdf"))
+      base::plot(genome_pos, roll_mean_Shannon)
+      grDevices::dev.off()
+
     }else{cent1000=0}
 
     #-------------------
@@ -4805,7 +4870,6 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
       plot(genome_pos_wind, Shannon_div_wind, type="l")
       grDevices::dev.off()
 
-
       grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Shannon_plot_norm.png"), width = 1500, height = 500)
       plot(genome_pos, Shannon_div)
       grDevices::dev.off()
@@ -4818,6 +4882,22 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
       plot(genome_pos, Simpson_div)
       grDevices::dev.off()
 
+      #pdfs
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Shannon_div_window", wind_factor,".pdf"))
+      plot(genome_pos_wind, Shannon_div_wind, type="l")
+      grDevices::dev.off()
+
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Shannon_plot_norm.pdf"))
+      plot(genome_pos, Shannon_div)
+      grDevices::dev.off()
+
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Pielou_div_norm.pdf"))
+      plot(genome_pos, Pielou_div)
+      grDevices::dev.off()
+
+      grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_Simpson_div_norm.pdf"))
+      plot(genome_pos, Simpson_div)
+      grDevices::dev.off()
 
       #-----------------------
       # moving average across Shannon that shows where min is
@@ -4833,6 +4913,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
         grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_25.png"), width = 1500, height = 500)
         base::plot(genome_pos, roll_mean_Shannon)
         grDevices::dev.off()
+
+        grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_25.pdf"))
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+
       }else{cent25=0}
       #----------
       if (full_length > 0.5e6){
@@ -4844,6 +4929,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
         grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_100.png"), width = 1500, height = 500)
         base::plot(genome_pos, roll_mean_Shannon)
         grDevices::dev.off()
+
+        grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_100.pdf"))
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+
       }else{cent100=0}
 
       #----------
@@ -4856,6 +4946,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
         grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_250.png"), width = 1500, height = 500)
         base::plot(genome_pos, roll_mean_Shannon)
         grDevices::dev.off()
+
+        grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_250.pdf"))
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+
       }else{cent250=0}
 
       #----------
@@ -4868,6 +4963,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
         grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_500.png"), width = 1500, height = 500)
         base::plot(genome_pos, roll_mean_Shannon)
         grDevices::dev.off()
+
+        grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_500.pdf"))
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+
       }else{cent500=0}
 
       #----------
@@ -4880,6 +4980,11 @@ run_diversity_plots <- function(chromosome=chromosome, fname=fname, inpath=inpat
         grDevices::png(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_1000.png"), width = 1500, height = 500)
         base::plot(genome_pos, roll_mean_Shannon)
         grDevices::dev.off()
+
+        grDevices::pdf(file=paste0(outpath,"/", fname,"/",chromosome,"/",fname, "_", chromosome, "_roll_mean_Shannon_1000.png"))
+        base::plot(genome_pos, roll_mean_Shannon)
+        grDevices::dev.off()
+
       }else{cent1000=0}
 
       #-------------------
@@ -6349,34 +6454,45 @@ run_summary_plots_range <- function(fname=fname, chromosome=chromosome, inpath=i
     walk_colours <- c(walk_colours, coltmp)
   }
 
+  #------------------
   # write to image
   ofile2 <-  paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome, "_DNAwalk2D_subset_", startbp,"-",endbp,".png")
   base::cat("\n ouput to", ofile2)
-  grDevices::png(file=ofile2)
-
+  grDevices::png(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome, "_DNAwalk2D_subset_", startbp,"-",endbp,".png"))
   plot(dnawalk$AT, dnawalk$CG, col = walk_colours)
+  grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome, "_DNAwalk2D_subset_", startbp,"-",endbp,".pdf"))
+  plot(dnawalk$AT, dnawalk$CG, col = walk_colours)
   grDevices::dev.off()
 
   #----------
   ofile3 <-  paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_AT_subset_", startbp,"-",endbp,".png")
   base::cat("\n ouput to", ofile3)
-  grDevices::png(file=ofile3)
+  grDevices::png(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_AT_subset_", startbp,"-",endbp,".png"))
   # plot 1D DNAwalk
-
   dnawalk$rownames <- c(1:nrow(dnawalk))
   plot(dnawalk$rownames, dnawalk$AT, col = walk_colours)
-
   grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_AT_subset_", startbp,"-",endbp,".pdf"))
+  # plot 1D DNAwalk
+  dnawalk$rownames <- c(1:nrow(dnawalk))
+  plot(dnawalk$rownames, dnawalk$AT, col = walk_colours)
+  grDevices::dev.off()
+
+  #---------------------
   ofile4 <-  paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_CG_subset_", startbp,"-",endbp,".png")
   base::cat("\n ouput to", ofile4)
-  grDevices::png(file=ofile4)
+  grDevices::png(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_CG_subset_", startbp,"-",endbp,".png"))
   # plot 1D DNAwalk
   plot(dnawalk$rownames, dnawalk$CG, col = walk_colours)
-
   grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/", chromosome,"/", fname, "_", chromosome,"_DNAwalk1D_CG_subset_", startbp,"-",endbp,".pdf"))
+  # plot 1D DNAwalk
+  plot(dnawalk$rownames, dnawalk$CG, col = walk_colours)
+  grDevices::dev.off()
 }
 
 
@@ -6814,6 +6930,17 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   )
   grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Shannon_div.pdf"))
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=Shannon_div_total, ggplot2::aes(x=Genome_position, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=Shannon_div))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
   # roll mean for  Shannon div data
   Shannon_div_total$Shannon_roll_mean <- zoo::rollapply(Shannon_div_total$Shannon_div, width = 100, FUN=mean, fill = NA, partial=(100/2))
 
@@ -6828,6 +6955,16 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   )
   grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_rolling_mean_500Kbp_Shannon_div.pdf"))
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=Shannon_div_total, ggplot2::aes(x=Genome_position, y=Shannon_roll_mean))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=Shannon_roll_mean))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
   #-----------------------
   # join histogram data
   ldf <- lapply(Histogram_list, read.table)
@@ -6854,8 +6991,16 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   #ggplot2::geom_density(alpha=.2, fill="#FF6666")
   grDevices::dev.off()
 
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Histograms.pdf"))
+  print(
+    ggplot2::ggplot(Histograms_total, ggplot2::aes(x=min_powsum_seqval)) +
+      ggplot2::geom_histogram(stat="count", bins=10, position = "stack", colour="black", fill="white")+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  #ggplot2::geom_density(alpha=.2, fill="#FF6666")
+  grDevices::dev.off()
 }
-
 
 #' DNAwalks_with_genes
 #'
