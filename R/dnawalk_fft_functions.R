@@ -1649,8 +1649,8 @@ largeimagesub<-function(All_specAve,ofi,rangebp=NULL,rangeseq1=NULL,flaglog=TRUE
 #' @examples
 #' function()
 #' @export
-largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi,rangebp=NULL,rangeseq1=NULL,flaglog=TRUE,
-                             main="",pngflag=TRUE,powval=1.2,inmain="", repround=TRUE, part=FALSE){ # ofi is file without .jpeg attached
+largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi, rangebp=NULL, rangeseq1=NULL, flaglog=TRUE,
+                             main="", pngflag=TRUE,powval=1.2,inmain="", repround=TRUE, part=FALSE, pdf_flag=FALSE){ # ofi is file without .jpeg attached
 
   # get the range of genome positions to be plotting, if NULL then plot all positions in All_spec_Ave
   if(!base::is.null(rangeseq1) & !base::is.numeric(rangeseq1[1])){  #All_specAve<-All_spec
@@ -1746,14 +1746,16 @@ largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi,rangebp=NULL,ra
            widths=base::c(((pixw-600)/pixw),1-((pixw-600)/pixw)), heights=base::c(1, 0.25))
   grDevices::dev.off()
 
-  grDevices::pdf(filename = base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,".pdf"))
-  imagenan(newdata,lasval=2,
-           xma=xma,xline=xline,yline=yline,yma=yma,topyma=topyma,
-           zlim=zlimtot,lnumr=lnumr,lnumc=lnumc,main=main,
-           col_unit="Genome Position (Mbp)",row_unit="1/Repeat length (1/bp)", zunit="Repeat Abundance",
-           cex.axis = (20*magnif), cex.lab =(20*magnif), cex.main=(20*magnif),
-           widths=base::c(((pixw-600)/pixw),1-((pixw-600)/pixw)), heights=base::c(1, 0.25))
-  grDevices::dev.off()
+  if(pdf_flag) {
+    grDevices::pdf(filename = base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,".pdf"))
+    imagenan(newdata,lasval=2,
+             xma=xma,xline=xline,yline=yline,yma=yma,topyma=topyma,
+             zlim=zlimtot,lnumr=lnumr,lnumc=lnumc,main=main,
+             col_unit="Genome Position (Mbp)",row_unit="1/Repeat length (1/bp)", zunit="Repeat Abundance",
+             cex.axis = (20*magnif), cex.lab =(20*magnif), cex.main=(20*magnif),
+             widths=base::c(((pixw-600)/pixw),1-((pixw-600)/pixw)), heights=base::c(1, 0.25))
+    grDevices::dev.off()
+  }
 
   #----------------------------
   # try alternative scaling based on row sums - like for Shannon diversity
