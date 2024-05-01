@@ -4414,7 +4414,7 @@ run_summary_plots <- function(chromosome=chromosome, fname=fname, inpath=inpath,
 
   base::cat("\nofi:",ofi,"\n")
   #if(!base::is.null(r0))largeimagesub_NEW(All_spec,fname=fname, chromosome=chromosome,ofi,rangebp=r0,pngflag = pngflag)
-  if(!base::is.null(r1))largeimagesub_NEW(All_spec,fname=fname, chromosome=chromosome,ofi,rangebp=r1,pngflag = pngflag)
+  if(!base::is.null(r1))largeimagesub_NEW(All_spec,fname=fname, chromosome=chromosome,ofi,rangebp=r1,pngflag = pngflag, pdf_flag=TRUE)
 
   #------------------------------------------
   # plot total DNAwalk for whole chromosome
@@ -6440,7 +6440,7 @@ run_summary_plots_range <- function(fname=fname, chromosome=chromosome, inpath=i
 
   base::cat("\nofi:",ofi,"\n")
   #if(!base::is.null(r0))largeimagesub_NEW(All_spec_subset,fname,chromosome,ofi,rangebp=r0,pngflag = pngflag)
-  if(!base::is.null(r1))largeimagesub_NEW(All_spec_subset,fname,chromosome,ofi,rangebp=r1,pngflag = pngflag)
+  if(!base::is.null(r1))largeimagesub_NEW(All_spec_subset,fname,chromosome,ofi,rangebp=r1,pngflag = pngflag, pdf_flag=TRUE)
 
   #------------------------------------------
   # plot total DNAwalk for subset chromosome
