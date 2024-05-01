@@ -17,7 +17,8 @@ largeimagesub_NEW(
   powval = 1.2,
   inmain = "",
   repround = TRUE,
-  part = FALSE
+  part = FALSE,
+  pdf_flag = FALSE
 )
 }
 \arguments{
