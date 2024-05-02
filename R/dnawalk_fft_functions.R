@@ -1752,7 +1752,7 @@ largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi, rangebp=NULL, 
     # https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/pdf
     grDevices::pdf(file = base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,".pdf"), width = pixw_pdf, height = pixh_pdf)
     imagenan(newdata,lasval=2,
-             xma=xma,xline=xline,yline=yline,yma=yma,topyma=topyma,
+             xma=xma/1000,xline=xline/1000,yline=yline/1000,yma=yma/1000,topyma=topyma/1000,
              zlim=zlimtot,lnumr=lnumr,lnumc=lnumc,main=main,
              col_unit="Genome Position (Mbp)",row_unit="1/Repeat length (1/bp)", zunit="Repeat Abundance",
              cex.axis = (20*magnif), cex.lab =(20*magnif), cex.main=(20*magnif),
