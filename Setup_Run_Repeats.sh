@@ -419,7 +419,7 @@ mkdir histograms
 cp -v -u  ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/*_histogram_POWER_SUM_seqval_*s_0.5std_1*.png ./histograms/
 
 rm Centromere_summary.txt
-cat ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/Centromere_*.txt > ./histograms/Centromere_histograms_summary.txt
+cat ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/Centromere_*.txt > ./histograms/\${SPP_Hap}_Centromere_histograms_summary.txt
 
 #-----------------
 mkdir DNAwalks; cd DNAwalks
@@ -445,15 +445,15 @@ mkdir Shannon_div_2.5Mbp
 cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_500.png ./Shannon_div_2.5Mbp
 
 rm Centromere_summary_Shannon.txt
-cat ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*Centromere_MIN_Shannon.txt > Centromere_summary_Shannon.txt
+cat ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*Centromere_MIN_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon.txt
 
-grep "cent25 " Centromere_summary_Shannon.txt > Centromere_summary_Shannon_25.txt
-grep "cent100 " Centromere_summary_Shannon.txt > Centromere_summary_Shannon_100.txt
-grep "cent250 " Centromere_summary_Shannon.txt > Centromere_summary_Shannon_250.txt
-grep "cent500 " Centromere_summary_Shannon.txt > Centromere_summary_Shannon_500.txt
-grep "cent1000 " Centromere_summary_Shannon.txt > Centromere_summary_Shannon_1000.txt
+grep "cent25 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_25.txt
+grep "cent100 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_100.txt
+grep "cent250 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_250.txt
+grep "cent500 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_500.txt
+grep "cent1000 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_1000.txt
 
-grep "centwind " Centromere_summary_Shannon_35_no_telo.txt > Centromere_summary_Shannon_wind_35_no_telo.txt
+grep "centwind " Centromere_summary_Shannon_35_no_telo.txt > \${SPP_Hap}_Centromere_summary_Shannon_wind_35_no_telo.txt
 mkdir Shannon_div_window
 cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*Shannon_div_window*.png ./Shannon_div_window
 
