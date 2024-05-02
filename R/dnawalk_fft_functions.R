@@ -1747,14 +1747,16 @@ largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi, rangebp=NULL, 
   grDevices::dev.off()
 
   if(pdf_flag) {
+    pixw_pdf <- pixw/1000
+    pixh_pdf <- pixh/1000
     # https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/pdf
-    grDevices::pdf(file = base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,".pdf"), width = pixw/500, height = pixh/500)
+    grDevices::pdf(file = base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,".pdf"), width = pixw_pdf, height = pixh_pdf)
     imagenan(newdata,lasval=2,
              xma=xma,xline=xline,yline=yline,yma=yma,topyma=topyma,
              zlim=zlimtot,lnumr=lnumr,lnumc=lnumc,main=main,
              col_unit="Genome Position (Mbp)",row_unit="1/Repeat length (1/bp)", zunit="Repeat Abundance",
              cex.axis = (20*magnif), cex.lab =(20*magnif), cex.main=(20*magnif),
-             widths=base::c(((pixw-600)/pixw),1-((pixw-600)/pixw)), heights=base::c(1, 0.25))
+             widths=base::c(((pixw_pdf-0.6)/pixw_pdf),1-((pixw_pdf-0.6)/pixw_pdf)), heights=base::c(1, 0.25))
     grDevices::dev.off()
   }
 
