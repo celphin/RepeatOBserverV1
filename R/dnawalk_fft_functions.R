@@ -1747,7 +1747,8 @@ largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi, rangebp=NULL, 
   grDevices::dev.off()
 
   if(pdf_flag) {
-    grDevices::pdf(filename = base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,".pdf"))
+    # https://www.rdocumentation.org/packages/grDevices/versions/3.6.2/topics/pdf
+    grDevices::pdf(filename = base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,".pdf"), paper="legalr")
     imagenan(newdata,lasval=2,
              xma=xma,xline=xline,yline=yline,yma=yma,topyma=topyma,
              zlim=zlimtot,lnumr=lnumr,lnumc=lnumc,main=main,
