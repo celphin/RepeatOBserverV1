@@ -476,6 +476,35 @@ cp -v -u ${path_name}/input_chromosomes/\${SPP_Hap}/chromosome_renaming.txt .
 mkdir isochores
 cp -v -u ${path_name}/input_chromosomes/${SPP_Hap}/isochore/*.png ./isochores
 
+#----------------------
+# collect editable pdf files
+cd ${path_name}/output_chromosomes/\${SPP_Hap}/Summary_output
+
+#-----------
+mkdir pdfs
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*All_spec_bp35_2000*.pdf ./pdfs
+
+#--------------------------
+cd pdfs
+mkdir histograms
+cp -v -u  ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/histograms/*_histogram_POWER_SUM_seqval_*s_0.5std_1*.pdf ./histograms
+
+#-----------------
+mkdir DNAwalks
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*DNAwalk2D*.pdf ./DNAwalks
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*DNAwalk1D*.pdf ./DNAwalks
+
+#----------
+#Make shannon_div directories: 100,1000, 250, 500
+
+mkdir Shannon_div
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/\${SPP_Hap}_Chr*_Shannon_plot_norm.pdf ./Shannon_div
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_100.pdf ./Shannon_div
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_1000.pdf ./Shannon_div
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_250.pdf ./Shannon_div
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_500.pdf ./Shannon_div
+cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*Shannon_div_window*.pdf ./Shannon_div
+
 EOF
 
 chmod +x post-repeats.sh
