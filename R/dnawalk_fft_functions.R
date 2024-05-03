@@ -1755,8 +1755,8 @@ largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi, rangebp=NULL, 
              xma=xma/1000,xline=xline/1000,yline=yline/1000,yma=yma/1000,topyma=topyma/1000,
              zlim=zlimtot,lnumr=lnumr,lnumc=lnumc,main=main,
              col_unit="Genome Position (Mbp)",row_unit="1/Repeat length (1/bp)", zunit="Repeat Abundance",
-             cex.axis = (20*magnif), cex.lab =(20*magnif), cex.main=(20*magnif),
-             widths=base::c(((pixw_pdf-0.6)/pixw_pdf),1-((pixw_pdf-0.6)/pixw_pdf)), heights=base::c(1, 0.25))
+             cex.axis = magnif, cex.lab =magnif, cex.main=magnif,
+             widths=base::c(((pixw-600)/pixw),1-((pixw-0.6)/pixw)), heights=base::c(1, 0.25))
     grDevices::dev.off()
   }
 
