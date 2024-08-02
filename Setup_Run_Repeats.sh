@@ -447,11 +447,11 @@ cp -v -u ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*roll_mean_Shannon_500
 rm Centromere_summary_Shannon.txt
 cat ${path_name}/output_chromosomes/\${SPP_Hap}/Chr*/*Centromere_MIN_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon.txt
 
-grep "cent25 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_25.txt
-grep "cent100 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_100.txt
-grep "cent250 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_250.txt
-grep "cent500 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_500.txt
-grep "cent1000 " Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_1000.txt
+grep "cent25 " \${SPP_Hap}_Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_25.txt
+grep "cent100 " \${SPP_Hap}_Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_100.txt
+grep "cent250 " \${SPP_Hap}_Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_250.txt
+grep "cent500 " \${SPP_Hap}_Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_500.txt
+grep "cent1000 " \${SPP_Hap}_Centromere_summary_Shannon.txt > \${SPP_Hap}_Centromere_summary_Shannon_1000.txt
 
 grep "centwind " Centromere_summary_Shannon_35_no_telo.txt > \${SPP_Hap}_Centromere_summary_Shannon_wind_35_no_telo.txt
 mkdir Shannon_div_window
