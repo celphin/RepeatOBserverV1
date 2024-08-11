@@ -185,6 +185,13 @@ grep -n "TTAGGGTTAGGGTTAGGGTTAGGGTTAGGGTTAGGGTTAGGGTT" ./chromosome_files/* > an
 
 qq='"'
 
+  if [ CGflag = TRUE ]
+  then
+    CG_flag=1
+  else
+    CG_flag=0
+  fi
+
 EOF
 
 #Part 2: make fourier script
@@ -198,13 +205,17 @@ print("repeats_fourier.R starting")
 library(RepeatOBserverV1)
 inpath=\${qq}\${pathname}/chromosome_files/\${qq}
 fname=\${qq}\${SPP}\${qq}
+
+CG_flag=\${CG_flag}
 #----------------------------------------
 
-if (\${CGflag}) {
+if (CG_flag == 1) {
 AT_flag=FALSE
 } else {
 AT_flag=TRUE
 }
+
+print(AT_flag)
 
 outpath="${path_name}/output_chromosomes"
 x_cpu=\${cpu} 
