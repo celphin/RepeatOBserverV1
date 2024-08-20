@@ -21,7 +21,8 @@ Imports:
     stringr,
     parallel,
     rapportools,
-    zoo
+    zoo,
+    ChemoSpecUtils
 Suggests: 
     knitr,
     rmarkdown

@@ -7050,7 +7050,8 @@ DNAwalks_with_genes <- function(chromosome=chromosome, fname=fname, inpath=inpat
   # 4000
   #--------------------------------
   # set these regions as colours
-  walk_colours <- c("#00FFFF", "#FF00FF", "black", "#CCFF00")
+  #walk_colours <- c("#00FFFF", "#FF00FF", "black", "#CCFF00")
+  walk_colours <- c("red", "blue", "black", "#CCFF00")
   cytoband_types <- c("+", "-", "not_gene", "both")
   cyto_type_colours <- as.data.frame(cbind(cytoband_types, walk_colours))
 
@@ -7391,7 +7392,8 @@ gene_slopes <- function(chromosome=chromosome, fname=fname, inpath=inpath,
   # 4000
   #--------------------------------
   # set these regions as colours
-  walk_colours <- c("#00FFFF", "#FF00FF", "black", "#CCFF00")
+  #walk_colours <- c("#00FFFF", "#FF00FF", "black", "#CCFF00")
+  walk_colours <- c("red", "blue", "black", "#CCFF00")
   cytoband_types <- c("+", "-", "not_gene", "both")
   cyto_type_colours <- as.data.frame(cbind(cytoband_types, walk_colours))
 
@@ -8049,29 +8051,246 @@ PCA_repeats <- function(haplotype_path=haplotype_path, Spp_chromosome=Spp_chromo
 }
 
 
+#' roll_sum_histogram
+#'
+#' Calculates and plots the roll sum abundance from the summary directory files. This code can only be run once the rest of the progam is complete.
+#'
+#' @param nam input dataset
+#'
+#' @return output dataset
+#'
+#' @examples
+#' function()
+#' @export
+roll_sum_histogram <- function(fname=fname, outpath=outpath){
+
+  # get chromosome count
+  summary_path <- paste0(outpath,"/", fname, "/", "Summary_output/output_data")
+  file_list <- list.files(summary_path, full.names=TRUE)
+  Histogram_list <- file_list[grep("Histogram", file_list)]
+  Shannon_list <- file_list[grep("Shannon", file_list)]
+
+  #-------------------------------
+  # plot for 4Mbp overlapping windows
+  for (i in 1:length(Histogram_list)) {
+    chromosome=i
+    print(fname)
+    print(chromosome)
+    # get Fourier data
+    All_spec0<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/Summary_output/output_data/Total_", fname, "_Chr", chromosome, "_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
+
+    # sum columns
+    Fourier_sums<- colSums(All_spec0)
+    # define window
+    wind_size=500
+    # run rolling sum
+    roll_sum_Fourier_sums <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
+
+    # join sums with genome positions
+    Genome_position <- c(1:length(roll_sum_Fourier_sums))*5000
+    Repeat_abund <- cbind(Genome_position, roll_sum_Fourier_sums)
+
+    #plot
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/histograms/", fname,"_Chr", chromosome, "_Repeat_abundance_sum.png"), width = 1400, height = 700)
+    plot(Genome_position, roll_sum_Fourier_sums)
+    grDevices::dev.off()
+
+    # write out total file
+    utils::write.table(x=Repeat_abund, file=paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Repeat_abundance_sum.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+
+  }
+
+  #----------------------------------
+  # # make non-overlapping 500kbp windows
+  # for (i in 1:length(Histogram_list)){
+  # chromosome=i
+  # All_spec0<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/Summary_output/output_data/Total_", fname, "_Chr", chromosome, "_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
+
+  # Fourier_sums <- NULL
+  # for (j in 0:(ncol(All_spec0)/100)-1){
+  # x=(j*100)
+  # y=x+99
+  # Fourier_sums[j] <- sum(colSums(All_spec0[,c(x:y)]))
+  # }
+
+  # wind_size=4e6
+  # roll_sum_Fourier_sums <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
+  # Genome_position <- c(1:length(roll_sum_Fourier_sums))*500000
+  # Repeat_abund <- cbind(Genome_position, roll_sum_Fourier_sums)
+  # grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Repeat_abundance_sum_500kbp_", wind_size, ".png"), width = 1400, height = 700)
+  # plot(Genome_position, roll_sum_Fourier_sums)
+  # grDevices::dev.off()
+  # utils::write.table(x=Repeat_abund, file=paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Repeat_abundance_sum_500kbp_", wind_size, ".txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
+  # }
+
+  #-----------------------
+  # Read in data for all chromosomes and plot
+  summary_path <- paste0(outpath,"/", fname, "/", "Summary_output/output_data")
+  file_list <- list.files(summary_path, full.names=TRUE)
+  rollsumhist_list <- file_list[grep("Repeat_abundance_sum", file_list)]
+
+  lsd <- lapply(rollsumhist_list, read.table)
+  sd_chr_list0 <- basename(rollsumhist_list)
+  sd_chr_list1 <- stringr::str_split(sd_chr_list0, "_", simplify =TRUE)
+  sd_chr_list2 <- sd_chr_list1[,3]
+  names(lsd) <- sd_chr_list2
+  RepeatAbundance_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
+  colnames(RepeatAbundance_total) <- c("Chromosome", "Genome_position", "RepeatAbundance")
+
+  RepeatAbundance_total$Chrnum <- as.numeric(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
+
+  RepeatAbundance_total$Genome_position <- as.numeric(as.character(RepeatAbundance_total$Genome_position))
+  RepeatAbundance_total$RepeatAbundance <- as.numeric(as.character(RepeatAbundance_total$RepeatAbundance))
+
+  print("plotting all chromosomes")
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.png"), width = 1000, height = 700)
+  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=RepeatAbundance_total, ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  # find start and end of highly repeating regions based 1SD from min
+  RepeatAbund_cent <- NULL
+  RepeatAbund_min <- NULL
+  RepeatAbund_length <- NULL
+  for (chromosome in 1:length(rollsumhist_list)){
+    RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chrnum == chromosome),]
+
+    # find min position
+    cent_min <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance == min(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE))]
+    #15 885 000
+
+    # find SD of data
+    SD_repeatAbund <- sd(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE)
+    #29 911 051
+
+    thres = min(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (1* SD_repeatAbund)
+    # 138 796 651
+
+    # find positions of + two SD from min
+    cent_range_wind <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance <= thres)]/5000
+
+    # find range of these values
+    # ChemoSpecUtils
+    # https://rdrr.io/cran/ChemoSpecUtils/man/check4Gaps.html
+
+    #library(ChemoSpecUtils)
+
+    cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
+    cent_range[nrow(cent_range)+1,] <- c(0,0,0,0,0)
+
+    cent_range_pos_start <- cent_range[,1]*5000
+    cent_range_pos_end <- cent_range[,2]*5000
+
+    SPP_l <- rep(fname, length(cent_range_pos_start))
+    Chr_l <- rep(chromosome, length(cent_range_pos_start))
+    typel <- rep("RepeatAbund", length(cent_range_pos_start))
+
+    RepeatAbund_cent_chr <- cbind(typel, SPP_l, Chr_l, cent_range_pos_start, cent_range_pos_end)
+    RepeatAbund_cent <- rbind(RepeatAbund_cent, RepeatAbund_cent_chr)
+
+    RepeatAbund_min_chr <- c("RepeatAbund", fname, chromosome, cent_min)
+    RepeatAbund_min <- rbind(RepeatAbund_min, RepeatAbund_min_chr)
+
+    chr_length <- max(RepeatAbundance_chr$Genome_position)
+    RepeatAbund_length_chr <- c("Length", fname, chromosome, chr_length)
+    RepeatAbund_length <- rbind(RepeatAbund_length, RepeatAbund_length_chr)
+
+  }
+
+  # remove zeros
+  RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,4] == 0),]
+
+  # output final file
+  utils::write.table(x=RepeatAbund_cent, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=RepeatAbund_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=RepeatAbund_length, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+
+  #-----------------------------------------------
+
+  # get Shannon div data
+  lsd <- lapply(Shannon_list, read.table)
+  sd_chr_list0 <- basename(Shannon_list)
+  sd_chr_list1 <- stringr::str_split(sd_chr_list0, "_", simplify =TRUE)
+  sd_chr_list2 <- sd_chr_list1[,3]
+  names(lsd) <- sd_chr_list2
+  Shannon_div_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
+  colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
+
+  Shannon_div_total$Chrnum <- as.numeric(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+
+  Shannon_div_total$Genome_position <- as.numeric(as.character(Shannon_div_total$Genome_position))
+  Shannon_div_total$Shannon_div <- as.numeric(as.character(Shannon_div_total$Shannon_div))
+
+  # define window
+  bin_size=500
+  # run rolling mean
+  Shannon_div_total$roll_mean_Shannon <- zoo::rollapply(Shannon_div_total$Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+
+  # find start and end of highly repeating regions based 1SD from min
+  Shannon_cent <- NULL
+  Shannon_min <- NULL
+  Shannon_length <- NULL
+  for (chromosome in 1:length(Shannon_list)){
+
+    Shannon_div_chr <- Shannon_div_total[which(Shannon_div_total$Chrnum == chromosome),]
+
+    # find min position
+    cent_min <- Shannon_div_chr$Genome_position[which(Shannon_div_chr$roll_mean_Shannon == min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE))]
+
+    # find SD of data
+    SD_repeatAbund <- sd(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE)
+
+    thres = min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE) + (1 * SD_repeatAbund)
+
+    # find positions of + two SD from min
+    cent_range_wind <- Shannon_div_chr$Genome_position[which(Shannon_div_chr$roll_mean_Shannon <= thres)]/5000
+
+    # find range of these values
+    # ChemoSpecUtils
+    # https://rdrr.io/cran/ChemoSpecUtils/man/check4Gaps.html
+
+    #library(ChemoSpecUtils)
+
+    cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
+    cent_range[nrow(cent_range)+1,] <- c(0,0,0,0,0)
+
+    cent_range_pos_start <- cent_range[,1]*5000
+    cent_range_pos_end <- cent_range[,2]*5000
+
+    SPP_l <- rep(fname, length(cent_range_pos_start))
+    Chr_l <- rep(chromosome, length(cent_range_pos_start))
+    typel <- rep("Shannon", length(cent_range_pos_start))
+
+    Shannon_cent_chr <- cbind(typel, SPP_l, Chr_l, cent_range_pos_start, cent_range_pos_end)
+    Shannon_cent <- rbind(Shannon_cent, Shannon_cent_chr)
+
+    Shannon_min_chr <- c("Shannon", fname, chromosome, cent_min)
+    Shannon_min <- rbind(Shannon_min, Shannon_min_chr)
+
+    chr_length <- max(Shannon_div_chr$Genome_position)
+    Shannon_length_chr <- c("Length", fname, chromosome, chr_length)
+    Shannon_length <- rbind(Shannon_length, Shannon_length_chr)
+
+  }
+
+  # remove zeros
+  Shannon_cent <- Shannon_cent[-which(Shannon_cent[,4] == 0),]
+
+  # output final file
+  utils::write.table(x=Shannon_cent, file=paste0(outpath,"/", fname,"/Summary_output/Shannon_div/", fname, "_Shannon_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=Shannon_min, file=paste0(outpath,"/", fname,"/Summary_output/Shannon_div/", fname, "_Shannon_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=Shannon_length, file=paste0(outpath,"/", fname,"/Summary_output/Shannon_div/", fname, "_Shannon_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+
+}
+
 #----------------------------------------
 # Create documentations for functions above
 # devtools::document()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
