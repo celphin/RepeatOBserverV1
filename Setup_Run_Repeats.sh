@@ -384,18 +384,42 @@ results3 <- parallel::parSapply(cl, base::seq_along(uni_chr_list), centromere_su
 
 print("centromere summary 2 complete")
 
-#---------------------------------
-print("plot all chromosomes starting")
-
-# plot all chromosomes shannon diversity and histograms in one plot
-plot_all_chromosomes(fname=fname, inpath=inpath, outpath=outpath)
-
-print("plot all chromosomes complete")
-
 print("Summary_plots.R finished running")
 EOF2
 
 echo "Summary_plots.R made"
+EOF
+
+#Part 3: make Summary roll_sum_histogram script
+cat << EOF >> pre-repeats.sh
+
+# make R script for summary plots with all chromosomes
+cat << EOF3 > Summary_plots2.R
+
+print("Summary_plots2.R starting")
+
+library(RepeatOBserverV1)
+inpath=\${qq}\${pathname}/chromosome_files/\${qq}
+fname=\${qq}\${SPP}\${qq}
+outpath="${path_name}/output_chromosomes"
+
+x_cpu=\${cpu} 
+pflag=FALSE
+writeflag=FALSE
+plotflag=FALSE
+
+print("plot all chromosomes roll_sum_histogram and Shannon starting")
+
+# plot all chromosomes shannon diversity and histograms in one plot
+plot_all_chromosomes(fname=fname, inpath=inpath, outpath=outpath)
+roll_sum_histogram(fname=fname, outpath=outpath)
+
+print("plot all chromosomes complete")
+
+print("Summary_plots2.R finished running")
+EOF3
+
+echo "Summary_plots2.R made"
 EOF
 
 chmod +x pre-repeats.sh
@@ -541,6 +565,8 @@ run_all(){
 
   ${path_name}/post-repeats.sh "${species}_${haplotype}"
 
+  Rscript ${path_name}/input_chromosomes/${species}_${haplotype}/Summary_plots2.R 
+  
   # list and remove empty folders
   cd ${path_name}/output_chromosomes/${species}_${haplotype}
   find . -type d -empty -print
