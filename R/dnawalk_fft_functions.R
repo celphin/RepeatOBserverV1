@@ -6920,7 +6920,18 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   Shannon_div_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
   colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
 
-  Shannon_div_total$Chrnum <- as.numeric(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+  Shannon_div_total_parts <- Shannon_div_total[grep("-", Shannon_div_total$Chromosome),]
+  
+  if (nrow(Shannon_div_total_parts)>0){
+  Shannon_div_total$Chrnum0 <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+  Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,1])
+  Shannon_div_total$Chrpart <- as.numeric(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,2])
+  
+  Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position + (Shannon_div_total$Chrpart -1)*4e8
+  
+  }else{
+    Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+  }
 
   grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Shannon_div.png"), width = 1000, height = 700)
   # plot Shannon on one plot
@@ -6980,7 +6991,7 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   Histograms_total <- Histograms_total[-which(Histograms_total[,8]=="max_N_seqval"),]
 
   Histograms_total$min_powsum_seqval <- as.numeric(Histograms_total$min_powsum_seqval)
-  Histograms_total$Chrnum <- as.numeric(stringr::str_split(Histograms_total$Chromosome, "r", simplify =TRUE)[,2])
+  Histograms_total$Chrnum <- as.factor(stringr::str_split(Histograms_total$Chromosome, "r", simplify =TRUE)[,2])
 
   # http://www.sthda.com/english/wiki/ggplot2-histogram-plot-quick-start-guide-r-software-and-data-visualization
   # https://www3.nd.edu/~steve/computing_with_data/13_Facets/facets.html
@@ -8070,9 +8081,18 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   Histogram_list <- file_list[grep("Histogram", file_list)]
   Shannon_list <- file_list[grep("Shannon", file_list)]
 
+  ldf <- lapply(Histogram_list, read.table)
+  chr_list0 <- basename(Histogram_list)
+  chr_list1 <- stringr::str_split(chr_list0, "_", simplify =TRUE)
+  chr_list2 <- chr_list1[,3]
+  names(ldf) <- chr_list2
+  Histograms_total <- dplyr::bind_rows(ldf, .id = 'chromosome')
+  colnames(Histograms_total) <- c("Chromosome", "Repeat_length", "min_mean_seqval", "max_mean_seqval", "min_powsum_seqval", "max_powsum_seqval", "min_N_seqval", "max_N_seqval")
+  chromosome_list <- unique(as.factor(stringr::str_split(Histograms_total$Chromosome, "r", simplify =TRUE)[,2]))
+
   #-------------------------------
   # plot for 4Mbp overlapping windows
-  for (i in 1:length(Histogram_list)) {
+  for (i in chromosome_list) {
     chromosome=i
     print(fname)
     print(chromosome)
@@ -8137,7 +8157,18 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   RepeatAbundance_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
   colnames(RepeatAbundance_total) <- c("Chromosome", "Genome_position", "RepeatAbundance")
 
-  RepeatAbundance_total$Chrnum <- as.numeric(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
+  RepeatAbundance_total_parts <- RepeatAbundance_total[grep("-", RepeatAbundance_total$Chromosome),]
+  
+  if (nrow(RepeatAbundance_total_parts)>0){
+  RepeatAbundance_total$Chrnum0 <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
+  RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,1])
+  RepeatAbundance_total$Chrpart <- as.numeric(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,2])
+  
+  RepeatAbundance_total$Genome_position <- RepeatAbundance_total$Genome_position + (RepeatAbundance_total$Chrpart -1)*4e8
+  
+  }else{
+    RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
+  }
 
   RepeatAbundance_total$Genome_position <- as.numeric(as.character(RepeatAbundance_total$Genome_position))
   RepeatAbundance_total$RepeatAbundance <- as.numeric(as.character(RepeatAbundance_total$RepeatAbundance))
@@ -8158,7 +8189,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   RepeatAbund_cent <- NULL
   RepeatAbund_min <- NULL
   RepeatAbund_length <- NULL
-  for (chromosome in 1:length(rollsumhist_list)){
+  for (chromosome in unique(RepeatAbundance_total$Chrnum)){
     RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chrnum == chromosome),]
 
     # find min position
@@ -8223,7 +8254,18 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   Shannon_div_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
   colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
 
-  Shannon_div_total$Chrnum <- as.numeric(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+  Shannon_div_total_parts <- Shannon_div_total[grep("-", Shannon_div_total$Chromosome),]
+  
+  if (nrow(Shannon_div_total_parts)>0){
+  Shannon_div_total$Chrnum0 <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+  Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,1])
+  Shannon_div_total$Chrpart <- as.numeric(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,2])
+  
+  Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position + (Shannon_div_total$Chrpart -1)*4e8
+  
+  }else{
+    Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+  }
 
   Shannon_div_total$Genome_position <- as.numeric(as.character(Shannon_div_total$Genome_position))
   Shannon_div_total$Shannon_div <- as.numeric(as.character(Shannon_div_total$Shannon_div))
@@ -8237,7 +8279,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   Shannon_cent <- NULL
   Shannon_min <- NULL
   Shannon_length <- NULL
-  for (chromosome in 1:length(Shannon_list)){
+  for (chromosome in unique(Shannon_div_total$Chrnum)){
 
     Shannon_div_chr <- Shannon_div_total[which(Shannon_div_total$Chrnum == chromosome),]
 
