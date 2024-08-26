@@ -8169,11 +8169,12 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     SD_repeatAbund <- sd(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE)
     #29 911 051
 
-    thres = min(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (1* SD_repeatAbund)
+    thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (1* SD_repeatAbund)
+	thres_lower = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) - (1* SD_repeatAbund)
     # 138 796 651
 
     # find positions of + two SD from min
-    cent_range_wind <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance <= thres)]/5000
+    cent_range_wind <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper | RepeatAbundance_chr$RepeatAbundance <= thres_lower )]/5000
 
     # find range of these values
     # ChemoSpecUtils
