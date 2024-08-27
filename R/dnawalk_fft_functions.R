@@ -8091,7 +8091,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   chromosome_list <- unique(as.factor(stringr::str_split(Histograms_total$Chromosome, "r", simplify =TRUE)[,2]))
 
   #-------------------------------
-  # plot for 4Mbp overlapping windows
+  # plot for 2Mbp overlapping windows
   for (i in chromosome_list) {
     chromosome=i
     print(fname)
@@ -8105,7 +8105,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # sum columns
     Fourier_sums<- colSums(All_spec)
     # define window
-    wind_size=500
+    wind_size=400
     # run rolling sum
     roll_sum_Fourier_sums0 <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
     
