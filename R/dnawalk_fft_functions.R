@@ -6933,6 +6933,8 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
     Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
   }
 
+  Shannon_div_total$Chrnum <- as.numeric(as.character(Shannon_div_total$Chrnum))
+
   grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Shannon_div.png"), width = 1000, height = 700)
   # plot Shannon on one plot
   # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
@@ -6991,7 +6993,7 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   Histograms_total <- Histograms_total[-which(Histograms_total[,8]=="max_N_seqval"),]
 
   Histograms_total$min_powsum_seqval <- as.numeric(Histograms_total$min_powsum_seqval)
-  Histograms_total$Chrnum <- as.factor(stringr::str_split(Histograms_total$Chromosome, "r", simplify =TRUE)[,2])
+  Histograms_total$Chrnum <- as.numeric(stringr::str_split(Histograms_total$Chromosome, "r", simplify =TRUE)[,2])
 
   # http://www.sthda.com/english/wiki/ggplot2-histogram-plot-quick-start-guide-r-software-and-data-visualization
   # https://www3.nd.edu/~steve/computing_with_data/13_Facets/facets.html
@@ -8105,7 +8107,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # sum columns
     Fourier_sums<- colSums(All_spec)
     # define window
-    wind_size=400
+    wind_size=500
     # run rolling sum
     roll_sum_Fourier_sums0 <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
     
@@ -8178,6 +8180,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
 
   RepeatAbundance_total$Genome_position <- as.numeric(as.character(RepeatAbundance_total$Genome_position))
   RepeatAbundance_total$RepeatAbundance <- as.numeric(as.character(RepeatAbundance_total$RepeatAbundance))
+  RepeatAbundance_total$Chrnum <- as.numeric(as.character(RepeatAbundance_total$Chrnum))
 
   print("plotting all chromosomes")
   grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.png"), width = 1000, height = 700)
