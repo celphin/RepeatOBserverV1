@@ -8209,8 +8209,8 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     SD_repeatAbund <- sd(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE)
     #29 911 051
 
-    thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (2* SD_repeatAbund)
-	thres_lower = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) - (2* SD_repeatAbund)
+    thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (1* SD_repeatAbund)
+	thres_lower = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) - (1* SD_repeatAbund)
     # 138 796 651
 
     # find positions of + two SD from min
