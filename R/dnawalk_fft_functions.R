@@ -8197,21 +8197,21 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   # find start and end of highly repeating regions based 1SD from min
   RepeatAbund_cent <- NULL
   RepeatAbund_min <- NULL
+  RepeatAbund_max <- NULL
   RepeatAbund_length <- NULL
+
   for (chromosome in unique(RepeatAbundance_total$Chrnum)){
     RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chrnum == chromosome),]
 
     # find min position
     cent_min <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance == min(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE))]
-    #15 885 000
+    cent_max <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance == max(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE))]
 
     # find SD of data
     SD_repeatAbund <- sd(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE)
-    #29 911 051
 
     thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (1* SD_repeatAbund)
-	thres_lower = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) - (1* SD_repeatAbund)
-    # 138 796 651
+    thres_lower = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) - (1* SD_repeatAbund)
 
     # find positions of + two SD from min
     cent_range_wind <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper | RepeatAbundance_chr$RepeatAbundance <= thres_lower )]/5000
@@ -8238,6 +8238,9 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     RepeatAbund_min_chr <- c("RepeatAbund", fname, chromosome, cent_min)
     RepeatAbund_min <- rbind(RepeatAbund_min, RepeatAbund_min_chr)
 
+    RepeatAbund_max_chr <- c("RepeatAbund", fname, chromosome, cent_max)
+    RepeatAbund_max <- rbind(RepeatAbund_max, RepeatAbund_max_chr)
+
     chr_length <- max(RepeatAbundance_chr$Genome_position)
     RepeatAbund_length_chr <- c("Length", fname, chromosome, chr_length)
     RepeatAbund_length <- rbind(RepeatAbund_length, RepeatAbund_length_chr)
@@ -8250,6 +8253,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   # output final file
   utils::write.table(x=RepeatAbund_cent, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=RepeatAbund_max, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_max.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_length, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
 
   #-----------------------------------------------
