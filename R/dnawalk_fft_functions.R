@@ -8211,8 +8211,8 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # find SD of data
     SD_repeatAbund <- sd(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE)
 
-    thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (1* SD_repeatAbund)
-    thres_lower = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) - (1* SD_repeatAbund)
+    thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (2* SD_repeatAbund)
+    thres_lower = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) - (2* SD_repeatAbund)
 
     # find positions of - one SD from mean
     cent_range_wind <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance <= thres_lower )]/5000
@@ -8279,8 +8279,9 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     RepeatAbund_cent_max$Label <- rep("RepAbundMax", nrow(RepeatAbund_cent_max))
   }
 
+  colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
   RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
-  
+
 # output final files
   utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
