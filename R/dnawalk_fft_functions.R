@@ -8101,8 +8101,8 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # get Fourier data
     All_spec0<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/Summary_output/output_data/Total_", fname, "_Chr", chromosome, "_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
 
-    # remove the first and last 2Mbp to avoid the telomeres
-    All_spec <- All_spec0[,c(400:(ncol(All_spec0)-400))]
+    # remove the first and last 2Mbp to avoid the telomeres, remove the very small repeat lengths
+    All_spec <- All_spec0[c(1:(nrow(All_spec0)-35)),c(400:(ncol(All_spec0)-400))]
     
     # sum columns
     Fourier_sums<- colSums(All_spec)
