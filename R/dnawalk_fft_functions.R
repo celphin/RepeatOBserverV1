@@ -8222,37 +8222,38 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # https://rdrr.io/cran/ChemoSpecUtils/man/check4Gaps.html
 
     #library(ChemoSpecUtils)
+  if (length(cent_range_wind)>0) {
+      cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
+      cent_range[nrow(cent_range)+1,] <- c(0,0,0,0,0)
 
-    cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
-    cent_range[nrow(cent_range)+1,] <- c(0,0,0,0,0)
+      cent_range_pos_start <- cent_range[,1]*5000
+      cent_range_pos_end <- cent_range[,2]*5000
 
-    cent_range_pos_start <- cent_range[,1]*5000
-    cent_range_pos_end <- cent_range[,2]*5000
+      SPP_l <- rep(fname, length(cent_range_pos_start))
+      Chr_l <- rep(chromosome, length(cent_range_pos_start))
+      typel <- rep("RepeatAbund", length(cent_range_pos_start))
 
-    SPP_l <- rep(fname, length(cent_range_pos_start))
-    Chr_l <- rep(chromosome, length(cent_range_pos_start))
-    typel <- rep("RepeatAbund", length(cent_range_pos_start))
-
-    RepeatAbund_cent_chr <- cbind(typel, SPP_l, Chr_l, cent_range_pos_start, cent_range_pos_end)
-    RepeatAbund_cent <- rbind(RepeatAbund_cent, RepeatAbund_cent_chr)
-
+      RepeatAbund_cent_chr <- cbind(typel, SPP_l, Chr_l, cent_range_pos_start, cent_range_pos_end)
+      RepeatAbund_cent <- rbind(RepeatAbund_cent, RepeatAbund_cent_chr)
+    }
 #-------------------------------
     # find positions of + one SD from mean
     cent_range_wind_max <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper)]/5000
 
-    cent_range_max <- ChemoSpecUtils::check4Gaps(cent_range_wind_max)
-    cent_range_max[nrow(cent_range_max)+1,] <- c(0,0,0,0,0)
+    if (length(cent_range_wind_max)>0) {
+      cent_range_max <- ChemoSpecUtils::check4Gaps(cent_range_wind_max)
+      cent_range_max[nrow(cent_range_max)+1,] <- c(0,0,0,0,0)
 
-    cent_range_pos_start_max <- cent_range_max[,1]*5000
-    cent_range_pos_end_max <- cent_range_max[,2]*5000
+      cent_range_pos_start_max <- cent_range_max[,1]*5000
+      cent_range_pos_end_max <- cent_range_max[,2]*5000
 
-    SPP_l_max <- rep(fname, length(cent_range_pos_start_max))
-    Chr_l_max <- rep(chromosome, length(cent_range_pos_start_max))
-    typel_max <- rep("RepeatAbund", length(cent_range_pos_start_max))
+      SPP_l_max <- rep(fname, length(cent_range_pos_start_max))
+      Chr_l_max <- rep(chromosome, length(cent_range_pos_start_max))
+      typel_max <- rep("RepeatAbund", length(cent_range_pos_start_max))
 
-    RepeatAbund_cent_chr_max <- cbind(typel_max, SPP_l_max, Chr_l_max, cent_range_pos_start_max, cent_range_pos_end_max)
-    RepeatAbund_cent_max <- rbind(RepeatAbund_cent_max, RepeatAbund_cent_chr_max)
-
+      RepeatAbund_cent_chr_max <- cbind(typel_max, SPP_l_max, Chr_l_max, cent_range_pos_start_max, cent_range_pos_end_max)
+      RepeatAbund_cent_max <- rbind(RepeatAbund_cent_max, RepeatAbund_cent_chr_max)
+    }
 
 #------------------------------
 
@@ -8268,14 +8269,17 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
 
   }
 
-  # remove zeros
-  RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,4] == 0),]
-  RepeatAbund_cent_max <- RepeatAbund_cent_max[-which(RepeatAbund_cent_max[,4] == 0),]
+  # remove zeros if files are not empty
+  if (length(RepeatAbund_cent)>0)
+    RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,4] == 0),]
+  }
+  if(length(RepeatAbund_cent_max)>0){
+    RepeatAbund_cent_max <- RepeatAbund_cent_max[-which(RepeatAbund_cent_max[,4] == 0),]
+  }
 
-  # output final file
+# output final files
   utils::write.table(x=RepeatAbund_cent, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_rangemin.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_cent_max, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_rangemax.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
-
   utils::write.table(x=RepeatAbund_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_max, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_max.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_length, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
