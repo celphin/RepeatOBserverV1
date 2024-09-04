@@ -8270,7 +8270,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   }
 
   # remove zeros if files are not empty
-  if (length(RepeatAbund_cent)>0)
+  if (length(RepeatAbund_cent)>0){
     RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,4] == 0),]
   }
   if(length(RepeatAbund_cent_max)>0){
