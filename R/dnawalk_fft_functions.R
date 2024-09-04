@@ -8278,8 +8278,10 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     RepeatAbund_cent_max <- as.data.frame(RepeatAbund_cent_max)
     RepeatAbund_cent_max$Label <- rep("RepAbundMax", nrow(RepeatAbund_cent_max))
   }
+  if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent)>0){ 
+    colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
+  }
 
-  colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
   RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
 
 # output final files
