@@ -8204,11 +8204,11 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   grDevices::dev.off()
 
   # find start and end of highly repeating regions based 1SD from min
-  RepeatAbund_cent <- NULL
-  RepeatAbund_cent_max <- NULL
-  RepeatAbund_min <- NULL
-  RepeatAbund_max <- NULL
-  RepeatAbund_length <- NULL
+  RepeatAbund_cent <- c(0,0,0,0)
+  RepeatAbund_cent_max <- c(0,0,0,0)
+  RepeatAbund_min <- c(0,0,0,0)
+  RepeatAbund_max <- c(0,0,0,0)
+  RepeatAbund_length <- c(0,0,0,0)
 
   for (chromosome in unique(RepeatAbundance_total$Chrnum)){
     RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chrnum == chromosome),]
@@ -8277,17 +8277,17 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   }
 
   # remove zeros if files are not empty
-  if (length(RepeatAbund_cent)>0){
+  if (length(RepeatAbund_cent)>1){
     RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,3] == 0),]
     RepeatAbund_cent <- as.data.frame(RepeatAbund_cent)
     RepeatAbund_cent$Label <- rep("MinRepeatAbund", nrow(RepeatAbund_cent))
   }
-  if(length(RepeatAbund_cent_max)>0){
+  if(length(RepeatAbund_cent_max)>1){
     RepeatAbund_cent_max <- RepeatAbund_cent_max[-which(RepeatAbund_cent_max[,3] == 0),]
     RepeatAbund_cent_max <- as.data.frame(RepeatAbund_cent_max)
     RepeatAbund_cent_max$Label <- rep("MaxRepeatAbund", nrow(RepeatAbund_cent_max))
   }
-  if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent)>0){ 
+  if (length(RepeatAbund_cent_max)>1 && length(RepeatAbund_cent)>1){ 
     colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
   }
 
