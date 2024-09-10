@@ -8337,9 +8337,9 @@ print(RepeatAbund_min)
   Shannon_div_total$roll_mean_Shannon <- zoo::rollapply(Shannon_div_total$Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
   # find start and end of highly repeating regions based 1SD from min
-  Shannon_cent <- NULL
-  Shannon_min <- NULL
-  Shannon_length <- NULL
+  Shannon_cent <- c(NA, NA, NA, NA, NA)
+  Shannon_min <- c(NA, NA, NA, NA)
+  Shannon_length <- c(NA, NA, NA, NA)
   for (chromosome in unique(Shannon_div_total$Chrnum)){
 
     Shannon_div_chr <- Shannon_div_total[which(Shannon_div_total$Chrnum == chromosome),]
