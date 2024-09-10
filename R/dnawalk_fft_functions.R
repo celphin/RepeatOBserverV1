@@ -125,7 +125,7 @@ imagenan <- function(x,yline=3,yma=5,topyma=4, xline=3,xma=6,lnumr=10,lnumc=10,
   graphics::par(mar =  base::c(xma,yma,topyma,2))
 
   graphics::image(1:base::length(cLabels),1:base::length(rLabels), base::t(x), col=ColorRamp, xlab="",
-        ylab="", axes=FALSE, zlim=zlim)
+                  ylab="", axes=FALSE, zlim=zlim)
   graphics::mtext(row_unit,side=2,line=yline, cex=cex.lab)
   if( !base::is.null(main) ){
     graphics::title(main=main,cex.main=cex.main)
@@ -136,16 +136,16 @@ imagenan <- function(x,yline=3,yma=5,topyma=4, xline=3,xma=6,lnumr=10,lnumc=10,
   graphics::par(mar = base::c(xma/5,yma/5,1,4))
   if(xma!=6){
     graphics::image(1, ColorLevels,
-          base::matrix(data=ColorLevels[1:base::length(ColorLevels)-1], ncol=base::length(ColorLevels)-1),
-          col=ColorRamp,cex.axis=cex.axis,
-          xlab="",ylab="",
-          xaxt="n") #cex.lab=cex.lab,ylab=zunit,
+                    base::matrix(data=ColorLevels[1:base::length(ColorLevels)-1], ncol=base::length(ColorLevels)-1),
+                    col=ColorRamp,cex.axis=cex.axis,
+                    xlab="",ylab="",
+                    xaxt="n") #cex.lab=cex.lab,ylab=zunit,
   } else {
     graphics::image(1, ColorLevels,
-          base::matrix(data=ColorLevels[1:base::length(ColorLevels)-1], ncol=base::length(ColorLevels)-1),
-          col=ColorRamp,cex.axis=cex.axis,
-          xlab="",cex.lab=cex.lab,ylab=zunit,
-          xaxt="n") #
+                    base::matrix(data=ColorLevels[1:base::length(ColorLevels)-1], ncol=base::length(ColorLevels)-1),
+                    col=ColorRamp,cex.axis=cex.axis,
+                    xlab="",cex.lab=cex.lab,ylab=zunit,
+                    xaxt="n") #
   }
 
   graphics::par(.pardefault)
@@ -184,7 +184,7 @@ plotdata_with_errors<- function( dataset,data_std,rnames=1:base::length(dataset)
   if(base::is.null(xlab)) xlab<-"Index"
   if(!lineonly){
     base::plot(d$x, d$y ,pch=pch, ylim= ylim,xlim= xlim,xlab=xlab, ylab=ylab,xaxt='n',yaxt='n',cex=cex,
-         cex.lab=1.5, cex.axis=1.5,  cex.sub=1.5)
+               cex.lab=1.5, cex.axis=1.5,  cex.sub=1.5)
     base::with(
       data = d
       , expr = Hmisc::errbar(x, y, y+xsd, y-xsd, add=TRUE, pch=pch,type=type,col=col,lty=lty, cap=.01)
@@ -229,8 +229,8 @@ plot.frequency.spectrum <- function(fr=NULL, X.k, xlimits=NULL,main="",plotflag=
   plot.data[2:base::length(X.k),2] <- 2*plot.data[2:base::length(X.k),2]
 
   if(plotflag) base::plot(plot.data,  lwd=2, main=main, type="b",
-                    xlab="Frequency (1/bp or Hz)", ylab="Strength",
-                    xlim=xlimits, ylim=base::c(0,base::max(base::Mod(plot.data[,2]))))
+                          xlab="Frequency (1/bp or Hz)", ylab="Strength",
+                          xlim=xlimits, ylim=base::c(0,base::max(base::Mod(plot.data[,2]))))
 
   base::return(plot.data)
 }
@@ -305,7 +305,7 @@ tdna_to_wax<-function(tdna,main=""){
 
 fracD<-function(CG,AT,pflag=TRUE,main="",plotflag=TRUE ){
   dat <- base::data.frame(CG = CG,
-                    AT = AT )
+                          AT = AT )
   uniquedat<-base::unique(dat) # base::plot(uniquedat)    base::length(dat$x)  base::plot(dat)
   fCGlim<-base::c(base::min(uniquedat$CG,na.rm = TRUE ), base::max(uniquedat$CG,na.rm = TRUE ))
   fATlim<-base::c(base::min(uniquedat$AT,na.rm = TRUE ), base::max(uniquedat$AT,na.rm = TRUE ))
@@ -317,19 +317,19 @@ fracD<-function(CG,AT,pflag=TRUE,main="",plotflag=TRUE ){
 
   fracdim_rectangle<- 2*base::log(base::length(uniquedat$CG))/base::log((dCG+1)*(dAT+1))  #one of these 0 gives dimension 2
   m1<- base::paste("\nbase::length(CG)",base::length(CG),"|unique|",base::length(uniquedat$CG),
-            "ranges(x,y)",dCG,dAT)
+                   "ranges(x,y)",dCG,dAT)
 
   if(pflag){
     xlim<-base::c(fCGlim[1],fCGlim[1]+rangeboth-1);ylim<-base::c(fATlim[1],fATlim[1]+rangeboth-1)
     base::plot(dat,main= base::paste(main,m1,"D",base::round(fracdim,digits=2) ),
-         type="l",xlim=xlim,ylim=ylim,cex.main=0.6,las=2)
+               type="l",xlim=xlim,ylim=ylim,cex.main=0.6,las=2)
     graphics::points(dat$CG[1],dat$AT[1],type="p",pch=83,col="red",cex=2)   #S
     graphics::points(dat$CG[base::length(dat$CG)],dat$AT[base::length(dat$AT)],type="p",pch=69,col="red",cex=2)
   }
   if(plotflag){
     xlim<-base::c(fCGlim[1],fCGlim[1]+dCG);ylim<-base::c(fATlim[1],fATlim[1]+dAT)
     base::plot(dat,main= base::paste(main,m1,"D(rect)",base::round(fracdim_rectangle,digits=2) ),
-         type="l",xlim=xlim,ylim=ylim,cex.main=0.6,las=2)
+               type="l",xlim=xlim,ylim=ylim,cex.main=0.6,las=2)
     graphics::points(dat$CG[1],dat$AT[1],type="p",pch=83,col="red",cex=2)
     graphics::points(dat$CG[base::length(dat$CG)],dat$AT[base::length(dat$AT)],type="p",pch=69,col="red",cex=2)
   }
@@ -488,7 +488,7 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
       tim1<-tim[j:(j+seqlen/sample_every-1)]
 
       m1<- base::paste(main,"\n",sample_every*j,"to",sample_every*(j+seqlen/sample_every),":  ",
-                sample_every*j+startval,sample_every*(j+seqlen/sample_every)+startval)
+                       sample_every*j+startval,sample_every*(j+seqlen/sample_every)+startval)
 
       fracDim<-fracD(CG=nextseqcg,AT=nextseq,main=m1,pflag=FALSE,plotflag=plotflag )
 
@@ -496,16 +496,16 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
       nti<-20
 
       if(plotflag)base::plot(tim1,nextseq,type="l",xlab="",cex.main=0.75,
-                       main= base::paste(m1,"D",base::round(fracDim,digits=2)),las=2,xaxp = base::c(x1[1],x1[2],nti))
+                             main= base::paste(m1,"D",base::round(fracDim,digits=2)),las=2,xaxp = base::c(x1[1],x1[2],nti))
 
       lowpass1.spline <- stats::smooth.spline(tim1,nextseq, spar = spar) ## Control spar for amount of smoothing
       if(plotflag)graphics::lines(stats::predict(lowpass1.spline, tim1), col = "red", lwd = 1)
       highpass1 <- nextseq - stats::predict(lowpass1.spline, tim1)$y
       if(plotflag)graphics::lines(tim1, highpass1, lwd =  2)
       if(plotflag)base::plot(tim1, highpass1,type="l",pch=15, lwd =  1,xlab="",cex.main=0.75,
-                       main= base::paste(main,"\n",sample_every*j,"to",sample_every*(j+seqlen/sample_every),":  ",
-                                  sample_every*j+startval,sample_every*(j+seqlen/sample_every)+startval,
-                                  "D",base::round(fracDim,digits=2)),las=2,xaxp = base::c(x1[1],x1[2],nti) )
+                             main= base::paste(main,"\n",sample_every*j,"to",sample_every*(j+seqlen/sample_every),":  ",
+                                               sample_every*j+startval,sample_every*(j+seqlen/sample_every)+startval,
+                                               "D",base::round(fracDim,digits=2)),las=2,xaxp = base::c(x1[1],x1[2],nti) )
 
 
       # base::plot(nextseq,type="b",main= base::paste(j,"to",(j+seqlen)))
@@ -519,8 +519,8 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
           base::cat("\nlower repeat upper lowerlimit fequency upperlimit\n")
           for(f in 1:(base::length(upperfreqval)/2)){
             base::cat( base::round(1/upperfreqval[f] ,digits=4),
-                 base::round(1/fr[f],digits=4),base::round(1/lowerfreqval[f],digits=4),
-                 upperfreqval[f],fr[f],lowerfreqval[f],"\n")
+                       base::round(1/fr[f],digits=4),base::round(1/lowerfreqval[f],digits=4),
+                       upperfreqval[f],fr[f],lowerfreqval[f],"\n")
           }
         }
       }
@@ -528,7 +528,7 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
 
       plotdata1<-plot.frequency.spectrum(fr,X.k, xlimits=base::c(0,base::max(fr)/2),
                                          main= base::paste(sample_every*j,"to",sample_every*(j+seqlen/sample_every),":  ",
-                                                    sample_every*j+startval,sample_every*(j+seqlen/sample_every)+startval),
+                                                           sample_every*j+startval,sample_every*(j+seqlen/sample_every)+startval),
                                          plotflag=plotflag)    # base::c(0,20)
 
       windowpeak<-pracma::findpeaks(plotdata1[,2])
@@ -536,7 +536,7 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
 
         if(writeflag){
           if(!base::is.null(windowpeak))      base::cat("\npeaks for window ",sample_every*j,sample_every*(j+seqlen/sample_every-1),
-                                            "     ",startval+sample_every*(j-1),startval+sample_every*(j+seqlen/sample_every-1),"\n")
+                                                        "     ",startval+sample_every*(j-1),startval+sample_every*(j+seqlen/sample_every-1),"\n")
           windowpeak<-base::cbind(fr[windowpeak[,2]],base::round(1/fr,digits=4)[windowpeak[,2]],windowpeak)
 
           base::colnames(windowpeak)<-base::c("freq","repeat length","height", "index", "start", "end")
@@ -616,9 +616,9 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
       #set the points to subdivide the fractal graph two sets one for the legend (ptset1) and one for the graph(ptset)
       numseg<-10;
       ptset1<-startval+ sample_every*base::seq((base::length(cgwalk )/numseg+1),base::length(cgwalk ),
-                                         by=(base::length(cgwalk )/numseg))
+                                               by=(base::length(cgwalk )/numseg))
       ptset<- base::seq((base::length(cgwalk)/numseg+1),base::length(cgwalk ),
-                  by=(base::length(cgwalk )/numseg))
+                        by=(base::length(cgwalk )/numseg))
 
     } else{
       numseg<-base::length(ptset)
@@ -635,17 +635,17 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
     if(plotflag) {
       col<-grDevices::rainbow(base::length(ptset)) #grDevices::rainbow(10)
       base::plot(sample_every*(1:(base::length(dnawalk))),dnawalk[1:(base::length(dnawalk))],type="l",cex.main=0.75,
-           main= base::paste("NET DNAWALK",main))
+                 main= base::paste("NET DNAWALK",main))
       base::plot(sample_every*(1:base::length(cgwalk)),cgwalk[1:base::length(cgwalk)],cex.main=0.75,
-           type="l",main= base::paste("CG DNAWALK",main));
+                 type="l",main= base::paste("CG DNAWALK",main));
       base::plot(sample_every*(1:base::length(atwalk)),atwalk[1:base::length(atwalk)],
-           type="l",cex.main=0.75,main= base::paste("AT DNAWALK",main))
+                 type="l",cex.main=0.75,main= base::paste("AT DNAWALK",main))
       base::plot(cgwalk,atwalk,lty=1,lwd=1,
-           type="l",cex.main=0.75,
-           main= base::paste("CG-AT DNA WALK Sense only: increment ",
-                      base::round((base::length(cgwalk)/numseg),digits=0),"\n", main));
+                 type="l",cex.main=0.75,
+                 main= base::paste("CG-AT DNA WALK Sense only: increment ",
+                                   base::round((base::length(cgwalk)/numseg),digits=0),"\n", main));
       offsetlist<-base::c(base::round((base::max(cgwalk[1:(base::length(cgwalk))],na.rm=TRUE)-
-                             base::min(cgwalk[1:base::length(cgwalk)],na.rm=TRUE))/5))
+                                         base::min(cgwalk[1:base::length(cgwalk)],na.rm=TRUE))/5))
       if(!base::is.numeric(offsetlist[1])|| base::is.na(offsetlist[1])) {
         base::cat("\n reset offst to 0")
         offsetlist[1]<-0
@@ -659,30 +659,30 @@ walk_and_plot<-function(tdna,main="",ptset=NULL,rng=NULL,seqlen=NULL,
 
       for (offst in offsetlist ){  #offst<- 0 changes the plot scale on x to see the legend better
         xli<-base::c(base::min(cgwalk[1:base::length(cgwalk)]-offst,na.rm = TRUE),
-               base::max(cgwalk[1:base::length(cgwalk)],na.rm = TRUE))
+                     base::max(cgwalk[1:base::length(cgwalk)],na.rm = TRUE))
 
         base::plot(cgwalk[1:base::length(cgwalk)],atwalk[1:base::length(cgwalk)],lty=1,lwd=1,
-             type="l",cex.main=0.75,
-             xlim=xli,
-             main= base::paste("Sense only: increment ",
-                        base::round((sample_every*(base::length(cgwalk) )/numseg),digits=0),"\n", main));
+                   type="l",cex.main=0.75,
+                   xlim=xli,
+                   main= base::paste("Sense only: increment ",
+                                     base::round((sample_every*(base::length(cgwalk) )/numseg),digits=0),"\n", main));
         graphics::lines(xli, -xli); graphics::lines(xli, xli)
 
         if(base::length(ptset)!=0 && base::min(ptset,rm.na=TRUE)>0){
           for( jpt in 2:(base::length(ptset)-1)){
             lwd=1
             graphics::lines(cgwalk[base::round(ptset[jpt-1]):base::round(ptset[jpt])], atwalk[base::round(ptset[jpt-1]):base::round(ptset[jpt])],
-                  lty=1,lwd=lwd,col=col[jpt-1])
+                            lty=1,lwd=lwd,col=col[jpt-1])
             graphics::points(cgwalk[base::round(ptset[jpt])],atwalk[base::round(ptset[jpt])],
-                   pch=base::as.character(jpt-1),cex=2, col="black")
+                             pch=base::as.character(jpt-1),cex=2, col="black")
           }
           for( jpt in 2:(base::length(ptset)-1)){
             graphics::points(cgwalk[base::round(ptset[jpt])],atwalk[base::round(ptset[jpt])],
-                   pch=base::as.character(jpt-1),cex=2, col="black")
+                             pch=base::as.character(jpt-1),cex=2, col="black")
           }
 
           graphics::legend("topleft",legend=base::c(base::round(ptset1[2:(base::length(ptset1))],digits=0)  ),
-                 pch=base::c(base::as.character(1:(base::length(ptset)-2)),"E"))
+                           pch=base::c(base::as.character(1:(base::length(ptset)-2)),"E"))
         }
         graphics::points(cgwalk[1],atwalk[1], pch=83,cex=2)
         graphics::points(cgwalk[(base::length(cgwalk))],atwalk[base::length(atwalk)], pch=69,cex=2)
@@ -723,27 +723,27 @@ run_one_repeat<-function(repeat_val,All_spec,chromnam,numstd=5,colrange=NULL,sor
   threshspec<-meanspec+numstd*stdspec    #base::length(peak_along_repeat)
 
   peak_along_repeat<-pracma::findpeaks(x=All_spec[repeat_val, ], minpeakheight = threshspec,
-                               minpeakdistance = 1, threshold = 0, npeaks = 0, sortstr = sortstr)  #change to false Feb 5 2023
+                                       minpeakdistance = 1, threshold = 0, npeaks = 0, sortstr = sortstr)  #change to false Feb 5 2023
   if(base::length(peak_along_repeat)!=0){  #change June 17 2022
     peak_along_repeat<-base::cbind(base::as.numeric(peak_along_repeat[,1])/maxspec,peak_along_repeat)
     peak_along_repeat<-base::cbind(peak_along_repeat,base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,3]]),
-                             base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,4]]),
-                             base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,5]]) )
+                                   base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,4]]),
+                                   base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,5]]) )
 
     base::colnames(peak_along_repeat)<-base::c("Percent of peak","Power","peak index","sindex","eindex","peak_bp","start_peak_bp", "end_peak_bp")
     peak_along_repeat
   } #end of check to ensure peak value found
   if(!base::is.null(colrange) | base::length(peak_along_repeat)!=0){
     base::plot(base::as.numeric(base::colnames(All_spec1)),All_spec1[repeat_val ,],cex.main=0.75,
-         main= base::paste("Chromosome",chromnam,"\n1/repeat length (bp)",repeat_val,"\nmean + ",numstd,
-                    "*sigma= ",base::round(threshspec,digits=1)),
-         ylim=base::c(0,maxspec),type="o",las=2,xlab="",ylab="",
-         xaxp=base::c( base::min(base::as.numeric(base::colnames(All_spec1)),na.rm=TRUE),
-                 base::max(base::as.numeric(base::colnames(All_spec1)),na.rm=TRUE),20) )       #best
+               main= base::paste("Chromosome",chromnam,"\n1/repeat length (bp)",repeat_val,"\nmean + ",numstd,
+                                 "*sigma= ",base::round(threshspec,digits=1)),
+               ylim=base::c(0,maxspec),type="o",las=2,xlab="",ylab="",
+               xaxp=base::c( base::min(base::as.numeric(base::colnames(All_spec1)),na.rm=TRUE),
+                             base::max(base::as.numeric(base::colnames(All_spec1)),na.rm=TRUE),20) )       #best
   }
   if(base::length(peak_along_repeat)!=0){
     graphics::lines(base::as.numeric(base::colnames(All_spec1)[base::as.numeric(peak_along_repeat[,"peak index"])]),
-          All_spec1[repeat_val ,base::as.numeric(peak_along_repeat[,"peak index"])],type="p",pch=15,col="red",cex=1.5)
+                    All_spec1[repeat_val ,base::as.numeric(peak_along_repeat[,"peak index"])],type="p",pch=15,col="red",cex=1.5)
     base::cat("track type=bedGraph")
   }
   base::return(peak_along_repeat)
@@ -805,9 +805,9 @@ run_sum_Fractal<-function(fracdim_list, numrange= (80*1e6/(100000)),pflag=TRUE,m
   low_frac_thresh<-meanD-nstd*stdD
   if(pflag){
     base::plot(base::as.numeric(names(fracdim_list)),fracdim_list,main= base::paste("Box Filling Dimension (Complexity) mean",
-                                                                 base::round(meanD,digits=2),"sigma=",
-                                                                 base::round(stdD,digits=2),"numrange",numrange,"\n",main),xlab="",
-         ylim=base::c(0.8,2),type="b",pch=1,xaxp = base::c(x1[1],x1[2],nti),las=2,cex.main=0.6)
+                                                                                    base::round(meanD,digits=2),"sigma=",
+                                                                                    base::round(stdD,digits=2),"numrange",numrange,"\n",main),xlab="",
+               ylim=base::c(0.8,2),type="b",pch=1,xaxp = base::c(x1[1],x1[2],nti),las=2,cex.main=0.6)
 
 
 
@@ -822,9 +822,9 @@ run_sum_Fractal<-function(fracdim_list, numrange= (80*1e6/(100000)),pflag=TRUE,m
 
     graphics::legend("topleft",legend=base::c( base::paste0("+",nstd," Sigma"), base::paste0("-",nstd," Sigma")),pch=base::c(16,16),col=base::c("red","blue"))
     base::plot(base::as.numeric(names(fracdim_list)),fracdim_list,main= base::paste("Box Filling Dimension (Complexity)  mean",
-                                                                 base::round(meanD,digits=2),"sigma=",
-                                                                 base::round(stdD,digits=2),"numrange",numrange,"\n",main),xlab="",
-         type="b",pch=1,xaxp = base::c(x1[1],x1[2],nti),las=2,cex.main=0.6)
+                                                                                    base::round(meanD,digits=2),"sigma=",
+                                                                                    base::round(stdD,digits=2),"numrange",numrange,"\n",main),xlab="",
+               type="b",pch=1,xaxp = base::c(x1[1],x1[2],nti),las=2,cex.main=0.6)
 
     graphics::lines(base::as.numeric(names(fracdim_list)), base::rep(meanD,base::length(fracdim_list)),type="l",col="green",lwd=3)
 
@@ -910,11 +910,11 @@ run_sum_Fractal<-function(fracdim_list, numrange= (80*1e6/(100000)),pflag=TRUE,m
     if(pflag){
 
       graphics::barplot(power_mean,names.arg = base::names(power_mean),ylim=base::c(minspec,maxspec),
-              main= base::paste("Box Filling Dimension (Complexity) sigma=",
-                         base::round(stdD,digits=2),"numrange",numrange,"\n",
-                         "Mean",
-                         main,"\nMid-Points: min at:",min_mean_seqval,"max at:",max_mean_seqval),
-              las=2,cex.axis = 0.65,cex.names=0.65,cex.main=0.6)
+                        main= base::paste("Box Filling Dimension (Complexity) sigma=",
+                                          base::round(stdD,digits=2),"numrange",numrange,"\n",
+                                          "Mean",
+                                          main,"\nMid-Points: min at:",min_mean_seqval,"max at:",max_mean_seqval),
+                        las=2,cex.axis = 0.65,cex.names=0.65,cex.main=0.6)
     }
 
     maxspec<-base::max(power_sum,na.rm=TRUE)
@@ -930,11 +930,11 @@ run_sum_Fractal<-function(fracdim_list, numrange= (80*1e6/(100000)),pflag=TRUE,m
     if(pflag){
 
       graphics::barplot(power_sum,names.arg = base::names(power_sum),ylim=base::c(minspec,maxspec),
-              main= base::paste("Box Filling Dimension (Complexity) sigma=",
-                         base::round(stdD,digits=2),"numrange",numrange,"\n",
-                         "Sum/Mbp above",base::round(threshfracD,digits=2),
-                         main,"\nMid-Points: min at:",min_sum_seqval,"max at:",max_sum_seqval),
-              las=2,cex.axis = 0.65,cex.names=0.65,cex.main=0.6) #"#std above mean", nstd,"\n",
+                        main= base::paste("Box Filling Dimension (Complexity) sigma=",
+                                          base::round(stdD,digits=2),"numrange",numrange,"\n",
+                                          "Sum/Mbp above",base::round(threshfracD,digits=2),
+                                          main,"\nMid-Points: min at:",min_sum_seqval,"max at:",max_sum_seqval),
+                        las=2,cex.axis = 0.65,cex.names=0.65,cex.main=0.6) #"#std above mean", nstd,"\n",
     }
 
     minspec<-maxspec<-NULL
@@ -953,11 +953,11 @@ run_sum_Fractal<-function(fracdim_list, numrange= (80*1e6/(100000)),pflag=TRUE,m
       if(pflag){
 
         graphics::barplot(power_N_above,names.arg = base::names(power_N_above),ylim=base::c(minspec,maxspec),
-                main= base::paste("Box Filling Dimension (Complexity) sigma=",
-                           base::round(stdD,digits=2),"numrange",numrange,"\n",
-                           "N/Mbp above mean",base::round(threshfracD_N,digits=2),
-                           main,"\nMid-Points: min at:",min_N_above_seqval,"max at:",max_N_above_seqval),
-                las=2,cex.axis = 0.65,cex.names=0.65,cex.main=0.6)
+                          main= base::paste("Box Filling Dimension (Complexity) sigma=",
+                                            base::round(stdD,digits=2),"numrange",numrange,"\n",
+                                            "N/Mbp above mean",base::round(threshfracD_N,digits=2),
+                                            main,"\nMid-Points: min at:",min_N_above_seqval,"max at:",max_N_above_seqval),
+                          las=2,cex.axis = 0.65,cex.names=0.65,cex.main=0.6)
       }
     } else {
       min_N_above_seqval<-max_N_above_seqval<-NA  #
@@ -980,11 +980,11 @@ run_sum_Fractal<-function(fracdim_list, numrange= (80*1e6/(100000)),pflag=TRUE,m
       if(pflag){
 
         graphics::barplot(power_N_below,names.arg = base::names(power_N_below),ylim=base::c(minspec,maxspec),
-                main= base::paste("Box Filling Dimension (Complexity) sigma=",
-                           base::round(stdD,digits=2),"numrange",numrange,"\n",
-                           "N/Mbp below mean",base::round(threshfracD_N,digits=2),
-                           main,"\nMid-Points: min at:",min_N_below_seqval,"max at:",max_N_below_seqval),
-                las=2,cex.axis = 0.65,cex.names=0.65,cex.main=0.6)
+                          main= base::paste("Box Filling Dimension (Complexity) sigma=",
+                                            base::round(stdD,digits=2),"numrange",numrange,"\n",
+                                            "N/Mbp below mean",base::round(threshfracD_N,digits=2),
+                                            main,"\nMid-Points: min at:",min_N_below_seqval,"max at:",max_N_below_seqval),
+                          las=2,cex.axis = 0.65,cex.names=0.65,cex.main=0.6)
       }
     } else {
       min_N_below_seqval <-max_N_below_seqval<-NA  #min_N_above_seqval<-max_N_above_seqval<-
@@ -998,9 +998,9 @@ run_sum_Fractal<-function(fracdim_list, numrange= (80*1e6/(100000)),pflag=TRUE,m
   }
 
   pow_list<-base::list(power_mean=power_mean, min_mean_seqval=min_mean_seqval,max_mean_seqval=max_mean_seqval,
-                 power_sum=power_sum, min_sum_seqval=min_sum_seqval,max_sum_seqval=max_sum_seqval,
-                 power_N_above=power_N_above, min_N_above_seqval=min_N_above_seqval,max_N_above_seqval=max_N_above_seqval,
-                 power_N_below=power_N_below, min_N_below_seqval=min_N_below_seqval,max_N_below_seqval=max_N_below_seqval
+                       power_sum=power_sum, min_sum_seqval=min_sum_seqval,max_sum_seqval=max_sum_seqval,
+                       power_N_above=power_N_above, min_N_above_seqval=min_N_above_seqval,max_N_above_seqval=max_N_above_seqval,
+                       power_N_below=power_N_below, min_N_below_seqval=min_N_below_seqval,max_N_below_seqval=max_N_below_seqval
   )
 
   base::return(pow_list)
@@ -1011,7 +1011,7 @@ Ave_spectra<-function(nam=nam,All_spec_long5Mbp=All_spec_long5Mbp,fftlen=fftlen,
                       seqlim=NULL, repeatlim=NULL ){
   if(base::is.null(seqlim)){
     seqlim<-base::c(base::as.numeric(base::colnames(All_spec_long5Mbp)[1]),
-              base::as.numeric(base::colnames(All_spec_long5Mbp)[ base::ncol(All_spec_long5Mbp)]))
+                    base::as.numeric(base::colnames(All_spec_long5Mbp)[ base::ncol(All_spec_long5Mbp)]))
   }
   Ave_spectra<-NULL
   for(j in base::seq(seqlim[1],(seqlim[2]-(dseq/2)),by=dseq)){
@@ -1031,7 +1031,7 @@ Average_spectral_profile<-function(nam=NULL,All_spec_long5Mbp=NULL,numbp=1,
   if((bplim[2]-bplim[1])>=(2*fftlen)){
     if(base::is.null(bplim)){
       bplim<-base::c(base::as.numeric(base::colnames(All_spec_long5Mbp)[1]),
-               base::as.numeric(base::colnames(All_spec_long5Mbp)[ base::ncol(All_spec_long5Mbp)]))
+                     base::as.numeric(base::colnames(All_spec_long5Mbp)[ base::ncol(All_spec_long5Mbp)]))
     }
 
 
@@ -1039,7 +1039,7 @@ Average_spectral_profile<-function(nam=NULL,All_spec_long5Mbp=NULL,numbp=1,
     repeats<-base::unlist(base::strsplit(base::rownames(All_spec_long5Mbp),"/"))
     if(base::is.null(repeatlim)){
       repeatlim<-base::c(repeats[1],
-                   repeats[base::length(repeats)])
+                         repeats[base::length(repeats)])
     }
     repeats<-base::as.numeric(repeats[base::seq(2,base::length(repeats), by=2)])
     whi1<-  base::which(repeats>=repeatlim[1])
@@ -1172,10 +1172,10 @@ run_sum_bp<-function(repeat_val,All_spec,chromnam,numstd2, numrange= 1500,pflag=
     min_mean_seqval<-base::as.numeric(names(power_mean[mincol]) )
     max_mean_seqval<-base::as.numeric(names(power_mean[maxcol]) )
     graphics::barplot(power_mean,names.arg = base::names(power_mean),
-            main= base::paste("Chromosome",chromnam,"\nMean Power: 1/repeat length (bp) ",repeat_val,"\nmean + ",
-                       numstd2,"*sigma= ",base::round(threshspec,digits=1),
-                       "\nMid-Points: min at:",min_mean_seqval,"max at:",max_mean_seqval),
-            ylim=base::c(threshspec,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
+                      main= base::paste("Chromosome",chromnam,"\nMean Power: 1/repeat length (bp) ",repeat_val,"\nmean + ",
+                                        numstd2,"*sigma= ",base::round(threshspec,digits=1),
+                                        "\nMid-Points: min at:",min_mean_seqval,"max at:",max_mean_seqval),
+                      ylim=base::c(threshspec,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
 
     maxspec<-base::max(power_sum,na.rm=TRUE)
     minspec<-base::min(power_sum,na.rm=TRUE)
@@ -1184,10 +1184,10 @@ run_sum_bp<-function(repeat_val,All_spec,chromnam,numstd2, numrange= 1500,pflag=
     min_powsum_seqval<-base::as.numeric(names(power_sum[mincol]) )#+deltabp_onebin/2;
     max_powsum_seqval<-base::as.numeric(names(power_sum[maxcol]) )#+deltabp_onebin/2
     graphics::barplot(power_sum,names.arg = base::names(power_sum),
-            main= base::paste("Chromosome",chromnam,"\nSum of Power (per Mbp): 1/repeat length (bp) ",repeat_val,"\nmean + ",
-                       numstd2,"*sigma= ",base::round(threshspec,digits=1),
-                       "\nMid-Points:min at:",min_powsum_seqval,"max at:",max_powsum_seqval),
-            ylim=base::c(0,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
+                      main= base::paste("Chromosome",chromnam,"\nSum of Power (per Mbp): 1/repeat length (bp) ",repeat_val,"\nmean + ",
+                                        numstd2,"*sigma= ",base::round(threshspec,digits=1),
+                                        "\nMid-Points:min at:",min_powsum_seqval,"max at:",max_powsum_seqval),
+                      ylim=base::c(0,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
 
     maxspec<-base::max(N,na.rm=TRUE)
     minspec<-base::min(N,na.rm=TRUE)
@@ -1196,16 +1196,16 @@ run_sum_bp<-function(repeat_val,All_spec,chromnam,numstd2, numrange= 1500,pflag=
     min_N_seqval<-base::as.numeric(names(N[mincol]) )#+deltabp_onebin/2;
     max_N_seqval<-base::as.numeric(names(N[maxcol]) )#+deltabp_onebin/2
     graphics::barplot(N,names.arg = base::names(N),
-            main= base::paste("Chromosome",chromnam,"\nNumber above (per Mbp): 1/repeat length (bp) ",repeat_val,"\nmean + ",
-                       numstd2,"*sigma= ",base::round(threshspec,digits=1),
-                       "\nMid-Points: min at:",min_N_seqval,"max at:",max_N_seqval),
-            ylim=base::c(0,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
+                      main= base::paste("Chromosome",chromnam,"\nNumber above (per Mbp): 1/repeat length (bp) ",repeat_val,"\nmean + ",
+                                        numstd2,"*sigma= ",base::round(threshspec,digits=1),
+                                        "\nMid-Points: min at:",min_N_seqval,"max at:",max_N_seqval),
+                      ylim=base::c(0,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
   }
 
   pow_list<-base::list(power_sum=power_sum,power_mean=power_mean,N=N,
-                 min_mean_seqval=min_mean_seqval,max_mean_seqval=max_mean_seqval,
-                 min_powsum_seqval=min_powsum_seqval,max_powsum_seqval=max_powsum_seqval,
-                 min_N_seqval=min_N_seqval,max_N_seqval=max_N_seqval )
+                       min_mean_seqval=min_mean_seqval,max_mean_seqval=max_mean_seqval,
+                       min_powsum_seqval=min_powsum_seqval,max_powsum_seqval=max_powsum_seqval,
+                       min_N_seqval=min_N_seqval,max_N_seqval=max_N_seqval )
 
   base::return(pow_list)
 
@@ -1259,10 +1259,10 @@ run_sum_bpold<-function(repeat_val,All_spec,chromnam,numstd2, numrange= 1500,pfl
       min_mean_seqval<-base::as.numeric(names(power_mean[mincol]) )+deltabp_onebin/2;
       max_mean_seqval<-base::as.numeric(names(power_mean[maxcol]) )+deltabp_onebin/2
       graphics::barplot(power_mean,names.arg = base::names(power_mean),
-              main= base::paste("Chromosome",chromnam,"\nMean Power: 1/repeat length (bp) ",repeat_val,"\nmean + ",
-                         numstd2,"*sigma= ",base::round(threshspec,digits=1),
-                         "\nmin at:",names(power_mean[mincol]),"max at:",names(power_mean[maxcol])),
-              ylim=base::c(threshspec,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
+                        main= base::paste("Chromosome",chromnam,"\nMean Power: 1/repeat length (bp) ",repeat_val,"\nmean + ",
+                                          numstd2,"*sigma= ",base::round(threshspec,digits=1),
+                                          "\nmin at:",names(power_mean[mincol]),"max at:",names(power_mean[maxcol])),
+                        ylim=base::c(threshspec,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
 
       maxspec<-base::max(power_sum,na.rm=TRUE)
       minspec<-base::min(power_sum,na.rm=TRUE)
@@ -1271,10 +1271,10 @@ run_sum_bpold<-function(repeat_val,All_spec,chromnam,numstd2, numrange= 1500,pfl
       min_powsum_seqval<-base::as.numeric(names(power_sum[mincol]) )+deltabp_onebin/2;
       max_powsum_seqval<-base::as.numeric(names(power_sum[maxcol]) )+deltabp_onebin/2
       graphics::barplot(power_sum,names.arg = base::names(power_sum),
-              main= base::paste("Chromosome",chromnam,"\nSum of Power (per Mbp): 1/repeat length (bp) ",repeat_val,"\nmean + ",
-                         numstd2,"*sigma= ",base::round(threshspec,digits=1),
-                         "\nmin at:",min_powsum_seqval,"max at:",max_powsum_seqval),
-              ylim=base::c(0,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
+                        main= base::paste("Chromosome",chromnam,"\nSum of Power (per Mbp): 1/repeat length (bp) ",repeat_val,"\nmean + ",
+                                          numstd2,"*sigma= ",base::round(threshspec,digits=1),
+                                          "\nmin at:",min_powsum_seqval,"max at:",max_powsum_seqval),
+                        ylim=base::c(0,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
 
       maxspec<-base::max(N,na.rm=TRUE)
       minspec<-base::min(N,na.rm=TRUE)
@@ -1283,16 +1283,16 @@ run_sum_bpold<-function(repeat_val,All_spec,chromnam,numstd2, numrange= 1500,pfl
       min_N_seqval<-base::as.numeric(names(N[mincol]) )+deltabp_onebin/2;
       max_N_seqval<-base::as.numeric(names(N[maxcol]) )+deltabp_onebin/2
       graphics::barplot(N,names.arg = base::names(N),
-              main= base::paste("Chromosome",chromnam,"\nNumber above (per Mbp): 1/repeat length (bp) ",repeat_val,"\nmean + ",
-                         numstd2,"*sigma= ",base::round(threshspec,digits=1),
-                         "\nmin at:",names(N[mincol]),"max at:",names(N[maxcol])),
-              ylim=base::c(0,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
+                        main= base::paste("Chromosome",chromnam,"\nNumber above (per Mbp): 1/repeat length (bp) ",repeat_val,"\nmean + ",
+                                          numstd2,"*sigma= ",base::round(threshspec,digits=1),
+                                          "\nmin at:",names(N[mincol]),"max at:",names(N[maxcol])),
+                        ylim=base::c(0,maxspec),las=2,cex.axis = 0.65,cex.names=0.65)
     }
   }
   pow_list<-base::list(power_sum=power_sum,power_mean=power_mean,N=N,
-                 min_mean_seqval=min_mean_seqval,max_mean_seqval=max_mean_seqval,
-                 min_powsum_seqval=min_powsum_seqval,max_powsum_seqval=max_powsum_seqval,
-                 min_N_seqval=min_N_seqval,max_N_seqval=max_N_seqval )
+                       min_mean_seqval=min_mean_seqval,max_mean_seqval=max_mean_seqval,
+                       min_powsum_seqval=min_powsum_seqval,max_powsum_seqval=max_powsum_seqval,
+                       min_N_seqval=min_N_seqval,max_N_seqval=max_N_seqval )
 
   base::return(pow_list)
 
@@ -1760,30 +1760,30 @@ largeimagesub_NEW <-function(All_specAve, fname, chromosome, ofi, rangebp=NULL, 
 
   #----------------------------
   # try alternative scaling based on row sums - like for Shannon diversity
-#
-#   All_spec <- as.matrix(All_specAve[whichones,c(rangeseq[1]:rangeseq[2])])
-#   All_spec_replen_sum <- apply(All_spec, 1, sum, na.rm=TRUE)
-#   All_spec_norm <- All_spec/All_spec_replen_sum
-#
-#
-#   if (rapportools::is.boolean(repround)) {rownames(All_spec_norm) <- paste0("1/", base::round(base::as.numeric(stringr::str_split_fixed(base::rownames(All_spec_norm),"/", 2)[,2])))}
-#   else {rownames(All_spec_norm) <- paste0("1/", base::round(base::as.numeric(stringr::str_split_fixed(base::rownames(All_spec_norm),"/", 2)[,2]), digits=repround))}
-#
-#   if (rapportools::is.boolean(part) && part==FALSE) {colnames(newdata0) <- round((c(0:(ncol(newdata0)-1))*5000)/1e6)}
-#   else {colnames(newdata0) <- round((c(0:(ncol(newdata0)-1))*5000)/1e6)+((part-1)*100)}
-#
-#   ofil1<- base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,"diff_norm.png")
-#
-#   # set intensity values
-#   # set intensity values
-#   zmeantot<-base::mean((All_spec_norm),na.rm=TRUE)
-#   zsd<-stats::sd((All_spec_norm),na.rm=TRUE)
-#   zmintot<-zmeantot-(0.8*zsd)
-#   zmaxtot<-zmeantot+(6*zsd)
-#
-#   base::cat("min max sd",zmintot,zmaxtot,zsd)
-#   zlimtot<-base::c(zmintot,zmaxtot)
-#   base::cat("\nrevised min max  sd",zlimtot,zsd)
+  #
+  #   All_spec <- as.matrix(All_specAve[whichones,c(rangeseq[1]:rangeseq[2])])
+  #   All_spec_replen_sum <- apply(All_spec, 1, sum, na.rm=TRUE)
+  #   All_spec_norm <- All_spec/All_spec_replen_sum
+  #
+  #
+  #   if (rapportools::is.boolean(repround)) {rownames(All_spec_norm) <- paste0("1/", base::round(base::as.numeric(stringr::str_split_fixed(base::rownames(All_spec_norm),"/", 2)[,2])))}
+  #   else {rownames(All_spec_norm) <- paste0("1/", base::round(base::as.numeric(stringr::str_split_fixed(base::rownames(All_spec_norm),"/", 2)[,2]), digits=repround))}
+  #
+  #   if (rapportools::is.boolean(part) && part==FALSE) {colnames(newdata0) <- round((c(0:(ncol(newdata0)-1))*5000)/1e6)}
+  #   else {colnames(newdata0) <- round((c(0:(ncol(newdata0)-1))*5000)/1e6)+((part-1)*100)}
+  #
+  #   ofil1<- base::paste0(ofi,"bp",rangebp[1],"_",rangebp[2],"seq",rangeseq1[1],"_",rangeseq1[2],flaglog,"diff_norm.png")
+  #
+  #   # set intensity values
+  #   # set intensity values
+  #   zmeantot<-base::mean((All_spec_norm),na.rm=TRUE)
+  #   zsd<-stats::sd((All_spec_norm),na.rm=TRUE)
+  #   zmintot<-zmeantot-(0.8*zsd)
+  #   zmaxtot<-zmeantot+(6*zsd)
+  #
+  #   base::cat("min max sd",zmintot,zmaxtot,zsd)
+  #   zlimtot<-base::c(zmintot,zmaxtot)
+  #   base::cat("\nrevised min max  sd",zlimtot,zsd)
 
   # plotting
   # grDevices::png(filename = ofil1, width = pixw, height = pixh)
@@ -1897,35 +1897,35 @@ run_chloroplast<-function(nam=nam, fname=fname, outpath=outpath, inpath=inpath,
   All_spec<-spectimage
   if(sample_every!=1){
     ofile<-base::file.path(outpathSPECT, base::paste0("concat_ALL_tot_",shortname,"_",
-                                         startval,"_",endval,"_",fftlength,"_",sample_every,
-                                         "_spar1_Table.txt"))
+                                                      startval,"_",endval,"_",fftlength,"_",sample_every,
+                                                      "_spar1_Table.txt"))
   } else{
     ofile<-base::file.path(outpathSPECT, base::paste0("concat_ALL_tot_",shortname,"_",
-                                         startval,"_",endval,"_",fftlength,
-                                         "_spar1_Table.txt"))
+                                                      startval,"_",endval,"_",fftlength,
+                                                      "_spar1_Table.txt"))
   }
   if(writeflag) utils::write.table(x=spectimage, file=ofile, append = FALSE, sep = " ", dec = ".",
-                            row.names = TRUE, col.names = TRUE)
+                                   row.names = TRUE, col.names = TRUE)
 
   ofile<-base::file.path(outpathDNAWALK, base::paste0("DNA_WALK_",nam,genname1,startval,"_",endval,"_",sample_every,".txt"))
 
   if(writeflag) utils::write.table(x=DNAwalk, file=ofile, append = FALSE, sep = " ", dec = ".",
-                            row.names = TRUE, col.names = TRUE)
+                                   row.names = TRUE, col.names = TRUE)
 
   ofile1<-base::file.path(outpathfractal, base::paste0("Fractal_",nam,genname1,startval,"_",endval,"_",sample_every,".txt"))
 
   if(writeflag)utils::write.table(x=fractal_list, file=ofile1, append = FALSE, sep = " ", dec = ".",
-                           row.names = TRUE, col.names = TRUE)
+                                  row.names = TRUE, col.names = TRUE)
   if(writeflag){
     ofile1<-base::file.path(outpathfractal.bed, base::paste0("Fractal_",nam,genname1,startval,"_",endval,"_",sample_every,
-                                                "_",fftlength, ".bedGraph"))
+                                                             "_",fftlength, ".bedGraph"))
     base::sink(ofile1)
     base::cat("track type=bedGraph")
     for(j in 1:base::length(fractal_list)){
       delta<-base::as.numeric(names(fractal_list)[2])-base::as.numeric(names(fractal_list)[1])  #base::as.numeric(names(fractal)[2])-base::as.numeric(names(fractal)[1])
       base::cat( base::paste0("\n",nam,"\t",base::as.numeric(names(fractal_list)[j]),"\t",
-                 base::as.numeric(names(fractal_list)[j])+delta,"\t",
-                 fractal_list[j]) )
+                              base::as.numeric(names(fractal_list)[j])+delta,"\t",
+                              fractal_list[j]) )
     }
     base::sink()
   }
@@ -1986,13 +1986,13 @@ run_barplots_bedGraph <-function(All_spec, nam=nam,fname=fname,inpath=inpath, ou
   if(atflag){
     chromnam<- base::paste(chromnam,"AT")
     ofile<-base::file.path(outpathbarplot, base::paste0("repeats",
-                                           numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,"_",repeat_range[1],"_",repeat_range[2],
-                                           "bp.pdf"))
+                                                        numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,"_",repeat_range[1],"_",repeat_range[2],
+                                                        "bp.pdf"))
   } else {
     chromnam<- base::paste(chromnam,"CG")
     ofile<-base::file.path(outpathbarplot, base::paste0("repeats_CG",
-                                           numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,"_",repeat_range[1],"_",repeat_range[2],
-                                           "bp.pdf"))
+                                                        numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,"_",repeat_range[1],"_",repeat_range[2],
+                                                        "bp.pdf"))
   }
   base::cat("\n ouput to", ofile)
   grDevices::pdf(file=ofile)
@@ -2005,15 +2005,15 @@ run_barplots_bedGraph <-function(All_spec, nam=nam,fname=fname,inpath=inpath, ou
     if(!base::is.null(peak_along_repeat)){
       if(atflag){
         base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_",numrange,"_","_s_",numstd2,"std_",numstd,"_",base::as.numeric(base::gsub("1/",
-                                                                                                                                    "",repeat_val)),".bedGraph")))
+                                                                                                                                                                   "",repeat_val)),".bedGraph")))
       } else {
         base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_CG_",numrange,"_","_s_",numstd2,"std_",numstd,"_",base::as.numeric(base::gsub("1/",
-                                                                                                                                       "",repeat_val)),".bedGraph")))
+                                                                                                                                                                      "",repeat_val)),".bedGraph")))
       }
       base::cat("track type=bedGraph")
       for(j in 1:base::nrow(peak_along_repeat)){
         base::cat( base::paste0("\n",nam1,"\t",peak_along_repeat[j,"start_peak_bp"],"\t",peak_along_repeat[j,"end_peak_bp"],"\t",
-                   peak_along_repeat[j,"Percent of peak"]) )
+                                peak_along_repeat[j,"Percent of peak"]) )
       }
 
       pow_list<- run_sum_bp(repeat_val,All_spec,chromnam,numstd2,numrange)
@@ -2035,10 +2035,10 @@ run_barplots_bedGraph <-function(All_spec, nam=nam,fname=fname,inpath=inpath, ou
       base::sink()
       if(atflag){
         base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_sum_by_bp_std_",numrange,"_s_",numstd2,"std_",
-                                                          numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
+                                                                             numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
       } else {
         base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_sum_by_bp_std_CG_",numrange,"_s_",numstd2,"std_",
-                                                          numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
+                                                                             numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
       }
       base::cat("\n1/repeat length ",repeat_val," numrange",numrange,"\nbp sum mean N")
       for(j in 1:base::length(sum_at_bp)) base::cat("\n",names(sum_at_bp)[j],sum_at_bp[j],mean_at_bp[j],N_at_bp[j])
@@ -2048,25 +2048,25 @@ run_barplots_bedGraph <-function(All_spec, nam=nam,fname=fname,inpath=inpath, ou
   }
   if(atflag){
     base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_",numrange,"_s_",numstd2,"std_",numstd,
-                                              "_",repeat_range[1],"_",repeat_range[2],".txt")))
+                                                                 "_",repeat_range[1],"_",repeat_range[2],".txt")))
   } else {
     base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_CG_",numrange,"_s_",numstd2,"std_",numstd,
-                                              "_",repeat_range[1],"_",repeat_range[2],".txt")))
+                                                                 "_",repeat_range[1],"_",repeat_range[2],".txt")))
   }
   base::cat("\ngoodrepeat min_mean_seqval max_mean_seqval min_powsum_seqval max_powsum_seqval min_N_seqval max_N_seqval\n")
   for(j in 1:base::length(min_powsum_seqval_list)) {
     base::cat(goodrepeats[j],
-        min_mean_seqval_list[j],max_mean_seqval_list[j],
-        min_powsum_seqval_list[j],max_powsum_seqval_list[j],
-        min_N_seqval_list[j],max_N_seqval_list[j],"\n")
+              min_mean_seqval_list[j],max_mean_seqval_list[j],
+              min_powsum_seqval_list[j],max_powsum_seqval_list[j],
+              min_N_seqval_list[j],max_N_seqval_list[j],"\n")
   }
   grDevices::dev.off()
   if(atflag){
     grDevices::pdf(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_",numrange,"_s_",numstd2,"std_",numstd,
-                                             "_",repeat_range[1],"_",repeat_range[2],".pdf")))
+                                                                     "_",repeat_range[1],"_",repeat_range[2],".pdf")))
   } else {
     grDevices::pdf(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_CG_",numrange,"_s_",numstd2,"std_",numstd,
-                                             "_",repeat_range[1],"_",repeat_range[2],".pdf")))
+                                                                     "_",repeat_range[1],"_",repeat_range[2],".pdf")))
   }
 
   base::cat("\n Mean:     Min summary\n");base::print(base::summary(min_mean_seqval_list))
@@ -2077,40 +2077,40 @@ run_barplots_bedGraph <-function(All_spec, nam=nam,fname=fname,inpath=inpath, ou
   base::cat("\n N:        Max summary\n");base::print(base::summary(max_N_seqval_list))
 
   a<-graphics::hist(min_mean_seqval_list,breaks=20, xaxp=base::c(0,base::max(min_mean_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_min_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nMean: Minimum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_min_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nMean: Minimum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMin Mean:       midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
 
   a<-graphics::hist(min_powsum_seqval_list,breaks=20,xaxp=base::c(0,base::max(min_powsum_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nPower Sum Minimum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nPower Sum Minimum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMin Power Sum:  midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<-graphics::hist(min_N_seqval_list,breaks=20,xaxp=base::c(0,base::max(min_N_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_min_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nNumber: Minimum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_min_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nNumber: Minimum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMin N:          midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<- graphics::hist(max_mean_seqval_list,breaks=20,xaxp=base::c(0,base::max(max_mean_seqval_list),20),xlab="",xlim=xlim,
-           main= base::paste0(chromnam,"_max_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                       "\nMean: Maximum values in the Sequence\nbp range ",
-                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                     main= base::paste0(chromnam,"_max_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                        "\nMean: Maximum values in the Sequence\nbp range ",
+                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMax Mean:      midpointmax counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<-graphics::hist(max_powsum_seqval_list,breaks=20,xaxp=base::c(0,base::max(max_powsum_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_max_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nPower Sum Maximum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_max_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nPower Sum Maximum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMax Power Sum: midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<-graphics::hist(max_N_seqval_list,breaks=20,xaxp=base::c(0,base::max(max_N_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_max_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nNumber: Maximum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_max_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nNumber: Maximum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMax N:         midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
   base::sink()
   grDevices::dev.off()
@@ -2170,13 +2170,13 @@ run_barplots <-function(All_spec=All_spec, nam=nam,fname=fname,inpath=inpath, ou
   if(atflag){
     chromnam<- base::paste(chromnam,"AT")
     ofile<-base::file.path(outpathbarplot, base::paste0("repeats",
-                                           numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,"_",repeat_range[1],"_",repeat_range[2],
-                                           "bp.pdf"))
+                                                        numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,"_",repeat_range[1],"_",repeat_range[2],
+                                                        "bp.pdf"))
   } else {
     chromnam<- base::paste(chromnam,"CG")
     ofile<-base::file.path(outpathbarplot, base::paste0("repeats_CG",
-                                           numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,"_",repeat_range[1],"_",repeat_range[2],
-                                           "bp.pdf"))
+                                                        numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,"_",repeat_range[1],"_",repeat_range[2],
+                                                        "bp.pdf"))
   }
   base::cat("\n ouput to", ofile)
   grDevices::pdf(file=ofile)
@@ -2189,16 +2189,16 @@ run_barplots <-function(All_spec=All_spec, nam=nam,fname=fname,inpath=inpath, ou
     if(!base::is.null(peak_along_repeat)){
       if(atflag){
         base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_",numrange,"_","_s_",numstd2,"std_",numstd,"_",base::as.numeric(base::gsub("1/",
-                                                                                                                                    "",repeat_val)),".bedGraph")))
+                                                                                                                                                                   "",repeat_val)),".bedGraph")))
       } else {
         base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_CG_",numrange,"_","_s_",numstd2,"std_",numstd,"_",base::as.numeric(base::gsub("1/",
-                                                                                                                                       "",repeat_val)),".bedGraph")))
+                                                                                                                                                                      "",repeat_val)),".bedGraph")))
       }
       base::cat("track type=bedGraph")
 
       for(j in 1:base::nrow(peak_along_repeat)){
         base::cat( base::paste0("\n",nam1,"\t",peak_along_repeat[j,"start_peak_bp"],"\t",peak_along_repeat[j,"end_peak_bp"],"\t",
-                   peak_along_repeat[j,"Percent of peak"]) )
+                                peak_along_repeat[j,"Percent of peak"]) )
       }
       # perform sum of powers above mean+sigma2 level  (but only for repeats where mean+numstd *sigma holds)
       pow_list<- run_sum_bp(repeat_val,All_spec,chromnam,numstd2,numrange)   #base::colnames(All_spec)
@@ -2220,10 +2220,10 @@ run_barplots <-function(All_spec=All_spec, nam=nam,fname=fname,inpath=inpath, ou
       base::sink()
       if(atflag){
         base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_sum_by_bp_std_",numrange,"_s_",numstd2,"std_",
-                                                          numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
+                                                                             numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
       } else {
         base::sink(file=base::file.path(outpathbarplotbedgraph, base::paste0(chromnam,"_sum_by_bp_std_CG_",numrange,"_s_",numstd2,"std_",
-                                                          numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
+                                                                             numstd,"_",base::as.numeric(base::gsub("1/","",repeat_val)),".txt")))
       }
       base::cat("\n1/repeat length ",repeat_val," numrange",numrange,"\nbp sum mean N")
       for(j in 1:base::length(sum_at_bp)) base::cat("\n",names(sum_at_bp)[j],sum_at_bp[j],mean_at_bp[j],N_at_bp[j])
@@ -2233,25 +2233,25 @@ run_barplots <-function(All_spec=All_spec, nam=nam,fname=fname,inpath=inpath, ou
   }
   if(atflag){
     base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_",numrange,"_s_",numstd2,"std_",numstd,
-                                              "_",repeat_range[1],"_",repeat_range[2],".txt")))
+                                                                 "_",repeat_range[1],"_",repeat_range[2],".txt")))
   } else {
     base::sink(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_CG_",numrange,"_s_",numstd2,"std_",numstd,
-                                              "_",repeat_range[1],"_",repeat_range[2],".txt")))
+                                                                 "_",repeat_range[1],"_",repeat_range[2],".txt")))
   }
   base::cat("\ngoodrepeat min_mean_seqval max_mean_seqval min_powsum_seqval max_powsum_seqval min_N_seqval max_N_seqval\n")
   for(j in 1:base::length(min_powsum_seqval_list)) {
     base::cat(goodrepeats[j],
-        min_mean_seqval_list[j],max_mean_seqval_list[j],
-        min_powsum_seqval_list[j],max_powsum_seqval_list[j],
-        min_N_seqval_list[j],max_N_seqval_list[j],"\n")
+              min_mean_seqval_list[j],max_mean_seqval_list[j],
+              min_powsum_seqval_list[j],max_powsum_seqval_list[j],
+              min_N_seqval_list[j],max_N_seqval_list[j],"\n")
   }
   grDevices::dev.off()
   if(atflag){
     grDevices::pdf(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_",numrange,"_s_",numstd2,"std_",numstd,
-                                             "_",repeat_range[1],"_",repeat_range[2],".pdf")))
+                                                                     "_",repeat_range[1],"_",repeat_range[2],".pdf")))
   } else {
     grDevices::pdf(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_POWER_SUM_seqval_CG_",numrange,"_s_",numstd2,"std_",numstd,
-                                             "_",repeat_range[1],"_",repeat_range[2],".pdf")))
+                                                                     "_",repeat_range[1],"_",repeat_range[2],".pdf")))
   }
 
   base::cat("\n Mean:     Min summary\n");base::print(base::summary(min_mean_seqval_list))
@@ -2263,9 +2263,9 @@ run_barplots <-function(All_spec=All_spec, nam=nam,fname=fname,inpath=inpath, ou
 
 
   a<-graphics::hist(min_powsum_seqval_list,breaks=20,xaxp=base::c(0,base::max(min_powsum_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nPower Sum Minimum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nPower Sum Minimum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMin Power Sum:  midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<-graphics::hist(min_mean_seqval_list,breaks=20, xaxp=base::c(0,base::max(min_mean_seqval_list),20),xlab="",xlim=xlim,
@@ -2275,27 +2275,27 @@ run_barplots <-function(All_spec=All_spec, nam=nam,fname=fname,inpath=inpath, ou
   base::cat("\nMin Mean:       midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<-graphics::hist(min_N_seqval_list,breaks=20,xaxp=base::c(0,base::max(min_N_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_min_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nNumber: Minimum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_min_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nNumber: Minimum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMin N:          midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<- graphics::hist(max_mean_seqval_list,breaks=20,xaxp=base::c(0,base::max(max_mean_seqval_list),20),xlab="",xlim=xlim,
-           main= base::paste0(chromnam,"_max_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                       "\nMean: Maximum values in the Sequence\nbp range ",
-                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                     main= base::paste0(chromnam,"_max_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                        "\nMean: Maximum values in the Sequence\nbp range ",
+                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMax Mean:      midpointmax counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<-graphics::hist(max_powsum_seqval_list,breaks=20,xaxp=base::c(0,base::max(max_powsum_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_max_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nPower Sum Maximum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_max_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nPower Sum Maximum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMax Power Sum: midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
 
   a<-graphics::hist(max_N_seqval_list,breaks=20,xaxp=base::c(0,base::max(max_N_seqval_list),20),xlab="",xlim=xlim,
-          main= base::paste0(chromnam,"_max_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                      "\nNumber: Maximum values in the Sequence\nbp range ",
-                      repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                    main= base::paste0(chromnam,"_max_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                       "\nNumber: Maximum values in the Sequence\nbp range ",
+                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMax N:         midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
   base::sink()
   grDevices::dev.off()
@@ -2470,9 +2470,9 @@ run_barplots_chromosome <-function(All_spec=All_spec, chromosome=chromosome,fnam
   base::cat("\n N:        Max summary\n");base::print(base::summary(max_N_seqval_list))
 
   aips<-graphics::hist(min_powsum_seqval_list,breaks=binnum,xaxp=base::c(0,full_length,binnum),xlab="",xlim=xlim,
-                    main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                                       "\nPower Sum Minimum values in the Sequence\nbp range ",
-                                       repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                       main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                          "\nPower Sum Minimum values in the Sequence\nbp range ",
+                                          repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   base::cat("\nMin Power Sum:  midpoint max counts",aips$mids[base::which(aips$counts==base::max(aips$counts))],"\n")
 
   a<-graphics::hist(min_mean_seqval_list,breaks=binnum, xaxp=base::c(0,full_length,binnum),xlab="",xlim=xlim,
@@ -2512,16 +2512,16 @@ run_barplots_chromosome <-function(All_spec=All_spec, chromosome=chromosome,fnam
   maxcount_min_powsum <- aips$mids[base::which(aips$counts==base::max(aips$counts))]
   barplot_cent_data <- t(as.matrix(c(fname, chromosome, maxcount_min_powsum, full_length)))
   utils::write.table(barplot_cent_data, file=file.path(outpathbarplot, base::paste0("Centromere_",chromnam,"_MIN_POWER_SUM_",numrange,"_s_",numstd2,"std_",numstd,
-                                                                                  "_",repeat_range[1],"_",repeat_range[2],".txt")),
+                                                                                    "_",repeat_range[1],"_",repeat_range[2],".txt")),
                      append = FALSE, sep = " ", dec = ".", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
   # plot power sum min in png image
   grDevices::png(file=base::file.path(outpathbarplot, base::paste0(chromnam,"_histogram_POWER_SUM_seqval_",numrange,"_s_",numstd2,"std_",numstd,
                                                                    "_",repeat_range[1],"_",repeat_range[2],".png")), width = 1500, height = 500)
   graphics::hist(min_powsum_seqval_list,breaks=40,xaxp=base::c(0,full_length,40),xlab="",xlim=xlim,
-                       main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-                                          "\nPower Sum Minimum values in the Sequence\nbp range ",
-                                          repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+                 main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+                                    "\nPower Sum Minimum values in the Sequence\nbp range ",
+                                    repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
   grDevices::dev.off()
 }
 
@@ -2608,24 +2608,24 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
           submajorlist<- base::seq(1,(length_submajor), by=length_minor)
           stval<-val1
           sname<-base::file.path(outpathDNAWALK, base::paste0("DNA_WALK_",fname,shortname,"_",startval+val1-1,"_",startval+val1+length_submajor-2,"_",
-                                                 submajor_nam,"_",length_fftgroup,"_spar1"))
+                                                              submajor_nam,"_",length_fftgroup,"_spar1"))
           if(plotflag){
             if(atflag){
               grDevices::pdf(base::file.path(outpathpdf, base::paste0(fname,shortname,"_",
-                                              startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
-                                              "_spar1.pdf")))
+                                                                      startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                      "_spar1.pdf")))
 
               ofi<-base::file.path(outpathtxt, base::paste0(fname,shortname,"_",
-                                               startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
-                                               "_spar1.txt"))
+                                                            startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
+                                                            "_spar1.txt"))
             } else{
               grDevices::pdf(base::file.path(outpathpdf, base::paste0(fname,shortname,"_",
-                                              startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
-                                              "_spar1_CG.pdf")))
+                                                                      startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                      "_spar1_CG.pdf")))
 
               ofi<-base::file.path(outpathtxt, base::paste0(fname,shortname,"_",
-                                               startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
-                                               "_spar1_CG.txt"))
+                                                            startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
+                                                            "_spar1_CG.txt"))
             }
             base::cat("\nrun_chromosome: output going to",ofi,"\n")
             base::sink(file=ofi)
@@ -2657,7 +2657,7 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
             fractal_dimlist<-base::c(fractal_dimlist,fractalD)
             if(writeflag){
               base::cat("\n\n\n ", base::paste0("Final peaks\nrng=base::c(",j,"_" ,j+inc-1,")"," ",
-                                   (startval+stval+j),"_" ,(startval+stval+j+inc-1) ,")"),"\n")
+                                                (startval+stval+j),"_" ,(startval+stval+j+inc-1) ,")"),"\n")
               if(base::nrow(peaks)>=20) base::print(peaks[1:20,]) else base::print(peaks[1:base::nrow(peaks),])
 
             }
@@ -2670,12 +2670,12 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
             if(!base::is.null(DNAwalk_extended)){
               if(atflag){
                 DNAwalk_extended<- base::rbind(DNAwalk_extended,
-                                        base::cbind(DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"]+DNAwalk[,"AT"],
-                                              DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"]+DNAwalk[,"CG"]))
+                                               base::cbind(DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"]+DNAwalk[,"AT"],
+                                                           DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"]+DNAwalk[,"CG"]))
               } else {
                 DNAwalk_extended<- base::rbind(DNAwalk_extended,
-                                        base::cbind(DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"]+DNAwalk[,"CG"],
-                                              DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"]+DNAwalk[,"AT"]))
+                                               base::cbind(DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"]+DNAwalk[,"CG"],
+                                                           DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"]+DNAwalk[,"AT"]))
               }
             } else {
               DNAwalk_extended<-DNAwalk
@@ -2709,26 +2709,26 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
         if(!base::is.null(base::nrow(concat_majorlist_tot))){
           if(atflag){
             grDevices::pdf(base::file.path(outpathpdf, base::paste0("Concatenate_",fname,shortname,"_",
-                                            startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                            "_spar1.pdf")))
+                                                                    startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                    "_spar1.pdf")))
             base::sink(file=base::file.path(outpathtxt, base::paste0("Concatenate_",fname,shortname,"_",
-                                                  startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                                  "_spar1.txt")))    #total number of bp is 295045
+                                                                     startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                     "_spar1.txt")))    #total number of bp is 295045
             #plot concatenated data for major group (1.5Mbp)
             main<- base::paste0("Concatenate ",shortname,"_",
-                         startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"\n",
-                         name_majorgroup,submajor_nam,"_",length_fftgroup)
+                                startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"\n",
+                                name_majorgroup,submajor_nam,"_",length_fftgroup)
           } else {
             grDevices::pdf(base::file.path(outpathpdf, base::paste0("Concatenate_CG_",fname,shortname,"_",
-                                            startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                            "_spar1.pdf")))
+                                                                    startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                    "_spar1.pdf")))
             base::sink(file=base::file.path(outpathtxt, base::paste0("Concatenate_CG_",fname,shortname,"_",
-                                                  startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                                  "_spar1.txt")))    #total number of bp is 295045
+                                                                     startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                     "_spar1.txt")))    #total number of bp is 295045
             #plot concatenated data for major group (1.5Mbp)
             main<- base::paste0("Concatenate CG",shortname,"_",
-                         startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"\n",
-                         name_majorgroup,submajor_nam,"_",length_fftgroup)
+                                startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"\n",
+                                name_majorgroup,submajor_nam,"_",length_fftgroup)
           }
 
           base::cat("\nrun_chromosome: entering imagesub loop for Concatenate spectra","\n")
@@ -2741,19 +2741,19 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
           grDevices::dev.off()
           if(atflag){
             ofile<-base::file.path(outpathfractal, base::paste0("FracCon_",fname,shortname,"_",
-                                                   startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                                   "_spar1.txt"))
+                                                                startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                "_spar1.txt"))
 
             #fractal_dimlist for1.5Mbp
             s1<-base::which(base::as.numeric(names(fractal_dimlist))>=startval+startmajor-1)[1]
             base::cat("\nrun_chromosome: Writing to",ofile,"\n Starting at s1",s1,"\n")
             utils::write.table(x=fractal_dimlist[s1:base::length(fractal_dimlist)], file=ofile, append = FALSE, sep = " ", dec = ".",
-                        row.names = TRUE, col.names = TRUE)
+                               row.names = TRUE, col.names = TRUE)
 
 
             ofile<-base::file.path(outpathfractal, base::paste0("FraCon_",fname,shortname,"_",
-                                                   startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                                   "_spar1.pdf"))
+                                                                startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                "_spar1.pdf"))
             base::cat("\nrun_chromosome: Writing to",ofile)
             grDevices::pdf(ofile)
             minf<-base::as.numeric(names(fractal_dimlist)[s1])
@@ -2768,14 +2768,14 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
       list2<-base::list(concat_majorlist_tot)
       major_concatenationtotlist<- base::c(major_concatenationtotlist, list2=list2)
       base::names(major_concatenationtotlist)[base::length(major_concatenationtotlist)]<- base::paste0(fname,
-                                                                                    shortname,"_",
-                                                                                    startmajor,"_",startmajor+length_majorgroup-1,"_",submajor_nam,"_",length_fftgroup, "_spar1")
+                                                                                                       shortname,"_",
+                                                                                                       startmajor,"_",startmajor+length_majorgroup-1,"_",submajor_nam,"_",length_fftgroup, "_spar1")
 
       #plot all together
       concat_ALL_tot<-base::cbind(concat_ALL_tot,concat_majorlist_tot)
       #concat_ALL_ave<-base::cbind(concat_ALL_ave,concat_majorlist_ave)
       base::cat("\n run_chromosome: Ending :",startmajor,"_",startmajor+length_majorgroup-1,
-          startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2, "\n")
+                startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2, "\n")
 
     } # end length_majorgroup loop   1.5Mbp each run
     # for each 20Mbp loop write out all small windows 5Kbp and then averages over the 25Kbp set
@@ -2783,28 +2783,28 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
     if(plotflag){
       if(atflag){
         grDevices::pdf(base::file.path(outpathpdf, base::paste0("ConcatALL_",fname,shortname,"_",
-                                        startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
-                                        "_spar1.pdf")))
+                                                                startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
+                                                                "_spar1.pdf")))
 
         base::sink(file=base::file.path(outpathtxt, base::paste0("ConcatALL_",fname,shortname,"_",
-                                              startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
-                                              "_spar1.txt")))    #total number of bp is 295045
+                                                                 startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
+                                                                 "_spar1.txt")))    #total number of bp is 295045
         #plot concatenated data for major group (1.5Mbp)
         main<- base::paste0("Concatenate ",shortname,"_",
-                     startval,"_",endval,"\n",
-                     name_majorgroup,submajor_nam,"_",length_fftgroup)
+                            startval,"_",endval,"\n",
+                            name_majorgroup,submajor_nam,"_",length_fftgroup)
       } else {
         grDevices::pdf(base::file.path(outpathpdf, base::paste0("ConcatALL_CG_",fname,shortname,"_",
-                                        startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
-                                        "_spar1.pdf")))
+                                                                startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
+                                                                "_spar1.pdf")))
 
         base::sink(file=base::file.path(outpathtxt, base::paste0("ConcatALL_CG_",fname,shortname,"_",
-                                              startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
-                                              "_spar1.txt")))    #total number of bp is 295045
+                                                                 startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
+                                                                 "_spar1.txt")))    #total number of bp is 295045
         #plot concatenated data for major group (1.5Mbp)
         main<- base::paste0("Concatenate CG",shortname,"_",
-                     startval,"_",endval,"\n",
-                     name_majorgroup,submajor_nam,"_",length_fftgroup)
+                            startval,"_",endval,"\n",
+                            name_majorgroup,submajor_nam,"_",length_fftgroup)
       }
 
       for (subval in list_plot){     # base::nrow(concat_ALL_tot)
@@ -2817,49 +2817,49 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
     }
     if(atflag){
       ofile<-base::file.path(outpathspectra, base::paste0("concat_ALL_tot_",shortname,"_",
-                                             startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1_Table.txt"))
+                                                          startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                          "_spar1_Table.txt"))
       base::cat("\n writing to ", ofile,"\n")
 
     } else {
       ofile<-base::file.path(outpathspectra, base::paste0("concat_ALL_tot_CG_",shortname,"_",
-                                             startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1_Table.txt"))
+                                                          startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                          "_spar1_Table.txt"))
       base::cat("\n writing to ", ofile,"\n")
 
     }
     utils::write.table(x=concat_ALL_tot, file=ofile, append = FALSE, sep = " ", dec = ".",
-                row.names = TRUE, col.names = TRUE)
+                       row.names = TRUE, col.names = TRUE)
     All_list<-base::c(All_list,ofile)
 
     base::print(names(major_concatenationtotlist))
     if(atflag){
       ofile<-base::file.path(outpathfractal, base::paste0("Frac_ALL_",shortname,"_",
-                                             startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1_Table.txt"))
+                                                          startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                          "_spar1_Table.txt"))
 
     } else {
       ofile<-base::file.path(outpathfractal, base::paste0("Frac_ALL_CG",shortname,"_",
-                                             startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1_Table.txt"))
+                                                          startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                          "_spar1_Table.txt"))
     }
     s1<-base::which(base::as.numeric(names(fractal_dimlist))>=startval)[1]
     utils::write.table(x=fractal_dimlist[s1:base::length(fractal_dimlist)], file=ofile, append = FALSE, sep = " ", dec = ".",
-                row.names = TRUE, col.names = TRUE)
+                       row.names = TRUE, col.names = TRUE)
     if(atflag){
       ofile<-base::file.path(outpathfractal, base::paste0("Frac_ALL_",shortname,"_",
-                                             startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1.pdf"))
+                                                          startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                          "_spar1.pdf"))
       main<- base::paste0("Concatenate ",shortname,"_",
-                   startval,"_",endval,"\n",
-                   name_majorgroup,submajor_nam,"_",length_fftgroup)
+                          startval,"_",endval,"\n",
+                          name_majorgroup,submajor_nam,"_",length_fftgroup)
     } else {
       ofile<-base::file.path(outpathfractal, base::paste0("Frac_ALL_CG",shortname,"_",
-                                             startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1.pdf"))
+                                                          startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                          "_spar1.pdf"))
       main<- base::paste0("Concatenate_CG ",shortname,"_",
-                   startval,"_",endval,"\n",
-                   name_majorgroup,submajor_nam,"_",length_fftgroup)
+                          startval,"_",endval,"\n",
+                          name_majorgroup,submajor_nam,"_",length_fftgroup)
     }
 
     grDevices::pdf(ofile)
@@ -2869,10 +2869,10 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
     #xlim<-base::c(fCGlim[1],fCGlim[1]+rangeboth-1);ylim<-base::c(fATlim[1],fATlim[1]+rangeboth-1)
     shortseq<-base::seq(1,base::nrow(DNAwalk_extended),20)
     base::plot(DNAwalk_extended[shortseq,"CG"], DNAwalk_extended[shortseq,"AT"],
-         main= base::paste(main), type="l",cex.main=0.6,las=2)
+               main= base::paste(main), type="l",cex.main=0.6,las=2)
     graphics::points(DNAwalk_extended[1,"CG"],DNAwalk_extended[1,"AT"],type="p",pch=83,col="red",cex=2)   #S
     graphics::points(DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"],DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"],
-           type="p",pch=69,col="red",cex=2)  #E
+                     type="p",pch=69,col="red",cex=2)  #E
 
     minf<-base::as.numeric(names(fractal_dimlist)[s1])
     maxf<-base::as.numeric(names(fractal_dimlist)[base::length(fractal_dimlist)]);
@@ -2889,17 +2889,17 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
 
     if(atflag){
       DNAwalk_name<-base::file.path(outpathDNAWALK, base::paste0("FULLDNA_WALK_",shortname,"_",
-                                                    startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                                    "_spar1.txt"))
+                                                                 startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                                 "_spar1.txt"))
 
     } else {
       DNAwalk_name<-base::file.path(outpathDNAWALK, base::paste0("FULLDNA_WALK_CG_",shortname,"_",
-                                                    startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                                    "_spar1.txt"))
+                                                                 startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                                 "_spar1.txt"))
 
     }
     utils::write.table(x=DNAwalk_extended, file=DNAwalk_name, append = FALSE, sep = " ", dec = ".",
-                row.names = TRUE, col.names = TRUE)
+                       row.names = TRUE, col.names = TRUE)
     fullwalklist<-base::c(fullwalklist,DNAwalk_name)
 
 
@@ -2907,8 +2907,8 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
     shortseq<-base::seq(1,base::nrow(DNAwalk_extended),samplesize)  #changed Feb 6 2023
     if(!base::is.null(DNAwalk_FULL)){
       DNAwalk_FULL<- base::rbind(DNAwalk_FULL,
-                          base::cbind(DNAwalk_FULL[base::nrow(DNAwalk_FULL),"AT"]+DNAwalk_extended[shortseq,"AT"],
-                                DNAwalk_FULL[base::nrow(DNAwalk_FULL),"CG"]+DNAwalk_extended[shortseq,"CG"]))
+                                 base::cbind(DNAwalk_FULL[base::nrow(DNAwalk_FULL),"AT"]+DNAwalk_extended[shortseq,"AT"],
+                                             DNAwalk_FULL[base::nrow(DNAwalk_FULL),"CG"]+DNAwalk_extended[shortseq,"CG"]))
     } else {
       DNAwalk_FULL<-DNAwalk_extended[shortseq,]
     }
@@ -2918,32 +2918,32 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
 
   if(atflag){
     main<- base::paste0("Concatenate ",shortname,"_",
-                 base::names(fractal_dimlist)[1],"_",names(fractal_dimlist)[base::length(fractal_dimlist)],"\n",
-                 name_majorgroup,submajor_nam,"_",length_fftgroup)
+                        base::names(fractal_dimlist)[1],"_",names(fractal_dimlist)[base::length(fractal_dimlist)],"\n",
+                        name_majorgroup,submajor_nam,"_",length_fftgroup)
 
     ofile<-base::file.path(outpathfractal, base::paste0("Fractal_ALL_",shortname,"_",
-                                           submajor_nam,"_",length_fftgroup,
-                                           "_spar1_Table.txt"))
+                                                        submajor_nam,"_",length_fftgroup,
+                                                        "_spar1_Table.txt"))
   } else {
     main<- base::paste0("Concatenate_CG ",shortname,"_",
-                 base::names(fractal_dimlist)[1],"_",names(fractal_dimlist)[base::length(fractal_dimlist)],"\n",
-                 name_majorgroup,submajor_nam,"_",length_fftgroup)
+                        base::names(fractal_dimlist)[1],"_",names(fractal_dimlist)[base::length(fractal_dimlist)],"\n",
+                        name_majorgroup,submajor_nam,"_",length_fftgroup)
 
     ofile<-base::file.path(outpathfractal, base::paste0("Fractal_ALL_CG_",shortname,"_",
-                                           submajor_nam,"_",length_fftgroup,
-                                           "_spar1_Table.txt"))
+                                                        submajor_nam,"_",length_fftgroup,
+                                                        "_spar1_Table.txt"))
   }
   base::cat("\n runchromosome: writing ofile Fractal txt file", ofile)
   utils::write.table(x=fractal_dimlist[1:base::length(fractal_dimlist)], file=ofile, append = FALSE, sep = " ", dec = ".",
-              row.names = TRUE, col.names = TRUE)
+                     row.names = TRUE, col.names = TRUE)
   if(atflag){
     ofile<-base::file.path(outpathfractal, base::paste0("Fractal_ALL_",shortname,"_",
-                                           submajor_nam,"_",length_fftgroup,
-                                           "_spar1.pdf"))
+                                                        submajor_nam,"_",length_fftgroup,
+                                                        "_spar1.pdf"))
   } else {
     ofile<-base::file.path(outpathfractal, base::paste0("Fractal_ALL_CG",shortname,"_",
-                                           submajor_nam,"_",length_fftgroup,
-                                           "_spar1.pdf"))
+                                                        submajor_nam,"_",length_fftgroup,
+                                                        "_spar1.pdf"))
   }
 
   base::cat("\n runchromosome: writing ofile Fractal pdf file", ofile)
@@ -2952,10 +2952,10 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
 
 
   base::plot(DNAwalk_FULL[,"CG"], DNAwalk_FULL[,"AT"],
-       main= base::paste(main,samplesize), type="l",cex.main=0.6,las=2)
+             main= base::paste(main,samplesize), type="l",cex.main=0.6,las=2)
   graphics::points(DNAwalk_FULL[1,"CG"],DNAwalk_FULL[1,"AT"],type="p",pch=83,col="red",cex=2)   #S
   graphics::points(DNAwalk_FULL[base::nrow(DNAwalk_FULL),"CG"],DNAwalk_FULL[base::nrow(DNAwalk_FULL),"AT"],
-         type="p",pch=69,col="red",cex=2)  #E
+                   type="p",pch=69,col="red",cex=2)  #E
 
 
 
@@ -2968,20 +2968,20 @@ run_chromosome<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpath,
   base::cat("\n runchromosome: writing ofile Fractal bed file", ofile)
   if(atflag){
     ofile1<-base::file.path(outpathfractal.bed, base::paste0("Fractal_ALL_",shortname,"_",
-                                                submajor_nam,"_",length_fftgroup,
-                                                ".bedGraph"))
+                                                             submajor_nam,"_",length_fftgroup,
+                                                             ".bedGraph"))
   } else {
     ofile1<-base::file.path(outpathfractal.bed, base::paste0("Fractal_ALL_CG",shortname,"_",
-                                                submajor_nam,"_",length_fftgroup,
-                                                ".bedGraph"))
+                                                             submajor_nam,"_",length_fftgroup,
+                                                             ".bedGraph"))
   }
   base::sink(ofile1)
   base::cat("track type=bedGraph")
   for(j in 1:base::length(fractal_dimlist)){
     delta<-base::as.numeric(names(fractal_dimlist)[2])-base::as.numeric(names(fractal_dimlist)[1])  #base::as.numeric(names(fractal)[2])-base::as.numeric(names(fractal)[1])
     base::cat( base::paste0("\n",nam,"\t",base::as.numeric(names(fractal_dimlist)[j]),"\t",
-               base::as.numeric(names(fractal_dimlist)[j])+delta,"\t",
-               fractal_dimlist[j]) )
+                            base::as.numeric(names(fractal_dimlist)[j])+delta,"\t",
+                            fractal_dimlist[j]) )
   }
   base::sink()
   base::cat("\n runchromosome: returning twolists","\n")
@@ -3033,13 +3033,13 @@ run_chromosomelist<-function(nam=nam, fname=fname, inpath=inpath, outpath=outpat
 
     }
     ofile<- base::paste0(outpath,"concat_ALL_tot_",fname,shortname,"_",
-                  startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
-                  "_spar1_Table.txt")
+                         startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
+                         "_spar1_Table.txt")
     All_list<-base::c(All_list,ofile)
 
     ofile<- base::paste0(outpath,"concat_ALL_ave_",fname,shortname,"_",
-                  startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
-                  "_spar1_Table.txt")
+                         startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
+                         "_spar1_Table.txt")
     All_listAve<-base::c(All_listAve,ofile)
 
   }#end 7.5Mbp loop
@@ -3124,24 +3124,24 @@ run_chromosomelistNEW<-function(nam=nam, fname=fname, inpath=inpath, outpath=out
     # each 4.5Mbp
     # dna walk list for every 25Kbp with sub headings of 500 kbp
     sname<-base::file.path(outpathwalk, base::paste0("FULLDNA_WALK_",shortname,"_",
-                                        startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                        "_spar1.txt"))
+                                                     startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                     "_spar1.txt"))
 
     fullwalklist<-base::c(fullwalklist,sname)
     ofile<-base::file.path(outpathspectra, base::paste0("concat_ALL_tot_",shortname,"_",
-                                           startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
-                                           "_spar1_Table.txt"))
+                                                        startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
+                                                        "_spar1_Table.txt"))
     base::cat("\n",base::file.path(outpathspectra, base::paste0("concat_ALL_tot_",shortname,"_",
-                                             startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1_Table.txt")))
+                                                                startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
+                                                                "_spar1_Table.txt")))
 
     base::cat("\n",startval+majorlen-1,majorlen,"\n")
 
     All_list<-base::c(All_list,ofile)
 
     ofile<-base::file.path(outpathspectra, base::paste0("concat_ALL_ave_",shortname,"_",
-                                           startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
-                                           "_spar1_Table.txt"))
+                                                        startval,"_",startval+majorlen-1,"_",submajor_nam,"_",length_fftgroup,
+                                                        "_spar1_Table.txt"))
     All_listAve<-base::c(All_listAve,ofile)
 
   }#end 4.5Mbp loop
@@ -3414,23 +3414,23 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
         submajorlist<- base::seq(1,(length_submajor), by=length_minor)
         stval<-val1
         sname<-base::file.path(outpathDNAWALK, base::paste0("DNA_WALK_",fname,shortname,"_",startval+val1-1,"_",startval+val1+length_submajor-2,"_",
-                                               submajor_nam,"_",length_fftgroup,"_spar1"))
+                                                            submajor_nam,"_",length_fftgroup,"_spar1"))
         if(plotflag){
           if(atflag){
             grDevices::pdf(base::file.path(outpathpdf, base::paste0(fname,shortname,"_",
-                                            startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
-                                            "_spar1.pdf")))
+                                                                    startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                    "_spar1.pdf")))
 
             ofi<-base::file.path(outpathtxt, base::paste0(fname,shortname,"_",
-                                             startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1.txt"))
+                                                          startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
+                                                          "_spar1.txt"))
           } else{
             grDevices::pdf(base::file.path(outpathpdf, base::paste0(fname,shortname,"_",
-                                            startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
-                                            "_spar1_CG.pdf")))
+                                                                    startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                    "_spar1_CG.pdf")))
             ofi<-base::file.path(outpathtxt, base::paste0(fname,shortname,"_",
-                                             startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
-                                             "_spar1_CG.txt"))
+                                                          startval+val1-1,"_",startval+val1+length_submajor-2,"_",submajor_nam,"_",length_fftgroup,
+                                                          "_spar1_CG.txt"))
           }
           base::cat("\nrun_chromosome: output going to",ofi,"\n")
           base::sink(file=ofi)    #total number of bp is 295045
@@ -3469,7 +3469,7 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
 
           if(writeflag){
             base::cat("\n\n\n ", base::paste0("Final peaks\nrng=base::c(",j,"_" ,j+inc-1,")"," ",
-                                 (startval+stval+j),"_" ,(startval+stval+j+inc-1) ,")"),"\n")
+                                              (startval+stval+j),"_" ,(startval+stval+j+inc-1) ,")"),"\n")
             if(base::nrow(peaks)>=20) base::print(peaks[1:20,]) else base::print(peaks[1:base::nrow(peaks),])
           }
           imagetot<-base::cbind(imagetot,spectimage)
@@ -3481,12 +3481,12 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
           if(!base::is.null(DNAwalk_extended)){
             if(atflag){
               DNAwalk_extended<- base::rbind(DNAwalk_extended,
-                                      base::cbind(DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"]+DNAwalk[,"AT"],
-                                            DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"]+DNAwalk[,"CG"]))
+                                             base::cbind(DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"]+DNAwalk[,"AT"],
+                                                         DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"]+DNAwalk[,"CG"]))
             } else {
               DNAwalk_extended<- base::rbind(DNAwalk_extended,
-                                      base::cbind(DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"]+DNAwalk[,"CG"],
-                                            DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"]+DNAwalk[,"AT"]))
+                                             base::cbind(DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"]+DNAwalk[,"CG"],
+                                                         DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"]+DNAwalk[,"AT"]))
             }
           } else {
             DNAwalk_extended<-DNAwalk
@@ -3519,26 +3519,26 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
       if(!base::is.null(base::nrow(concat_majorlist_tot))){
         if(atflag){
           grDevices::pdf(base::file.path(outpathpdf, base::paste0("Concatenate_",fname,shortname,"_",
-                                          startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                          "_spar1.pdf")))
+                                                                  startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                  "_spar1.pdf")))
           base::sink(file=base::file.path(outpathtxt, base::paste0("Concatenate_",fname,shortname,"_",
-                                                startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                                "_spar1.txt")))    #total number of bp is 295045
+                                                                   startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                   "_spar1.txt")))    #total number of bp is 295045
           #plot concatenated data for major group (1.5Mbp)
           main<- base::paste0("Concatenate ",shortname,"_",
-                       startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"\n",
-                       name_majorgroup,submajor_nam,"_",length_fftgroup)
+                              startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"\n",
+                              name_majorgroup,submajor_nam,"_",length_fftgroup)
         } else {
           grDevices::pdf(base::file.path(outpathpdf, base::paste0("Concatenate_CG_",fname,shortname,"_",
-                                          startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                          "_spar1.pdf")))
+                                                                  startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                  "_spar1.pdf")))
           base::sink(file=base::file.path(outpathtxt, base::paste0("Concatenate_CG_",fname,shortname,"_",
-                                                startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                                "_spar1.txt")))    #total number of bp is 295045
+                                                                   startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                                   "_spar1.txt")))    #total number of bp is 295045
           #plot concatenated data for major group (1.5Mbp)
           main<- base::paste0("Concatenate CG",shortname,"_",
-                       startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"\n",
-                       name_majorgroup,submajor_nam,"_",length_fftgroup)
+                              startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"\n",
+                              name_majorgroup,submajor_nam,"_",length_fftgroup)
         }
 
         base::cat("\nrun_chromosome: entering imagesub loop for Concatenate spectra","\n")
@@ -3551,19 +3551,19 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
         grDevices::dev.off()
         if(atflag){
           ofile<-base::file.path(outpathfractal, base::paste0("FracCon_",fname,shortname,"_",
-                                                 startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                                 "_spar1.txt"))
+                                                              startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                              "_spar1.txt"))
 
           #fractal_dimlist for1.5Mbp
           s1<-base::which(base::as.numeric(names(fractal_dimlist))>=startval+startmajor-1)[1]
           base::cat("\nrun_chromosome: Writing to",ofile,"\n Starting at s1",s1,"\n")
           utils::write.table(x=fractal_dimlist[s1:base::length(fractal_dimlist)], file=ofile, append = FALSE, sep = " ", dec = ".",
-                      row.names = TRUE, col.names = TRUE)
+                             row.names = TRUE, col.names = TRUE)
 
 
           ofile<-base::file.path(outpathfractal, base::paste0("FraCon_",fname,shortname,"_",
-                                                 startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
-                                                 "_spar1.pdf"))
+                                                              startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2,"_",submajor_nam,"_",length_fftgroup,
+                                                              "_spar1.pdf"))
           base::cat("\nrun_chromosome: Writing to",ofile)
           grDevices::pdf(ofile)
           minf<-base::as.numeric(names(fractal_dimlist)[s1])
@@ -3579,14 +3579,14 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
     list2<-base::list(concat_majorlist_tot)
     major_concatenationtotlist<- base::c(major_concatenationtotlist, list2=list2)
     base::names(major_concatenationtotlist)[base::length(major_concatenationtotlist)]<- base::paste0(fname,
-                                                                                  shortname,"_",
-                                                                                  startmajor,"_",startmajor+length_majorgroup-1,"_",submajor_nam,"_",length_fftgroup, "_spar1")
+                                                                                                     shortname,"_",
+                                                                                                     startmajor,"_",startmajor+length_majorgroup-1,"_",submajor_nam,"_",length_fftgroup, "_spar1")
 
     #plot all together
     concat_ALL_tot<-base::cbind(concat_ALL_tot,concat_majorlist_tot)
     #concat_ALL_ave<-base::cbind(concat_ALL_ave,concat_majorlist_ave)
     base::cat("\n run_chromosome: Ending :",startmajor,"_",startmajor+length_majorgroup-1,
-        startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2, "\n")
+              startval+startmajor-1,"_",startval+startmajor+length_majorgroup-2, "\n")
 
   } # end length_majorgroup loop   1.5Mbp each run
   # for each 20Mbp loop write out all small windows 5Kbp and then averages over the 25Kbp set
@@ -3594,28 +3594,28 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
   if(plotflag){
     if(atflag){
       grDevices::pdf(base::file.path(outpathpdf, base::paste0("ConcatALL_",fname,shortname,"_",
-                                      startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
-                                      "_spar1.pdf")))
+                                                              startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
+                                                              "_spar1.pdf")))
 
       base::sink(file=base::file.path(outpathtxt, base::paste0("ConcatALL_",fname,shortname,"_",
-                                            startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
-                                            "_spar1.txt")))    #total number of bp is 295045
+                                                               startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
+                                                               "_spar1.txt")))    #total number of bp is 295045
       #plot concatenated data for major group (1.5Mbp)
       main<- base::paste0("Concatenate ",shortname,"_",
-                   startval,"_",endval,"\n",
-                   name_majorgroup,submajor_nam,"_",length_fftgroup)
+                          startval,"_",endval,"\n",
+                          name_majorgroup,submajor_nam,"_",length_fftgroup)
     } else {
       grDevices::pdf(base::file.path(outpathpdf, base::paste0("ConcatALL_CG_",fname,shortname,"_",
-                                      startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
-                                      "_spar1.pdf")))
+                                                              startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
+                                                              "_spar1.pdf")))
 
       base::sink(file=base::file.path(outpathtxt, base::paste0("ConcatALL_CG_",fname,shortname,"_",
-                                            startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
-                                            "_spar1.txt")))    #total number of bp is 295045
+                                                               startval,"_",endval,"_",submajor_nam,"_",length_fftgroup,
+                                                               "_spar1.txt")))    #total number of bp is 295045
       #plot concatenated data for major group (1.5Mbp)
       main<- base::paste0("Concatenate CG",shortname,"_",
-                   startval,"_",endval,"\n",
-                   name_majorgroup,submajor_nam,"_",length_fftgroup)
+                          startval,"_",endval,"\n",
+                          name_majorgroup,submajor_nam,"_",length_fftgroup)
     }
 
     for (subval in list_plot){     # base::nrow(concat_ALL_tot)
@@ -3628,59 +3628,59 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
   }
   if(atflag){
     ofile<-base::file.path(outpathspectra, base::paste0("concat_ALL_tot_",shortname,"_",
-                                           startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                           "_spar1_Table.txt"))
+                                                        startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                        "_spar1_Table.txt"))
     base::cat("\n writing to ", ofile,"\n")
 
   } else {
     ofile<-base::file.path(outpathspectra, base::paste0("concat_ALL_tot_CG_",shortname,"_",
-                                           startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                           "_spar1_Table.txt"))
+                                                        startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                        "_spar1_Table.txt"))
     base::cat("\n writing to ", ofile,"\n")
 
   }
   utils::write.table(x=concat_ALL_tot, file=ofile, append = FALSE, sep = " ", dec = ".",
-              row.names = TRUE, col.names = TRUE)
+                     row.names = TRUE, col.names = TRUE)
   All_list<-base::c(All_list,ofile)
 
   base::print(names(major_concatenationtotlist))
   if(atflag){
     ofile<-base::file.path(outpathfractal, base::paste0("Frac_ALL_",shortname,"_",
-                                           startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                           "_spar1_Table.txt"))
+                                                        startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                        "_spar1_Table.txt"))
 
   } else {
     ofile<-base::file.path(outpathfractal, base::paste0("Frac_ALL_CG",shortname,"_",
-                                           startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                           "_spar1_Table.txt"))
+                                                        startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                        "_spar1_Table.txt"))
   }
   s1<-base::which(base::as.numeric(names(fractal_dimlist))>=startval)[1]
   utils::write.table(x=fractal_dimlist[s1:base::length(fractal_dimlist)], file=ofile, append = FALSE, sep = " ", dec = ".",
-              row.names = TRUE, col.names = TRUE)
+                     row.names = TRUE, col.names = TRUE)
   if(atflag){
     ofile<-base::file.path(outpathfractal, base::paste0("Frac_ALL_",shortname,"_",
-                                           startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                           "_spar1.pdf"))
+                                                        startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                        "_spar1.pdf"))
     main<- base::paste0("Concatenate ",shortname,"_",
-                 startval,"_",endval,"\n",
-                 name_majorgroup,submajor_nam,"_",length_fftgroup)
+                        startval,"_",endval,"\n",
+                        name_majorgroup,submajor_nam,"_",length_fftgroup)
   } else {
     ofile<-base::file.path(outpathfractal, base::paste0("Frac_ALL_CG",shortname,"_",
-                                           startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                           "_spar1.pdf"))
+                                                        startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                        "_spar1.pdf"))
     main<- base::paste0("Concatenate_CG ",shortname,"_",
-                 startval,"_",endval,"\n",
-                 name_majorgroup,submajor_nam,"_",length_fftgroup)
+                        startval,"_",endval,"\n",
+                        name_majorgroup,submajor_nam,"_",length_fftgroup)
   }
 
   grDevices::pdf(ofile)
 
   shortseq<-base::seq(1,base::nrow(DNAwalk_extended),20)
   base::plot(DNAwalk_extended[shortseq,"CG"], DNAwalk_extended[shortseq,"AT"],
-       main= base::paste(main), type="l",cex.main=0.6,las=2)
+             main= base::paste(main), type="l",cex.main=0.6,las=2)
   graphics::points(DNAwalk_extended[1,"CG"],DNAwalk_extended[1,"AT"],type="p",pch=83,col="red",cex=2)   #S
   graphics::points(DNAwalk_extended[base::nrow(DNAwalk_extended),"CG"],DNAwalk_extended[base::nrow(DNAwalk_extended),"AT"],
-         type="p",pch=69,col="red",cex=2)  #E
+                   type="p",pch=69,col="red",cex=2)  #E
 
   minf<-base::as.numeric(names(fractal_dimlist)[s1])
   maxf<-base::as.numeric(names(fractal_dimlist)[base::length(fractal_dimlist)]);
@@ -3699,17 +3699,17 @@ run_chromosome_loop <- function(x, nam, fname, atflag, AT_flag, startgroup, majo
 
   if(atflag){
     DNAwalk_name<-base::file.path(outpathDNAWALK, base::paste0("FULLDNA_WALK_",shortname,"_",
-                                                  startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                                  "_spar1.txt"))
+                                                               startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                               "_spar1.txt"))
 
   } else {
     DNAwalk_name<-base::file.path(outpathDNAWALK, base::paste0("FULLDNA_WALK_CG_",shortname,"_",
-                                                  startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
-                                                  "_spar1.txt"))
+                                                               startval,"_",startval+endmajor-1,"_",submajor_nam,"_",length_fftgroup,
+                                                               "_spar1.txt"))
 
   }
   utils::write.table(x=DNAwalk_extended, file=DNAwalk_name, append = FALSE, sep = " ", dec = ".",
-              row.names = TRUE, col.names = TRUE)
+                     row.names = TRUE, col.names = TRUE)
   fullwalklist<-base::c(fullwalklist,DNAwalk_name)
 
 
@@ -3771,19 +3771,19 @@ run_chromosome_parallel<-function(nam=nam, fname=fname, inpath=inpath, outpath=o
   ncpu=full_length/5000000
   cl <- parallel::makeCluster(x_cpu)
   results <- parallel::parSapply(cl, base::seq_along(start_seq), run_chromosome_loop, nam=nam,
-                       fname=fname, atflag=atflag, AT_flag=AT_flag, startgroup=startgroup, majorlen=majorlen,
-                       length_majorgroup=length_majorgroup, name_majorgroup=name_majorgroup,
-                       length_submajor=length_submajor, name_submajorgroup=name_submajorgroup,
-                       length_fftgroup=length_fftgroup,   name_fftgroup=name_fftgroup,
-                       length_minor=length_minor, submajor_nam=submajor_nam, pflag=pflag,
-                       splitname=splitname, chr=chr, outpathtxt=outpathtxt,outpathpdf=outpathpdf,
-                       outpathfractal=outpathfractal, outpathspectra=outpathspectra,
-                       outpathfractal.bed=outpathfractal.bed,
-                       outpathDNAWALK=outpathDNAWALK, genname1=genname1,Shortnames=Shortnames,shortname=shortname,
-                       in_name=in_name, dna_1=dna_1,main=main,dn1=dn1, list_plot=list_plot,
-                       full_length=full_length,start_seq=start_seq,All_list=All_list, All_listAve=All_listAve,
-                       fullwalklist=fullwalklist, fractal_dimlist=fractal_dimlist, DNAwalk_FULL=DNAwalk_FULL,
-                       plotflag=plotflag, writeflag=writeflag, samplesize=samplesize)
+                                 fname=fname, atflag=atflag, AT_flag=AT_flag, startgroup=startgroup, majorlen=majorlen,
+                                 length_majorgroup=length_majorgroup, name_majorgroup=name_majorgroup,
+                                 length_submajor=length_submajor, name_submajorgroup=name_submajorgroup,
+                                 length_fftgroup=length_fftgroup,   name_fftgroup=name_fftgroup,
+                                 length_minor=length_minor, submajor_nam=submajor_nam, pflag=pflag,
+                                 splitname=splitname, chr=chr, outpathtxt=outpathtxt,outpathpdf=outpathpdf,
+                                 outpathfractal=outpathfractal, outpathspectra=outpathspectra,
+                                 outpathfractal.bed=outpathfractal.bed,
+                                 outpathDNAWALK=outpathDNAWALK, genname1=genname1,Shortnames=Shortnames,shortname=shortname,
+                                 in_name=in_name, dna_1=dna_1,main=main,dn1=dn1, list_plot=list_plot,
+                                 full_length=full_length,start_seq=start_seq,All_list=All_list, All_listAve=All_listAve,
+                                 fullwalklist=fullwalklist, fractal_dimlist=fractal_dimlist, DNAwalk_FULL=DNAwalk_FULL,
+                                 plotflag=plotflag, writeflag=writeflag, samplesize=samplesize)
 
   base::cat("\n runchromosome: returning twolists","\n")
   twolists<-base::list(All_list=All_list,All_listAve=All_listAve,fullwalklist=fullwalklist,fractal_dimlist,fractal_dimlist)
@@ -4169,205 +4169,205 @@ run_summary_hist <- function(chromosome=chromosome, fname=fname, inpath=inpath, 
       run_barplots_chromosome(All_spec=All_spec,chromosome=chromosome,fname=fname,inpath=inpath, outpath=outpath, full_length=full_length, atflag=atflag, numstd=numstdred,  numstd2=numstd_bins, numrange=numrange,repeat_range=base::c(35,2000), binnum=numbins)
     }
   }
-#   #-----------------------------
-#   repeat_list<-base::rownames(All_spec)
-#   if(!base::is.null(repeat_range)) {
-#     Nrepeat_list<-base::as.numeric(base::gsub("1/","",repeat_list))
-#     whichrow<-base::which(Nrepeat_list<=repeat_range[2] & Nrepeat_list>=repeat_range[1])
-#     repeat_list<-repeat_list[whichrow]
-#     Nrepeat_list<-Nrepeat_list[whichrow]
-#   }
-#
-#   chromnam <- chromosome
-#
-#   min_powsum_seqval_list<-NULL
-#   max_powsum_seqval_list<-NULL
-#   goodrepeats<-NULL
-#   min_mean_seqval_list<-NULL
-#   max_mean_seqval_list<-NULL
-#   min_N_seqval_list<-NULL
-#   max_N_seqval_list<-NULL
-#
-#   for(repeat_val in repeat_list){
-#     #repeat_val="5000"
-#     base::cat("\n beginning ", repeat_val)
-#     sortstr=FALSE
-#     All_spec1<-All_spec
-#     All_spec1[base::which(All_spec1==0.0)]<-NA
-#     maxspec<-base::max(All_spec1[repeat_val, ],na.rm=TRUE)
-#     meanspec<-base::mean(All_spec1[repeat_val, ],na.rm=TRUE)
-#     stdspec<-stats::sd(All_spec1[repeat_val, ],na.rm=TRUE)
-#
-#     threshspec<-meanspec+numstd*stdspec    #base::length(peak_along_repeat)
-#
-#     peak_along_repeat<-pracma::findpeaks(x=All_spec[repeat_val, ], minpeakheight = threshspec,
-#                                          minpeakdistance = 1, threshold = 0, npeaks = 0, sortstr = sortstr)  #change to false Feb 5 2023
-#
-#     if(base::length(peak_along_repeat)!=0){  #change June 17 2022
-#       peak_along_repeat<-base::cbind(base::as.numeric(peak_along_repeat[,1])/maxspec,peak_along_repeat)
-#       peak_along_repeat<-base::cbind(peak_along_repeat,base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,3]]),
-#                                      base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,4]]),
-#                                      base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,5]]) )
-#
-#       base::colnames(peak_along_repeat)<-base::c("Percent of peak","Power","peak index","sindex","eindex","peak_bp","start_peak_bp", "end_peak_bp")
-#     } #end of check to ensure peak value found
-#
-#     if(!base::is.null(peak_along_repeat)){
-#       # perform sum of powers above mean+sigma2 level  (but only for repeats where mean+numstd *sigma holds)
-#       # pow_list<- run_sum_bp(repeat_val,All_spec,chromnam,numstd2,numrange,pflag=FALSE)   #base::colnames(All_spec)
-#
-#       #All_spec1[base::which(All_spec1<=1e-5)]<-NA
-#       threshspec<-meanspec+numstd2*stdspec
-#       bpval<-base::as.numeric(base::colnames(All_spec))
-#       deltabp<-(bpval[2]-bpval[1])
-#       deltabp_onebin<-deltabp*numrange
-#       start_bpseqval<-base::seq(bpval[1],bpval[base::length(bpval)],by= deltabp_onebin)
-#       end_bpseqval<-start_bpseqval+deltabp_onebin
-#       end_bpseqval[base::length(end_bpseqval)]<-bpval[base::length(bpval)]
-#       which_ones<-base::which(All_spec1[repeat_val, ] >=threshspec)
-#       power_sum<-NULL;power_mean<-NULL; N<-NULL
-#       for(j in 1:base::length(start_bpseqval)){
-#         sbpval<-start_bpseqval[j]
-#         ebpval<-end_bpseqval[j]
-#         whichval<-base::which(bpval>=sbpval & bpval<=ebpval)
-#         if(!base::is.na(whichval[1])){
-#           sval<-whichval[1]
-#           eval<-whichval[base::length(whichval)]
-#           which_notNA<-base::which(!base::is.na(All_spec1[repeat_val,sval: eval]))
-#           bplength_onebin<-base::length(which_notNA)*deltabp
-#           bp_notNA<-NULL
-#           for (k in 2: base::length(which_notNA)){
-#             bp_notNA<-base::c(bp_notNA,bpval[which_notNA[k]]-bpval[which_notNA[k-1]])
-#           }
-#
-#           deltabpnotNA<-(bplength_onebin)/1.e6
-#           which_val<-base::which(which_ones<eval & which_ones>=sval)
-#           if(base::length(which_notNA)!=0){
-#             meanabove<-base::mean(All_spec1[repeat_val,which_ones[which_val]] ,na.rm=TRUE)
-#             power_mean<-base::c(power_mean,meanabove)
-#             sumabove<-base::sum(All_spec1[repeat_val,which_ones[which_val]] ,na.rm=TRUE)/deltabpnotNA
-#             power_sum<-base::c(power_sum,sumabove)
-#             Nabove<-base::length(All_spec1[repeat_val,which_ones[which_val]] )/deltabpnotNA
-#             N<-base::c(N,Nabove)
-#             base::names(power_mean)[base::length(power_mean)]<-sbpval+bplength_onebin/2
-#           } else{
-#             meanabove<-NA;power_mean<-base::c(power_mean,NA);power_sum<-base::c(power_sum,NA) ;N<-base::c(N,NA)
-#             base::names(power_mean)[base::length(power_mean)]<-sbpval+bplength_onebin/2
-#           }
-#         } else{
-#           bplength_onebin<-0
-#           meanabove<-NA;power_mean<-base::c(power_mean,NA);power_sum<-base::c(power_sum,NA) ;N<-base::c(N,NA)
-#           base::names(power_mean)[base::length(power_mean)]<-sbpval+bplength_onebin/2
-#         }
-#       }
-#       base::names(power_sum)<-names(N)<-names(power_mean)
-#       if( !base::is.null(power_sum)){
-# #
-#         maxspec<-base::max(power_mean,na.rm=TRUE)
-#         minspec<-base::min(power_mean,na.rm=TRUE)
-#         mincol<-base::which(minspec==power_mean)[1]
-#         maxcol<-base::which(maxspec==power_mean)[1]
-#         min_mean_seqval<-base::as.numeric(names(power_mean[mincol]) )
-#         max_mean_seqval<-base::as.numeric(names(power_mean[maxcol]) )
-#
-#         maxspec<-base::max(power_sum,na.rm=TRUE)
-#         minspec<-base::min(power_sum,na.rm=TRUE)
-#         mincol<-base::which(minspec==power_sum)[1]
-#         maxcol<-base::which(maxspec==power_sum)[1]       #base::as.numeric
-#         min_powsum_seqval<-base::as.numeric(names(power_sum[mincol]) )#+deltabp_onebin/2;
-#         max_powsum_seqval<-base::as.numeric(names(power_sum[maxcol]) )#+deltabp_onebin/2
-#
-#         maxspec<-base::max(N,na.rm=TRUE)
-#         minspec<-base::min(N,na.rm=TRUE)
-#         mincol<-base::which(minspec==N)[1]
-#         maxcol<-base::which(maxspec==N)[1]       #base::as.numeric
-#         min_N_seqval<-base::as.numeric(names(N[mincol]) )#+deltabp_onebin/2;
-#         max_N_seqval<-base::as.numeric(names(N[maxcol]) )#+deltabp_onebin/2
-#       }
-#
-#       pow_list<-base::list(power_sum=power_sum,power_mean=power_mean,N=N,
-#                            min_mean_seqval=min_mean_seqval,max_mean_seqval=max_mean_seqval,
-#                            min_powsum_seqval=min_powsum_seqval,max_powsum_seqval=max_powsum_seqval,
-#                            min_N_seqval=min_N_seqval,max_N_seqval=max_N_seqval )
-#
-#
-#       sum_at_bp<-pow_list$power_sum
-#       mean_at_bp<-pow_list$power_mean
-#
-#       goodrepeats<-base::c(goodrepeats,repeat_val)
-#
-#       min_powsum_seqval_list<-base::c(min_powsum_seqval_list,pow_list$min_powsum_seqval)
-#       max_powsum_seqval_list<-base::c(max_powsum_seqval_list,pow_list$max_powsum_seqval)
-#
-#       min_mean_seqval_list<-base::c(min_mean_seqval_list,pow_list$min_mean_seqval)
-#       max_mean_seqval_list<-base::c(max_mean_seqval_list,pow_list$max_mean_seqval)
-#
-#       min_N_seqval_list<-base::c(min_N_seqval_list,pow_list$min_N_seqval)
-#       max_N_seqval_list<-base::c(max_N_seqval_list,pow_list$max_N_seqval)
-#
-#       N_at_bp<-pow_list$N
-#     }
-#   }
-#
-#   ofile<-base::paste0(outpath,"/",fname,"/", chromosome, "/",fname, "_", "histogram", numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,".pdf")
-#
-#   base::cat("\n ouput to", ofile)
-#   grDevices::pdf(file=ofile)
-#
-#   base::cat("\n Mean:     Min summary\n");base::print(base::summary(min_mean_seqval_list))
-#   base::cat("\n Power Sum:Min summary\n");base::print(base::summary(min_powsum_seqval_list))
-#   base::cat("\n N:        Min summary\n");base::print(base::summary(min_N_seqval_list))
-#   base::cat("\n Mean:     Max summary\n");base::print(base::summary(max_mean_seqval_list))
-#   base::cat("\n Power Sum:Max summary\n");base::print(base::summary(max_powsum_seqval_list))
-#   base::cat("\n N:        Max summary\n");base::print(base::summary(max_N_seqval_list))
-#
-#   # https://www.datamentor.io/r-programming/histogram
-#
-#   # add single value at end of chromosome to fix plotting
-#   min_powsum_seqval_list <- c(min_powsum_seqval_list, full_length)
-#   min_mean_seqval_list <- c(min_mean_seqval_list, full_length)
-#   min_N_seqval_list <- c(min_N_seqval_list, full_length)
-#   max_mean_seqval_list <- c(max_mean_seqval_list, full_length)
-#   max_powsum_seqval_list <- c(max_powsum_seqval_list, full_length)
-#   max_N_seqval_list <- c(max_N_seqval_list, full_length)
-#
-#   #---------------
-#   a<- graphics::hist(min_powsum_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
-#                      main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,"\nPower Sum Minimum values in the Sequence\nbp range ",
-#                                         repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
-#   base::cat("\nMin Power Sum:  midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
-#
-#   a<-graphics::hist(min_mean_seqval_list, breaks=numbins, xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
-#                     main= base::paste0(chromnam,"_min_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,"\nMean: Minimum values in the Sequence\nbp range ",
-#                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
-#   base::cat("\nMin Mean:       midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
-#
-#
-#   a<-graphics::hist(min_N_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
-#                     main= base::paste0(chromnam,"_min_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-#                                        "\nNumber: Minimum values in the Sequence\nbp range ",
-#                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
-#   base::cat("\nMin N:          midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
-#
-#   a<-graphics::hist(max_mean_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
-#                     main= base::paste0(chromnam,"_max_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-#                                        "\nMean: Maximum values in the Sequence\nbp range ",
-#                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
-#   base::cat("\nMax Mean:      midpointmax counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
-#
-#   a<-graphics::hist(max_powsum_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
-#                     main= base::paste0(chromnam,"_max_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-#                                        "\nPower Sum Maximum values in the Sequence\nbp range ",
-#                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
-#   base::cat("\nMax Power Sum: midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
-#
-#   a<-graphics::hist(max_N_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
-#                     main= base::paste0(chromnam,"_max_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
-#                                        "\nNumber: Maximum values in the Sequence\nbp range ",
-#                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
-#   base::cat("\nMax N:         midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
-#
-#   grDevices::dev.off()
+  #   #-----------------------------
+  #   repeat_list<-base::rownames(All_spec)
+  #   if(!base::is.null(repeat_range)) {
+  #     Nrepeat_list<-base::as.numeric(base::gsub("1/","",repeat_list))
+  #     whichrow<-base::which(Nrepeat_list<=repeat_range[2] & Nrepeat_list>=repeat_range[1])
+  #     repeat_list<-repeat_list[whichrow]
+  #     Nrepeat_list<-Nrepeat_list[whichrow]
+  #   }
+  #
+  #   chromnam <- chromosome
+  #
+  #   min_powsum_seqval_list<-NULL
+  #   max_powsum_seqval_list<-NULL
+  #   goodrepeats<-NULL
+  #   min_mean_seqval_list<-NULL
+  #   max_mean_seqval_list<-NULL
+  #   min_N_seqval_list<-NULL
+  #   max_N_seqval_list<-NULL
+  #
+  #   for(repeat_val in repeat_list){
+  #     #repeat_val="5000"
+  #     base::cat("\n beginning ", repeat_val)
+  #     sortstr=FALSE
+  #     All_spec1<-All_spec
+  #     All_spec1[base::which(All_spec1==0.0)]<-NA
+  #     maxspec<-base::max(All_spec1[repeat_val, ],na.rm=TRUE)
+  #     meanspec<-base::mean(All_spec1[repeat_val, ],na.rm=TRUE)
+  #     stdspec<-stats::sd(All_spec1[repeat_val, ],na.rm=TRUE)
+  #
+  #     threshspec<-meanspec+numstd*stdspec    #base::length(peak_along_repeat)
+  #
+  #     peak_along_repeat<-pracma::findpeaks(x=All_spec[repeat_val, ], minpeakheight = threshspec,
+  #                                          minpeakdistance = 1, threshold = 0, npeaks = 0, sortstr = sortstr)  #change to false Feb 5 2023
+  #
+  #     if(base::length(peak_along_repeat)!=0){  #change June 17 2022
+  #       peak_along_repeat<-base::cbind(base::as.numeric(peak_along_repeat[,1])/maxspec,peak_along_repeat)
+  #       peak_along_repeat<-base::cbind(peak_along_repeat,base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,3]]),
+  #                                      base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,4]]),
+  #                                      base::as.numeric(base::colnames(All_spec)[peak_along_repeat[,5]]) )
+  #
+  #       base::colnames(peak_along_repeat)<-base::c("Percent of peak","Power","peak index","sindex","eindex","peak_bp","start_peak_bp", "end_peak_bp")
+  #     } #end of check to ensure peak value found
+  #
+  #     if(!base::is.null(peak_along_repeat)){
+  #       # perform sum of powers above mean+sigma2 level  (but only for repeats where mean+numstd *sigma holds)
+  #       # pow_list<- run_sum_bp(repeat_val,All_spec,chromnam,numstd2,numrange,pflag=FALSE)   #base::colnames(All_spec)
+  #
+  #       #All_spec1[base::which(All_spec1<=1e-5)]<-NA
+  #       threshspec<-meanspec+numstd2*stdspec
+  #       bpval<-base::as.numeric(base::colnames(All_spec))
+  #       deltabp<-(bpval[2]-bpval[1])
+  #       deltabp_onebin<-deltabp*numrange
+  #       start_bpseqval<-base::seq(bpval[1],bpval[base::length(bpval)],by= deltabp_onebin)
+  #       end_bpseqval<-start_bpseqval+deltabp_onebin
+  #       end_bpseqval[base::length(end_bpseqval)]<-bpval[base::length(bpval)]
+  #       which_ones<-base::which(All_spec1[repeat_val, ] >=threshspec)
+  #       power_sum<-NULL;power_mean<-NULL; N<-NULL
+  #       for(j in 1:base::length(start_bpseqval)){
+  #         sbpval<-start_bpseqval[j]
+  #         ebpval<-end_bpseqval[j]
+  #         whichval<-base::which(bpval>=sbpval & bpval<=ebpval)
+  #         if(!base::is.na(whichval[1])){
+  #           sval<-whichval[1]
+  #           eval<-whichval[base::length(whichval)]
+  #           which_notNA<-base::which(!base::is.na(All_spec1[repeat_val,sval: eval]))
+  #           bplength_onebin<-base::length(which_notNA)*deltabp
+  #           bp_notNA<-NULL
+  #           for (k in 2: base::length(which_notNA)){
+  #             bp_notNA<-base::c(bp_notNA,bpval[which_notNA[k]]-bpval[which_notNA[k-1]])
+  #           }
+  #
+  #           deltabpnotNA<-(bplength_onebin)/1.e6
+  #           which_val<-base::which(which_ones<eval & which_ones>=sval)
+  #           if(base::length(which_notNA)!=0){
+  #             meanabove<-base::mean(All_spec1[repeat_val,which_ones[which_val]] ,na.rm=TRUE)
+  #             power_mean<-base::c(power_mean,meanabove)
+  #             sumabove<-base::sum(All_spec1[repeat_val,which_ones[which_val]] ,na.rm=TRUE)/deltabpnotNA
+  #             power_sum<-base::c(power_sum,sumabove)
+  #             Nabove<-base::length(All_spec1[repeat_val,which_ones[which_val]] )/deltabpnotNA
+  #             N<-base::c(N,Nabove)
+  #             base::names(power_mean)[base::length(power_mean)]<-sbpval+bplength_onebin/2
+  #           } else{
+  #             meanabove<-NA;power_mean<-base::c(power_mean,NA);power_sum<-base::c(power_sum,NA) ;N<-base::c(N,NA)
+  #             base::names(power_mean)[base::length(power_mean)]<-sbpval+bplength_onebin/2
+  #           }
+  #         } else{
+  #           bplength_onebin<-0
+  #           meanabove<-NA;power_mean<-base::c(power_mean,NA);power_sum<-base::c(power_sum,NA) ;N<-base::c(N,NA)
+  #           base::names(power_mean)[base::length(power_mean)]<-sbpval+bplength_onebin/2
+  #         }
+  #       }
+  #       base::names(power_sum)<-names(N)<-names(power_mean)
+  #       if( !base::is.null(power_sum)){
+  # #
+  #         maxspec<-base::max(power_mean,na.rm=TRUE)
+  #         minspec<-base::min(power_mean,na.rm=TRUE)
+  #         mincol<-base::which(minspec==power_mean)[1]
+  #         maxcol<-base::which(maxspec==power_mean)[1]
+  #         min_mean_seqval<-base::as.numeric(names(power_mean[mincol]) )
+  #         max_mean_seqval<-base::as.numeric(names(power_mean[maxcol]) )
+  #
+  #         maxspec<-base::max(power_sum,na.rm=TRUE)
+  #         minspec<-base::min(power_sum,na.rm=TRUE)
+  #         mincol<-base::which(minspec==power_sum)[1]
+  #         maxcol<-base::which(maxspec==power_sum)[1]       #base::as.numeric
+  #         min_powsum_seqval<-base::as.numeric(names(power_sum[mincol]) )#+deltabp_onebin/2;
+  #         max_powsum_seqval<-base::as.numeric(names(power_sum[maxcol]) )#+deltabp_onebin/2
+  #
+  #         maxspec<-base::max(N,na.rm=TRUE)
+  #         minspec<-base::min(N,na.rm=TRUE)
+  #         mincol<-base::which(minspec==N)[1]
+  #         maxcol<-base::which(maxspec==N)[1]       #base::as.numeric
+  #         min_N_seqval<-base::as.numeric(names(N[mincol]) )#+deltabp_onebin/2;
+  #         max_N_seqval<-base::as.numeric(names(N[maxcol]) )#+deltabp_onebin/2
+  #       }
+  #
+  #       pow_list<-base::list(power_sum=power_sum,power_mean=power_mean,N=N,
+  #                            min_mean_seqval=min_mean_seqval,max_mean_seqval=max_mean_seqval,
+  #                            min_powsum_seqval=min_powsum_seqval,max_powsum_seqval=max_powsum_seqval,
+  #                            min_N_seqval=min_N_seqval,max_N_seqval=max_N_seqval )
+  #
+  #
+  #       sum_at_bp<-pow_list$power_sum
+  #       mean_at_bp<-pow_list$power_mean
+  #
+  #       goodrepeats<-base::c(goodrepeats,repeat_val)
+  #
+  #       min_powsum_seqval_list<-base::c(min_powsum_seqval_list,pow_list$min_powsum_seqval)
+  #       max_powsum_seqval_list<-base::c(max_powsum_seqval_list,pow_list$max_powsum_seqval)
+  #
+  #       min_mean_seqval_list<-base::c(min_mean_seqval_list,pow_list$min_mean_seqval)
+  #       max_mean_seqval_list<-base::c(max_mean_seqval_list,pow_list$max_mean_seqval)
+  #
+  #       min_N_seqval_list<-base::c(min_N_seqval_list,pow_list$min_N_seqval)
+  #       max_N_seqval_list<-base::c(max_N_seqval_list,pow_list$max_N_seqval)
+  #
+  #       N_at_bp<-pow_list$N
+  #     }
+  #   }
+  #
+  #   ofile<-base::paste0(outpath,"/",fname,"/", chromosome, "/",fname, "_", "histogram", numrange,"_",chromnam,"_s_",numstd2,"std_",numstd,".pdf")
+  #
+  #   base::cat("\n ouput to", ofile)
+  #   grDevices::pdf(file=ofile)
+  #
+  #   base::cat("\n Mean:     Min summary\n");base::print(base::summary(min_mean_seqval_list))
+  #   base::cat("\n Power Sum:Min summary\n");base::print(base::summary(min_powsum_seqval_list))
+  #   base::cat("\n N:        Min summary\n");base::print(base::summary(min_N_seqval_list))
+  #   base::cat("\n Mean:     Max summary\n");base::print(base::summary(max_mean_seqval_list))
+  #   base::cat("\n Power Sum:Max summary\n");base::print(base::summary(max_powsum_seqval_list))
+  #   base::cat("\n N:        Max summary\n");base::print(base::summary(max_N_seqval_list))
+  #
+  #   # https://www.datamentor.io/r-programming/histogram
+  #
+  #   # add single value at end of chromosome to fix plotting
+  #   min_powsum_seqval_list <- c(min_powsum_seqval_list, full_length)
+  #   min_mean_seqval_list <- c(min_mean_seqval_list, full_length)
+  #   min_N_seqval_list <- c(min_N_seqval_list, full_length)
+  #   max_mean_seqval_list <- c(max_mean_seqval_list, full_length)
+  #   max_powsum_seqval_list <- c(max_powsum_seqval_list, full_length)
+  #   max_N_seqval_list <- c(max_N_seqval_list, full_length)
+  #
+  #   #---------------
+  #   a<- graphics::hist(min_powsum_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
+  #                      main= base::paste0(chromnam,"_min_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,"\nPower Sum Minimum values in the Sequence\nbp range ",
+  #                                         repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+  #   base::cat("\nMin Power Sum:  midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
+  #
+  #   a<-graphics::hist(min_mean_seqval_list, breaks=numbins, xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
+  #                     main= base::paste0(chromnam,"_min_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,"\nMean: Minimum values in the Sequence\nbp range ",
+  #                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+  #   base::cat("\nMin Mean:       midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
+  #
+  #
+  #   a<-graphics::hist(min_N_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
+  #                     main= base::paste0(chromnam,"_min_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+  #                                        "\nNumber: Minimum values in the Sequence\nbp range ",
+  #                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+  #   base::cat("\nMin N:          midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
+  #
+  #   a<-graphics::hist(max_mean_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
+  #                     main= base::paste0(chromnam,"_max_mean_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+  #                                        "\nMean: Maximum values in the Sequence\nbp range ",
+  #                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+  #   base::cat("\nMax Mean:      midpointmax counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
+  #
+  #   a<-graphics::hist(max_powsum_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
+  #                     main= base::paste0(chromnam,"_max_pow_sum_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+  #                                        "\nPower Sum Maximum values in the Sequence\nbp range ",
+  #                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+  #   base::cat("\nMax Power Sum: midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
+  #
+  #   a<-graphics::hist(max_N_seqval_list,breaks=numbins,xaxp=base::c(0,full_length,numbins),xlab="",xlim=c(0,full_length),
+  #                     main= base::paste0(chromnam,"_max_N_seqval_",numrange,"\ns_",numstd2,"std_",numstd,
+  #                                        "\nNumber: Maximum values in the Sequence\nbp range ",
+  #                                        repeat_range[1],"_",repeat_range[2]),las=2,cex.axis=0.7)
+  #   base::cat("\nMax N:         midpoint max counts",a$mids[base::which(a$counts==base::max(a$counts))],"\n")
+  #
+  #   grDevices::dev.off()
 
 }
 
@@ -5481,7 +5481,7 @@ run_diversity_plots_no_telomere <- function(chromosome=chromosome, fname=fname, 
     base::cat("\nfile exists: ", paste0(outpath,"/", fname,"/",chromosome,"/Total_",fname, "_", chromosome,"_All_spec_merged.txt"))
     All_spec0<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/",chromosome,"/Total_",fname, "_", chromosome,"_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
 
-     # remove blank/zero columns in All_spec
+    # remove blank/zero columns in All_spec
     col_length0 <- as.numeric(colnames(All_spec0)[ncol(All_spec0)])
 
     # https://stackoverflow.com/questions/21530168/remove-columns-with-zero-values-from-a-dataframe
@@ -5617,7 +5617,7 @@ run_diversity_plots_no_telomere <- function(chromosome=chromosome, fname=fname, 
     utils::write.table(Shannon_div1, file=paste0(outpath, "/", fname, "/",chromosome, "/", fname, "_", chromosome, "_Shannon_div_no_telo.txt"),
                        append = FALSE, sep = " ", dec = ".", quote = FALSE, row.names = FALSE, col.names = FALSE)
 
-    } else {
+  } else {
     for (i in 1:sum(grepl(chromosome, nam_list1))){
       Spp_chr_part <- nam_list1[grepl(chromosome, nam_list1)][i]
       chr_part <- stringr::str_split(Spp_chr_part, "_", simplify =TRUE)[,3]
@@ -5633,7 +5633,7 @@ run_diversity_plots_no_telomere <- function(chromosome=chromosome, fname=fname, 
         nam_list0a <- base::list.files(paste0(outpath,"/", fname,"/", chr_part,"/", "spectra_Table.txt/"))
         nam_list1a <- nam_list0a[base::grep("_spar1_Table.txt", nam_list0a)]
         if (length(base::grep("merged", nam_list1a))!=0){
-        nam_list1a <- nam_list1a[-base::grep("merged", nam_list1a)]
+          nam_list1a <- nam_list1a[-base::grep("merged", nam_list1a)]
         }
         for (i in 1:base::length(nam_list1a)){
           file_nam <- nam_list1a[i]
@@ -6314,8 +6314,8 @@ run_summary_plots_range <- function(fname=fname, chromosome=chromosome, inpath=i
   }
   #---------------------
   if (startbp<=5e+06 && endbp<=5e+06){
-      startval="1"
-      endval="5e+06"
+    startval="1"
+    endval="5e+06"
   }
   if (startbp>=5000001 && endbp>=5000001 && startbp<=1e+07 && endbp<=1e+07){
     startval="5000001"
@@ -6921,14 +6921,14 @@ plot_all_chromosomes <- function(fname=fname, inpath=inpath, outpath=outpath){
   colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
 
   Shannon_div_total_parts <- Shannon_div_total[grep("-", Shannon_div_total$Chromosome),]
-  
+
   if (nrow(Shannon_div_total_parts)>0){
-  Shannon_div_total$Chrnum0 <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
-  Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,1])
-  Shannon_div_total$Chrpart <- as.numeric(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,2])
-  
-  Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position + (Shannon_div_total$Chrpart -1)*4e8
-  
+    Shannon_div_total$Chrnum0 <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+    Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,1])
+    Shannon_div_total$Chrpart <- as.numeric(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,2])
+
+    Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position + (Shannon_div_total$Chrpart -1)*4e8
+
   }else{
     Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
   }
@@ -7371,8 +7371,8 @@ DNAwalks_with_genes <- function(chromosome=chromosome, fname=fname, inpath=inpat
 #' function()
 #' @export
 gene_slopes <- function(chromosome=chromosome, fname=fname, inpath=inpath,
-                                outpath=outpath, gff3_path=gff3_path, cytchr=cytchr,
-                                start=start, end=end){
+                        outpath=outpath, gff3_path=gff3_path, cytchr=cytchr,
+                        start=start, end=end){
 
 
   # import the gff3 annotation file
@@ -7554,9 +7554,9 @@ gene_slopes <- function(chromosome=chromosome, fname=fname, inpath=inpath,
   Gene_walks$best_fit_CG_slope <- Gene_walks$AT_slope
   for (i in 1:nrow(Gene_walks)){
     if (Gene_walks$Start[i]<Gene_walks$End[i]){
-    DNAwalk_subset <- DNAwalk_long[which(DNAwalk_long$genomepos >= Gene_walks$Start[i] & DNAwalk_long$genomepos <=Gene_walks$End[i]),]
-    Gene_walks$best_fit_AT_slope[i] <- coef(lm(DNAwalk_subset$atwalk~DNAwalk_subset$genomepos))[2]
-    Gene_walks$best_fit_CG_slope[i] <- coef(lm(DNAwalk_subset$cgwalk~DNAwalk_subset$genomepos))[2]
+      DNAwalk_subset <- DNAwalk_long[which(DNAwalk_long$genomepos >= Gene_walks$Start[i] & DNAwalk_long$genomepos <=Gene_walks$End[i]),]
+      Gene_walks$best_fit_AT_slope[i] <- coef(lm(DNAwalk_subset$atwalk~DNAwalk_subset$genomepos))[2]
+      Gene_walks$best_fit_CG_slope[i] <- coef(lm(DNAwalk_subset$cgwalk~DNAwalk_subset$genomepos))[2]
     } else {
       DNAwalk_subset <- DNAwalk_long[which(DNAwalk_long$genomepos <= Gene_walks$Start[i] & DNAwalk_long$genomepos >=Gene_walks$End[i]),]
       Gene_walks$best_fit_AT_slope[i] <- coef(lm(DNAwalk_subset$atwalk~DNAwalk_subset$genomepos))[2]
@@ -8103,17 +8103,17 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
 
     # remove the first and last 2Mbp to avoid the telomeres, remove the very large repeat lengths
     All_spec <- All_spec0[c(1:(nrow(All_spec0))),c(400:(ncol(All_spec0)-400))]
-    
+
     # sum columns
     Fourier_sums<- colSums(All_spec)
     # define window - 2.5Mbp same as histogram
     wind_size=500
     # run rolling sum
     roll_sum_Fourier_sums0 <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
-    
+
     # add NAs for the first and last 2Mbp with telomeres
     roll_sum_Fourier_sums <- c(rep(NA, 400), roll_sum_Fourier_sums0, rep(NA, 400))
-    
+
     # join sums with genome positions
     Genome_position <- c(1:length(roll_sum_Fourier_sums))*5000
     Repeat_abund <- cbind(Genome_position, roll_sum_Fourier_sums)
@@ -8150,6 +8150,20 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   # grDevices::dev.off()
   # utils::write.table(x=Repeat_abund, file=paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Repeat_abundance_sum_500kbp_", wind_size, ".txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
   # }
+}
+
+#' calculate_ranges
+#'
+#' Plots the roll sum abundance for all chromosomes. This code can only be run once the rest of the progam (including roll_sum_histogram) is complete.
+#'
+#' @param nam input dataset
+#'
+#' @return output dataset
+#'
+#' @examples
+#' function()
+#' @export
+calculate_ranges <- function(fname=fname, outpath=outpath){
 
   #-----------------------
   # Read in data for all chromosomes and plot
@@ -8166,14 +8180,14 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   colnames(RepeatAbundance_total) <- c("Chromosome", "Genome_position", "RepeatAbundance")
 
   RepeatAbundance_total_parts <- RepeatAbundance_total[grep("-", RepeatAbundance_total$Chromosome),]
-  
+
   if (nrow(RepeatAbundance_total_parts)>0){
-  RepeatAbundance_total$Chrnum0 <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
-  RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,1])
-  RepeatAbundance_total$Chrpart <- as.numeric(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,2])
-  
-  RepeatAbundance_total$Genome_position <- RepeatAbundance_total$Genome_position + (RepeatAbundance_total$Chrpart -1)*4e8
-  
+    RepeatAbundance_total$Chrnum0 <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
+    RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,1])
+    RepeatAbundance_total$Chrpart <- as.numeric(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,2])
+
+    RepeatAbundance_total$Genome_position <- RepeatAbundance_total$Genome_position + (RepeatAbundance_total$Chrpart -1)*4e8
+
   }else{
     RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
   }
@@ -8192,7 +8206,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
       ggplot2::theme_classic()
   )
   grDevices::dev.off()
-  
+
   grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.pdf"))
   # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
   print(
@@ -8203,7 +8217,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   )
   grDevices::dev.off()
 
- # find start and end of highly repeating regions based 1.5 SD from mean
+  # find start and end of highly repeating regions based 1.5 SD from mean
   RepeatAbund_cent <- NULL
   RepeatAbund_cent_max <- NULL
   RepeatAbund_min <- NULL
@@ -8231,7 +8245,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # https://rdrr.io/cran/ChemoSpecUtils/man/check4Gaps.html
 
     #library(ChemoSpecUtils)
-  if (length(cent_range_wind)>0) {
+    if (length(cent_range_wind)>0) {
       cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
       cent_range[nrow(cent_range)+1,] <- c(0,0,0,0,0)
 
@@ -8244,7 +8258,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
       RepeatAbund_cent_chr <- cbind(SPP_l, Chr_l, cent_range_pos_start, cent_range_pos_end)
       RepeatAbund_cent <- rbind(RepeatAbund_cent, RepeatAbund_cent_chr)
     }
-#-------------------------------
+    #-------------------------------
     # find positions of + two SD more than mean
     cent_range_wind_max <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper)]/5000
 
@@ -8262,7 +8276,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
       RepeatAbund_cent_max <- rbind(RepeatAbund_cent_max, RepeatAbund_cent_chr_max)
     }
 
-#------------------------------
+    #------------------------------
 
     RepeatAbund_min_chr <- c("MinRepeatAbund", fname, chromosome, cent_min)
     RepeatAbund_min <- rbind(RepeatAbund_min, RepeatAbund_min_chr)
@@ -8287,20 +8301,20 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     RepeatAbund_cent_max <- as.data.frame(RepeatAbund_cent_max)
     RepeatAbund_cent_max$Label <- rep("MaxRepeatAbund", nrow(RepeatAbund_cent_max))
   }
-  # if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent)>0){ 
-    # colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
+  # if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent)>0){
+  # colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
   # }
 
-   if (length(RepeatAbund_cent_max)==length(RepeatAbund_cent) && length(RepeatAbund_cent_max)>0){ 
-     colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
-     RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
-     utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
-   }
+  if (length(RepeatAbund_cent_max)==length(RepeatAbund_cent) && length(RepeatAbund_cent_max)>0){
+    colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
+    RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
+    utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  }
 
-print(RepeatAbund_max)
-print(RepeatAbund_min)
+  print(RepeatAbund_max)
+  print(RepeatAbund_min)
 
-# output final files
+  # output final files
   utils::write.table(x=RepeatAbund_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_max, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_prediction_max.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_length, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
@@ -8319,14 +8333,14 @@ print(RepeatAbund_min)
   colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
 
   Shannon_div_total_parts <- Shannon_div_total[grep("-", Shannon_div_total$Chromosome),]
-  
+
   if (nrow(Shannon_div_total_parts)>0){
-  Shannon_div_total$Chrnum0 <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
-  Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,1])
-  Shannon_div_total$Chrpart <- as.numeric(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,2])
-  
-  Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position + (Shannon_div_total$Chrpart -1)*4e8
-  
+    Shannon_div_total$Chrnum0 <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
+    Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,1])
+    Shannon_div_total$Chrpart <- as.numeric(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,2])
+
+    Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position + (Shannon_div_total$Chrpart -1)*4e8
+
   }else{
     Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
   }
@@ -8397,6 +8411,133 @@ print(RepeatAbund_min)
 
 }
 
+#' cent_finalize
+#'
+#' Gathers the centromere predictions from all methods - run at the very end and not automatically
+#'
+#' @param nam input dataset
+#'
+#' @return output dataset
+#'
+#' @examples
+#' function()
+#' @export
+cent_finalize <- function(fname=fname, outpath=outpath){
+
+  # read in RepAbund data
+  summary_path <- paste0(outpath,"/", fname, "/", "Summary_output/output_data")
+  file_list <- list.files(summary_path, full.names=TRUE)
+
+  rollsumhist_list <- file_list[grep("Repeat_abundance_sum", file_list)]
+  lsd <- lapply(rollsumhist_list, read.table)
+  sd_chr_list0 <- basename(rollsumhist_list)
+  sd_chr_list1 <- stringr::str_split(sd_chr_list0, "_", simplify =TRUE)
+  sd_chr_list2 <- sd_chr_list1[,3]
+  names(lsd) <- sd_chr_list2
+  RepeatAbundance_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
+  colnames(RepeatAbundance_total) <- c("Chromosome", "Genome_position", "RepeatAbundance")
+
+  #--------------------------------------
+  # Read in centromere predictions
+  RepAbund_maxcent <- base::as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/", "Summary_output/histograms/", fname,"_RepeatAbund_centromere_prediction_max.txt"), header = FALSE, check.names = FALSE)))
+  RepAbund_mincent <- base::as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/", "Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_min.txt"), header = FALSE, check.names = FALSE)))
+  Shannon_cent <- base::as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/", "Summary_output/Shannon_div/", fname, "_Shannon_centromere_prediction_min.txt"), header = FALSE, check.names = FALSE)))
+  Hist_cent <- base::as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/", "Summary_output/histograms/", fname, "_Centromere_histograms_summary.txt"), sep=" ", fill=T, header = FALSE, check.names = FALSE)))
+
+  # add column names
+  colnames(RepAbund_maxcent) <- c("Label", "Spp", "Chr", "Centromere")
+  colnames(RepAbund_mincent) <- c("Label", "Spp", "Chr", "Centromere")
+  colnames(Shannon_cent) <- c("Label", "Spp", "Chr", "Centromere")
+  colnames(Hist_cent) <- c("Spp", "Chr", "Centromere", "Length")
+
+  # add/change label for some
+
+  RepAbund_maxcent$Chr <- as.numeric(RepAbund_maxcent$Chr)
+  RepAbund_mincent$Chr <- as.numeric(RepAbund_mincent$Chr)
+  Shannon_cent$Chr <- as.numeric(Shannon_cent$Chr)
+
+  RepAbund_maxcent$Chr <- paste0("Chr", RepAbund_maxcent$Chr)
+  RepAbund_mincent$Chr <- paste0("Chr", RepAbund_mincent$Chr)
+  Shannon_cent$Chr <- paste0("Chr", Shannon_cent$Chr)
+
+  Hist_cent$Label <- rep("Histogram", nrow(Hist_cent))
+
+  # subset columns
+  Hist_cent <- cbind(Hist_cent$Label, Hist_cent$Spp, Hist_cent$Chr, Hist_cent$Centromere)
+  colnames(Hist_cent) <- c("Label", "Spp", "Chr", "Centromere")
+
+  # make a total possible cent positions - with all methods
+  Total_cent <- rbind(RepAbund_maxcent, RepAbund_mincent, Shannon_cent, Hist_cent)
+
+  utils::write.table(x=Total_cent, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_total_possible.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
+
+  #-------------------------------------------
+  # read in ranges
+  RepAbund_cent_range <- base::as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/", "Summary_output/histograms/", fname, "_RepeatAbund_centromere_range.txt"), header = FALSE, check.names = FALSE)))
+  Shannon_cent_range <- base::as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/", "Summary_output/Shannon_div/", fname, "_Shannon_centromere_range.txt"), header = FALSE, check.names = FALSE)))
+
+  # rearrange columns for joining
+  RepAbund_cent_range_ed <- cbind(RepAbund_cent_range$V5, RepAbund_cent_range$V1,RepAbund_cent_range$V2,RepAbund_cent_range$V3,RepAbund_cent_range$V4)
+
+  colnames(RepAbund_cent_range_ed) <-  c("Label", "Spp", "Chr", "Start", "End")
+  colnames(Shannon_cent_range) <-  c("Label", "Spp", "Chr", "Start", "End")
+
+  # make a total possible cent ranges - with all methods
+  Total_cent_range <- rbind(RepAbund_cent_range_ed, Shannon_cent_range)
+
+  Total_cent_range$Chr <- as.numeric(Total_cent_range$Chr)
+  Total_cent_range$Chr <- paste0("Chr", Total_cent_range$Chr)
+
+  utils::write.table(x=Total_cent_range, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_total_possible_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
+
+  #-------------------------------------
+  # Not used currently
+  # check if any Repabund is 1 SD above mean
+
+  # cent_final <- NULL
+  # range_final <- NULL
+  # for (chromosome in unique(RepeatAbundance_total$Chromosome)){
+  # RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chromosome == chromosome),]
+
+  # # find SD of data
+  # SD_repeatAbund <- sd(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE)
+  # thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (2* SD_repeatAbund)
+  # # find positions of +2 SD from mean
+  # cent_max <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper)]/5000
+
+  # thres_upper2 = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (3* SD_repeatAbund)
+  # # find positions of +3 SD from mean
+  # cent_max2 <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper2)]/5000
+
+  # Total_cent <- as.data.frame(Total_cent)
+  # Total_cent_range <- as.data.frame(Total_cent_range)
+  # if (length(cent_max2)>0) {
+  # centromeres_chr <- Total_cent[which(Total_cent$Chr==chromosome & Total_cent$Label=="MaxRepeatAbund"),]
+  # range_chr <- Total_cent_range[which(Total_cent_range$Chr==chromosome & Total_cent_range$Label=="MaxRepeatAbund"),]
+  # } else {
+  # if (length(cent_max)>0) {
+  # centromeres_chr <- Total_cent[which(Total_cent$Chr==chromosome & Total_cent$Label=="MinRepeatAbund"),]
+  # range_chr <- Total_cent_range[which(Total_cent_range$Chr==chromosome & Total_cent_range$Label=="MinRepeatAbund"),]
+  # }else {
+  # centromeres_chr <- Total_cent[which(Total_cent$Chr==chromosome & Total_cent$Label=="Shannon"),]
+  # range_chr <- Total_cent_range[which(Total_cent_range$Chr==chromosome & Total_cent_range$Label=="Shannon"),]
+  # }}
+
+  # cent_final <- rbind(cent_final, centromeres_chr)
+  # range_final <- rbind(range_final, range_chr)
+  # }
+
+  # range_final_gb <- dplyr::group_by(range_final, Label, Spp, Chr)
+  # range_final0 <- dplyr::summarise(range_final_gb, Start = min(Start), End = max(End))
+
+  #print(cent_final)
+  #print(range_final0)
+
+  # write out final centromere predictions
+  #utils::write.table(x=cent_final, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_centromeres.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
+  #utils::write.table(x=range_final, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_cent_ranges.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
+
+}
 #----------------------------------------
 # Create documentations for functions above
 # devtools::document()

@@ -2,6 +2,8 @@
 
 export(DNAwalks_with_genes)
 export(PCA_repeats)
+export(calculate_ranges)
+export(cent_finalize)
 export(dna_1_to_wax)
 export(gene_slopes)
 export(imagenan)
