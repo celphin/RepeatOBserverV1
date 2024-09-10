@@ -8218,11 +8218,11 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   grDevices::dev.off()
 
   # find start and end of highly repeating regions based 1.5 SD from mean
-  RepeatAbund_cent <- NULL
-  RepeatAbund_cent_max <- NULL
-  RepeatAbund_min <- NULL
-  RepeatAbund_max <- NULL
-  RepeatAbund_length <- NULL
+  RepeatAbund_cent <- data.frame()
+  RepeatAbund_cent_max <- data.frame()
+  RepeatAbund_min <- data.frame()
+  RepeatAbund_max <- data.frame()
+  RepeatAbund_length <- data.frame()
 
   for (chromosome in unique(RepeatAbundance_total$Chrnum)){
     RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chrnum == chromosome),]
@@ -8354,9 +8354,9 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   Shannon_div_total$roll_mean_Shannon <- zoo::rollapply(Shannon_div_total$Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
   # find start and end of highly repeating regions based 1SD from min
-  Shannon_cent <- NULL
-  Shannon_min <- NULL
-  Shannon_length <- NULL
+  Shannon_cent <- data.frame()
+  Shannon_min <- data.frame()
+  Shannon_length <- data.frame()
   for (chromosome in unique(Shannon_div_total$Chrnum)){
 
     Shannon_div_chr <- Shannon_div_total[which(Shannon_div_total$Chrnum == chromosome),]
