@@ -8101,8 +8101,8 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # get Fourier data
     All_spec0<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/Summary_output/output_data/Total_", fname, "_Chr", chromosome, "_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
 
-    # remove the first and last 250kbp to avoid the telomeres, remove the very large repeat lengths
-    All_spec <- All_spec0[c(1:(nrow(All_spec0))),c(50:(ncol(All_spec0)-50))]
+    # remove the first and last 2Mbp to avoid the telomeres, remove the very large repeat lengths
+    All_spec <- All_spec0[c(1:(nrow(All_spec0))),c(400:(ncol(All_spec0)-400))]
     
     # sum columns
     Fourier_sums<- colSums(All_spec)
@@ -8111,8 +8111,8 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # run rolling sum
     roll_sum_Fourier_sums0 <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
     
-    # add NAs for the first and last 250kbp with telomeres
-    roll_sum_Fourier_sums <- c(rep(NA, 50), roll_sum_Fourier_sums0, rep(NA, 50))
+    # add NAs for the first and last 2Mbp with telomeres
+    roll_sum_Fourier_sums <- c(rep(NA, 400), roll_sum_Fourier_sums0, rep(NA, 400))
     
     # join sums with genome positions
     Genome_position <- c(1:length(roll_sum_Fourier_sums))*5000
