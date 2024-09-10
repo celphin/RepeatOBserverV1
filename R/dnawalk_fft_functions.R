@@ -8306,6 +8306,8 @@ print(RepeatAbund_min)
 
   #-----------------------------------------------
 
+  Shannon_list <- file_list[grep("Shannon", file_list)]
+
   # get Shannon div data
   lsd <- lapply(Shannon_list, read.table)
   sd_chr_list0 <- basename(Shannon_list)
