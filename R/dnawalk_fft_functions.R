@@ -8204,11 +8204,11 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   grDevices::dev.off()
 
  # find start and end of highly repeating regions based 1.5 SD from mean
-  RepeatAbund_cent <- c(NA, NA, NA, NA)
-  RepeatAbund_cent_max <- c(NA, NA, NA, NA)
-  RepeatAbund_min <- c(NA, NA, NA, NA)
-  RepeatAbund_max <- c(NA, NA, NA, NA)
-  RepeatAbund_length <- c(NA, NA, NA, NA)
+  RepeatAbund_cent <- NULL
+  RepeatAbund_cent_max <- NULL
+  RepeatAbund_min <- NULL
+  RepeatAbund_max <- NULL
+  RepeatAbund_length <- NULL
 
   for (chromosome in unique(RepeatAbundance_total$Chrnum)){
     RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chrnum == chromosome),]
@@ -8279,27 +8279,30 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
   RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,3] == NA),]
   
   # remove zeros if files are not empty
-  if (length(RepeatAbund_cent)>1){
+  if (length(RepeatAbund_cent)>0){
     RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,3] == 0),]
     RepeatAbund_cent <- as.data.frame(RepeatAbund_cent)
     RepeatAbund_cent$Label <- rep("MinRepeatAbund", nrow(RepeatAbund_cent))
   }
-  if(length(RepeatAbund_cent_max)>1){
+  if(length(RepeatAbund_cent_max)>0){
     RepeatAbund_cent_max <- RepeatAbund_cent_max[-which(RepeatAbund_cent_max[,3] == 0),]
     RepeatAbund_cent_max <- as.data.frame(RepeatAbund_cent_max)
     RepeatAbund_cent_max$Label <- rep("MaxRepeatAbund", nrow(RepeatAbund_cent_max))
   }
-  if (length(RepeatAbund_cent_max)>1 && length(RepeatAbund_cent)>1){ 
-    colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
-  }
+  # if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent)>0){ 
+    # colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
+  # }
 
-  RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
+   if (length(RepeatAbund_cent_max)=length(RepeatAbund_cent)){ 
+     colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
+     RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
+     utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+   }
 
 print(RepeatAbund_max)
 print(RepeatAbund_min)
 
 # output final files
-  utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_max, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_prediction_max.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_length, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
@@ -8339,9 +8342,9 @@ print(RepeatAbund_min)
   Shannon_div_total$roll_mean_Shannon <- zoo::rollapply(Shannon_div_total$Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
   # find start and end of highly repeating regions based 1SD from min
-  Shannon_cent <- c(NA, NA, NA, NA, NA)
-  Shannon_min <- c(NA, NA, NA, NA)
-  Shannon_length <- c(NA, NA, NA, NA)
+  Shannon_cent <- NULL
+  Shannon_min <- NULL
+  Shannon_length <- NULL
   for (chromosome in unique(Shannon_div_total$Chrnum)){
 
     Shannon_div_chr <- Shannon_div_total[which(Shannon_div_total$Chrnum == chromosome),]
