@@ -8388,6 +8388,7 @@ print(RepeatAbund_min)
 
   # remove zeros
   Shannon_cent <- Shannon_cent[-which(Shannon_cent[,4] == 0),]
+  print(Shannon_min)
 
   # output final file
   utils::write.table(x=Shannon_cent, file=paste0(outpath,"/", fname,"/Summary_output/Shannon_div/", fname, "_Shannon_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
