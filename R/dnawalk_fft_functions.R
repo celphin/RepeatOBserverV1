@@ -8106,8 +8106,8 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     
     # sum columns
     Fourier_sums<- colSums(All_spec)
-    # define window
-    wind_size=100
+    # define window - 2.5Mbp same as histogram
+    wind_size=500
     # run rolling sum
     roll_sum_Fourier_sums0 <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
     
