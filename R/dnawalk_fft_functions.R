@@ -8301,15 +8301,11 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
     RepeatAbund_cent_max <- as.data.frame(RepeatAbund_cent_max)
     RepeatAbund_cent_max$Label <- rep("MaxRepeatAbund", nrow(RepeatAbund_cent_max))
   }
-  # if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent)>0){
-  # colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
-  # }
-
-  if (length(RepeatAbund_cent_max)==length(RepeatAbund_cent) && length(RepeatAbund_cent_max)>0){
+  if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent)>0){
     colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
-    RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
-    utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   }
+
+  RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
 
   print(RepeatAbund_max)
   print(RepeatAbund_min)
@@ -8318,6 +8314,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   utils::write.table(x=RepeatAbund_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_max, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_prediction_max.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_length, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
 
   #-----------------------------------------------
 
