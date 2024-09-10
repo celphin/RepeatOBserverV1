@@ -8184,7 +8184,16 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
 
   print("plotting all chromosomes")
   grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.png"), width = 1000, height = 700)
-  # plot Shannon on one plot
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=RepeatAbundance_total, ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+  
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.pdf"))
   # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
   print(
     ggplot2::ggplot(data=RepeatAbundance_total, ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
