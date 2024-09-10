@@ -8275,9 +8275,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     RepeatAbund_length <- rbind(RepeatAbund_length, RepeatAbund_length_chr)
 
   }
-  RepeatAbund_cent_max <- RepeatAbund_cent_max[-which(RepeatAbund_cent_max[,3] == NA),]
-  RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,3] == NA),]
-  
+
   # remove zeros if files are not empty
   if (length(RepeatAbund_cent)>0){
     RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,3] == 0),]
@@ -8293,7 +8291,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     # colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
   # }
 
-   if (length(RepeatAbund_cent_max)==length(RepeatAbund_cent)){ 
+   if (length(RepeatAbund_cent_max)==length(RepeatAbund_cent) && length(RepeatAbund_cent_max)>0){ 
      colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
      RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
      utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
