@@ -8632,6 +8632,7 @@ chrnum <- length(unique(chr_sizes$Chr))
 # plot
 library(ggplot2)
 grDevices::png(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_prediction_comparisons.png"), height=50*chrnum, width=500)
+print(
   ggplot2::ggplot(chr_sizes) +
   ggplot2::geom_rect(data=chr_sizes, ggplot2::aes(xmin=0,xmax=Length,ymin=Chromosome-0.5,ymax=Chromosome+0.5),color="black",fill=NA) +
   ggplot2::geom_rect(data=cent_ranges_formatted2,ggplot2::aes(xmin=Start,xmax=End,ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill=Label),color=NA) +
@@ -8639,7 +8640,7 @@ grDevices::png(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_
     ggplot2::scale_fill_manual(values =c("#FFB31C","green","purple"),name="Predictor",
                                labels = c(expression("RepAbundMin"),expression("Shannon"),expression("RepAbundMax"))) +
   ggplot2::scale_y_reverse(breaks=c(1:nrow(chr_sizes))) +
-  xlab("MBp") + ylab("Chromosome") +
+  xlab("Mbp") + ylab("Chromosome") +
   ggplot2::theme_classic() +
   ggplot2::theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_blank(),
@@ -8647,9 +8648,28 @@ grDevices::png(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_
         axis.text.y = element_text(margin=margin(0,-15,0,0)),
         axis.ticks.y = element_blank())+
   ggplot2::facet_wrap(~SPP, scales = "free")
-
+)
 grDevices::dev.off()
 
+grDevices::pdf(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_prediction_comparisons.pdf"))
+print(
+  ggplot2::ggplot(chr_sizes) +
+  ggplot2::geom_rect(data=chr_sizes, ggplot2::aes(xmin=0,xmax=Length,ymin=Chromosome-0.5,ymax=Chromosome+0.5),color="black",fill=NA) +
+  ggplot2::geom_rect(data=cent_ranges_formatted2,ggplot2::aes(xmin=Start,xmax=End,ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill=Label),color=NA) +
+  #ggplot2::geom_rect(data=cent_data_formatted2,ggplot2::aes(xmin=(Centromere-0.1),xmax=(Centromere+0.1),ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill="grey"),color=NA) +
+    ggplot2::scale_fill_manual(values =c("#FFB31C","green","purple"),name="Predictor",
+                               labels = c(expression("RepAbundMin"),expression("Shannon"),expression("RepAbundMax"))) +
+  ggplot2::scale_y_reverse(breaks=c(1:nrow(chr_sizes))) +
+  xlab("Mbp") + ylab("Chromosome") +
+  ggplot2::theme_classic() +
+  ggplot2::theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_blank(),
+        legend.position="bottom",
+        axis.text.y = element_text(margin=margin(0,-15,0,0)),
+        axis.ticks.y = element_blank())+
+  ggplot2::facet_wrap(~SPP, scales = "free")
+)
+grDevices::dev.off()
 }
 #----------------------------------------
 # Create documentations for functions above
