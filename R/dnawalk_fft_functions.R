@@ -8535,6 +8535,121 @@ cent_finalize <- function(fname=fname, outpath=outpath){
   #utils::write.table(x=cent_final, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_centromeres.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
   #utils::write.table(x=range_final, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_cent_ranges.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
 
+#####################################
+# Plot prediction comparisons
+
+#--------------------------------
+# read in total possible positions
+total_cent_pos <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/",fname, "_total_possible.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
+
+#-------------------------------------
+# read in total possible ranges
+total_cent_ranges <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/",fname, "_total_possible_range.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
+
+#-------------------------------------
+# read in chromosome lengths
+chr_sizes0 <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/histograms/",fname, "_RepeatAbund_centromere_prediction_length.txt"), sep= "\t", header = FALSE, check.names = FALSE)))
+
+#-------------------------------------
+# read in known cent positions
+# Known_cent0 <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath, "/Known_centromeres_Sept2024.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
+# Known_cent <-  as.data.frame(cbind(Known_cent0$Spp, Known_cent0$Chr, as.numeric(Known_cent0$Known),  as.numeric(Known_cent0$Start),  as.numeric(Known_cent0$End), Known_cent0$NewName))
+# Known_cent[,7] <-  rep("Known", nrow(Known_cent))
+# colnames(Known_cent) <-  c("Spp", "Chr", "Centromere", "Start", "End", "Mixed", "Label")
+
+#####################################
+# Make mixed column for joining
+total_cent_pos$Mixed <- paste0(total_cent_pos$Spp,  "_", total_cent_pos$Chr)
+total_cent_ranges$Mixed <- paste0(total_cent_ranges$Spp,  "_", total_cent_ranges$Chr)
+
+# make column names
+colnames(total_cent_pos) <-   c("Label","Spp", "Chr",  "Centromere", "Mixed")
+colnames(total_cent_ranges) <-  c("Label","Spp", "Chr",  "Start", "End", "Mixed")
+
+# subset known data
+# Known_cent_pos <- as.data.frame(cbind(Known_cent$Label, Known_cent$Spp, Known_cent$Chr, Known_cent$Centromere,  Known_cent$Mixed))
+# Known_cent_range <- as.data.frame(cbind(Known_cent$Label, Known_cent$Spp, Known_cent$Chr, Known_cent$Start, Known_cent$End, Known_cent$Mixed))
+
+# colnames(Known_cent_pos) <-  c("Label","Spp", "Chr",  "Centromere", "Mixed")
+# colnames(Known_cent_range) <-  c("Label","Spp", "Chr",  "Start", "End", "Mixed")
+
+# define ranges as total
+cent_range <- total_cent_ranges
+
+# make predicted values in Mbp
+cent_range$Start <- as.numeric(cent_range$Start)/1e6
+cent_range$End <- as.numeric(cent_range$End)/1e6
+total_cent_pos$Centromere <- as.numeric(total_cent_pos$Centromere)/1e6
+
+# make known values numeric
+# Known_cent_pos$Centromere <- as.numeric(Known_cent_pos$Centromere)
+# Known_cent_range$Start <- as.numeric(Known_cent_range$Start)
+# Known_cent_range$End <- as.numeric(Known_cent_range$End)
+
+# join all the data
+Total_cent <-  total_cent_pos # rbind(total_cent_pos, Known_cent_pos)
+Total_range <- cent_range # rbind(cent_range, Known_cent_range)
+
+# remove NA values
+Total_cent <- Total_cent[which(!is.na(Total_cent$Centromere)),]
+
+##############################
+# Get centromere lengths
+
+colnames(chr_sizes0) <- c("Label", "Spp", "Chr", "Length")
+chr_sizes0$Mixed <- paste0(chr_sizes0$Spp,  "_Chr", chr_sizes0$Chr)
+chr_sizes0$Length <- as.numeric(chr_sizes0$Length)/1e6
+
+#############################
+# Plot the chromosome known, shannon and abundance sum centromeres
+
+library(tidyverse)
+#library(statebins)
+library(ggplot2)
+
+cent_data_formatted <-  dplyr::mutate(Total_cent, pred_vert = dplyr::case_when(Label == "MaxRepeatAbund" ~ 0.66,
+                                                                              Label == "MinRepeatAbund"~ 0.33,
+                                                                              Label == "Histogram" ~ 0.33,
+                                                                              Label == "Shannon" ~ 0))
+cent_ranges_formatted <-  dplyr::mutate(Total_range, pred_vert = dplyr::case_when(Label == "MaxRepeatAbund" ~ 0.66,
+                                                                               Label == "MinRepeatAbund"~ 0.33,
+                                                                               Label == "Shannon" ~ 0))
+
+cent_data_formatted2 <- tidyr::separate(cent_data_formatted, Mixed, c("SPP","Chromosome"), "_Chr")
+cent_ranges_formatted2 <- tidyr::separate(cent_ranges_formatted, Mixed, c("SPP","Chromosome"), "_Chr")
+
+chr_sizes <- tidyr::separate(chr_sizes0, Mixed, c("SPP","Chromosome"), "_Chr")
+chr_sizes$SPP <- chr_sizes$Spp
+chr_sizes$Chr <- paste0("Chr", chr_sizes$Chromosome)
+
+chr_sizes$Chromosome <- as.numeric(chr_sizes$Chromosome)
+cent_data_formatted2$Chromosome <- as.numeric(cent_data_formatted2$Chromosome)
+cent_ranges_formatted2$Chromosome <- as.numeric(cent_ranges_formatted2$Chromosome)
+cent_ranges_formatted2$Label <- as.factor(cent_ranges_formatted2$Label)
+
+chrnum <- length(unique(chr_sizes$Chr))
+#--------------------------
+# plot
+library(ggplot2)
+grDevices::png(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_prediction_comparisons.png"), height=50*chrnum, width=500)
+  ggplot2::ggplot(chr_sizes) +
+  ggplot2::geom_rect(data=chr_sizes, ggplot2::aes(xmin=0,xmax=Length,ymin=Chromosome-0.5,ymax=Chromosome+0.5),color="black",fill=NA) +
+  ggplot2::geom_rect(data=cent_ranges_formatted2,ggplot2::aes(xmin=Start,xmax=End,ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill=Label),color=NA) +
+  #ggplot2::geom_rect(data=cent_data_formatted2,ggplot2::aes(xmin=(Centromere-0.1),xmax=(Centromere+0.1),ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill="grey"),color=NA) +
+    ggplot2::scale_fill_manual(values =c("#FFB31C","green","purple"),name="Predictor",
+                               labels = c(expression("Shannon"),expression("Histogram"),expression("diffMaxRepeatAbund"))) +
+  ggplot2::scale_y_reverse(breaks=c(1:nrow(chr_sizes))) +
+  xlab("MBp") + ylab("Chromosome") +
+  ggplot2::theme_classic() +
+  ggplot2::theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.background = element_blank(), axis.line = element_blank(),
+        legend.position="bottom",
+        axis.text.y = element_text(margin=margin(0,-15,0,0)),
+        axis.ticks.y = element_blank())+
+  ggplot2::facet_wrap(~SPP, scales = "free")
+
+grDevices::dev.off()
+
 }
 #----------------------------------------
 # Create documentations for functions above
