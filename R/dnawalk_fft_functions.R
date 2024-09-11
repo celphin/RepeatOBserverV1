@@ -8637,7 +8637,7 @@ grDevices::png(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_
   ggplot2::geom_rect(data=cent_ranges_formatted2,ggplot2::aes(xmin=Start,xmax=End,ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill=Label),color=NA) +
   #ggplot2::geom_rect(data=cent_data_formatted2,ggplot2::aes(xmin=(Centromere-0.1),xmax=(Centromere+0.1),ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill="grey"),color=NA) +
     ggplot2::scale_fill_manual(values =c("#FFB31C","green","purple"),name="Predictor",
-                               labels = c(expression("Histogram"),expression("Shannon"),expression("diffMaxRepeatAbund"))) +
+                               labels = c(expression("RepAbundMin"),expression("Shannon"),expression("RepAbundMax"))) +
   ggplot2::scale_y_reverse(breaks=c(1:nrow(chr_sizes))) +
   xlab("MBp") + ylab("Chromosome") +
   ggplot2::theme_classic() +
