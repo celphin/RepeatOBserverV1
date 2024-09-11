@@ -8329,6 +8329,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   Shannon_div_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
   colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
 
+  # join parts
   Shannon_div_total_parts <- Shannon_div_total[grep("-", Shannon_div_total$Chromosome),]
 
   if (nrow(Shannon_div_total_parts)>0){
@@ -8346,10 +8347,8 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   Shannon_div_total$Shannon_div <- as.numeric(as.character(Shannon_div_total$Shannon_div))
 
   # define window
-  bin_size=100
-  # run rolling mean
-  Shannon_div_total$roll_mean_Shannon <- zoo::rollapply(Shannon_div_total$Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
-
+  bin_size=500
+  
   # find start and end of highly repeating regions based 1SD from min
   Shannon_cent <- data.frame()
   Shannon_min <- data.frame()
@@ -8357,6 +8356,8 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   for (chromosome in unique(Shannon_div_total$Chrnum)){
 
     Shannon_div_chr <- Shannon_div_total[which(Shannon_div_total$Chrnum == chromosome),]
+
+    Shannon_div_chr$roll_mean_Shannon <- zoo::rollapply(Shannon_div_chr$Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
 
     # find min position
     cent_min <- Shannon_div_chr$Genome_position[which(Shannon_div_chr$roll_mean_Shannon == min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE))]
