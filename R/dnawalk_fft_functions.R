@@ -8066,7 +8066,7 @@ PCA_repeats <- function(haplotype_path=haplotype_path, Spp_chromosome=Spp_chromo
 
 #' roll_sum_histogram
 #'
-#' Calculates and plots the roll sum abundance from the summary directory files. This code can only be run once the rest of the progam is complete.
+#' Calculates and plots the summed repeat abundance from the Fourier spectra summary directory files. This code can only be run once the rest of the progam is complete.
 #'
 #' @param nam input dataset
 #'
@@ -8098,58 +8098,99 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
     chromosome=i
     print(fname)
     print(chromosome)
+
     # get Fourier data
-    All_spec0<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/Summary_output/output_data/Total_", fname, "_Chr", chromosome, "_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
+    All_spec<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/Summary_output/output_data/Total_", fname, "_Chr", chromosome, "_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
 
-    # remove the first and last 2Mbp to avoid the telomeres, remove the very large repeat lengths
-    All_spec <- All_spec0[c(1:(nrow(All_spec0))),c(400:(ncol(All_spec0)-400))]
-
-    # sum columns
+    # sum columns to get repeat abundance in 5kbp windows
     Fourier_sums<- colSums(All_spec)
-    # define window - 2.5Mbp same as histogram
-    wind_size=500
-    # run rolling sum
-    roll_sum_Fourier_sums0 <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
-
-    # add NAs for the first and last 2Mbp with telomeres
-    roll_sum_Fourier_sums <- c(rep(NA, 400), roll_sum_Fourier_sums0, rep(NA, 400))
 
     # join sums with genome positions
-    Genome_position <- c(1:length(roll_sum_Fourier_sums))*5000
-    Repeat_abund <- cbind(Genome_position, roll_sum_Fourier_sums)
+    Genome_position <- c(1:length(Fourier_sums))*5000
+    Repeat_abund <- cbind(Genome_position, Fourier_sums)
 
     #plot
     grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/histograms/", fname,"_Chr", chromosome, "_Repeat_abundance_sum.png"), width = 1400, height = 700)
-    plot(Genome_position, roll_sum_Fourier_sums)
+    plot(Genome_position, Fourier_sums)
     grDevices::dev.off()
 
     # write out total file
     utils::write.table(x=Repeat_abund, file=paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Repeat_abundance_sum.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
 
   }
+}
 
-  #----------------------------------
-  # # make non-overlapping 500kbp windows
-  # for (i in 1:length(Histogram_list)){
-  # chromosome=i
-  # All_spec0<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/Summary_output/output_data/Total_", fname, "_Chr", chromosome, "_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
 
-  # Fourier_sums <- NULL
-  # for (j in 0:(ncol(All_spec0)/100)-1){
-  # x=(j*100)
-  # y=x+99
-  # Fourier_sums[j] <- sum(colSums(All_spec0[,c(x:y)]))
-  # }
+#' roll_mean_Shannon
+#'
+#' Calculates and plots the Shannon diversity of the Fourier spectra
+#'
+#' @param nam input dataset
+#'
+#' @return output dataset
+#'
+#' @examples
+#' function()
+#' @export
+roll_mean_Shannon <- function(fname=fname, outpath=outpath){
 
-  # wind_size=4e6
-  # roll_sum_Fourier_sums <-  zoo::rollsum(Fourier_sums, wind_size, align = "center", fill = NA)
-  # Genome_position <- c(1:length(roll_sum_Fourier_sums))*500000
-  # Repeat_abund <- cbind(Genome_position, roll_sum_Fourier_sums)
-  # grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Repeat_abundance_sum_500kbp_", wind_size, ".png"), width = 1400, height = 700)
-  # plot(Genome_position, roll_sum_Fourier_sums)
-  # grDevices::dev.off()
-  # utils::write.table(x=Repeat_abund, file=paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Repeat_abundance_sum_500kbp_", wind_size, ".txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
-  # }
+  # get chromosome count
+  summary_path <- paste0(outpath,"/", fname, "/", "Summary_output/output_data")
+  file_list <- list.files(summary_path, full.names=TRUE)
+  Histogram_list <- file_list[grep("Histogram", file_list)]
+  Shannon_list <- file_list[grep("Shannon", file_list)]
+
+  ldf <- lapply(Histogram_list, read.table)
+  chr_list0 <- basename(Histogram_list)
+  chr_list1 <- stringr::str_split(chr_list0, "_", simplify =TRUE)
+  chr_list2 <- chr_list1[,3]
+  names(ldf) <- chr_list2
+  Histograms_total <- dplyr::bind_rows(ldf, .id = 'chromosome')
+  colnames(Histograms_total) <- c("Chromosome", "Repeat_length", "min_mean_seqval", "max_mean_seqval", "min_powsum_seqval", "max_powsum_seqval", "min_N_seqval", "max_N_seqval")
+  chromosome_list <- unique(as.factor(stringr::str_split(Histograms_total$Chromosome, "r", simplify =TRUE)[,2]))
+
+  #-------------------------------
+  # plot for 2Mbp overlapping windows
+  for (i in chromosome_list) {
+    chromosome=i
+    print(fname)
+    print(chromosome)
+
+    ################################
+    # read in total All_spec
+    All_spec0<-base::as.matrix(utils::read.table(paste0(outpath,"/", fname, "/Summary_output/output_data/Total_", fname, "_Chr", chromosome, "_All_spec_merged.txt"), header = TRUE, check.names = FALSE))
+
+    # remove blank/zero columns in All_spec
+    colnames(All_spec0)[ncol(All_spec0)]
+
+    # https://stackoverflow.com/questions/21530168/remove-columns-with-zero-values-from-a-dataframe
+    All_spec0[,which(colSums(All_spec0, na.rm = FALSE, dims = 1) < 1e-5)] <- NA
+    All_spec <- All_spec0[, !is.na(colSums(All_spec0 != 0)) & colSums(All_spec0 != 0) > 0]
+
+    #############################
+    All_spec <- as.matrix(All_spec)
+    All_spec_replen_sum <- apply(All_spec, 1, sum)
+    All_spec_norm <- All_spec/All_spec_replen_sum
+    All_spec_norm_t <- t(as.matrix(All_spec_norm))
+
+    # sum columns to get repeat abundance in 5kbp windows
+    Shannon_div <- vegan::diversity(All_spec_norm_t, index = "shannon")
+
+    Shannon_div[which(Shannon_div<=2)] <- NA
+
+    # join sums with genome positions
+    Genome_position <- c(1:length(Shannon_div))*5000
+    Shannon_div_data <- cbind(Genome_position, Shannon_div)
+
+    #plot
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/Shannon_div/", fname,"_Chr", chromosome, "_Shannon_div.png"), width = 1400, height = 700)
+    plot(Genome_position, Shannon_div)
+    grDevices::dev.off()
+
+    # write out total file
+    utils::write.table(x=Shannon_div_data, file=paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Shannon_div.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+
+  }
 }
 
 #' calculate_ranges
@@ -8171,6 +8212,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   file_list <- list.files(summary_path, full.names=TRUE)
   rollsumhist_list <- file_list[grep("Repeat_abundance_sum", file_list)]
 
+  # read in Repeat Abundance sums
   lsd <- lapply(rollsumhist_list, read.table)
   sd_chr_list0 <- basename(rollsumhist_list)
   sd_chr_list1 <- stringr::str_split(sd_chr_list0, "_", simplify =TRUE)
@@ -8181,6 +8223,8 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
 
   RepeatAbundance_total_parts <- RepeatAbundance_total[grep("-", RepeatAbundance_total$Chromosome),]
 
+  #-----------------------------
+  # join chromosome parts if >400Mbp
   if (nrow(RepeatAbundance_total_parts)>0){
     RepeatAbundance_total$Chrnum0 <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
     RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,1])
@@ -8192,53 +8236,78 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
     RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
   }
 
+  #--------------------------
+  # formatting
+
   RepeatAbundance_total$Genome_position <- as.numeric(as.character(RepeatAbundance_total$Genome_position))
   RepeatAbundance_total$RepeatAbundance <- as.numeric(as.character(RepeatAbundance_total$RepeatAbundance))
   RepeatAbundance_total$Chrnum <- as.numeric(as.character(RepeatAbundance_total$Chrnum))
 
-  print("plotting all chromosomes")
-  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.png"), width = 1000, height = 700)
-  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
-  print(
-    ggplot2::ggplot(data=RepeatAbundance_total, ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
-      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
-      ggplot2::facet_wrap(~Chrnum, scales = "free")+
-      ggplot2::theme_classic()
-  )
-  grDevices::dev.off()
-
-  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.pdf"))
-  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
-  print(
-    ggplot2::ggplot(data=RepeatAbundance_total, ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
-      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
-      ggplot2::facet_wrap(~Chrnum, scales = "free")+
-      ggplot2::theme_classic()
-  )
-  grDevices::dev.off()
+  #-------------------------------------
+  # Calculate max, min and ranges from roll sum data
 
   # find start and end of highly repeating regions based 1.5 SD from mean
-  RepeatAbund_cent <- data.frame()
+  RepeatAbund_cent_min <- data.frame()
   RepeatAbund_cent_max <- data.frame()
   RepeatAbund_min <- data.frame()
   RepeatAbund_max <- data.frame()
   RepeatAbund_length <- data.frame()
+  RepeatAbundTotal<- data.frame()
 
   for (chromosome in unique(RepeatAbundance_total$Chrnum)){
     RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chrnum == chromosome),]
+    subsetRepeatAbundance <- RepeatAbundance_chr$RepeatAbundance
+    subsetRepeatAbundance[c((length(subsetRepeatAbundance)-400):length(subsetRepeatAbundance))] <- NA
+
+    # run rolling sum
+    wind_size=80
+    RepeatAbund100 <-  zoo::rollsum(subsetRepeatAbundance, k=wind_size,  fill = NA, align = "center")
+
+    # run rolling sum
+    wind_size=1000
+    RepeatAbund500 <-  zoo::rollsum(subsetRepeatAbundance, k=wind_size, fill = NA, align = "center")
+
+    # join sums with genome positions
+    Repeat_abund_chr <- cbind(RepeatAbundance_chr, RepeatAbund100, RepeatAbund500)
+
+    #plot
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/histograms/", fname,"_Chr", chromosome, "_Repeat_abundance_rollsum_80.png"), width = 1400, height = 700)
+    plot(RepeatAbundance_chr$Genome_position, RepeatAbund100)
+    grDevices::dev.off()
+
+    #plot
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/histograms/", fname,"_Chr", chromosome, "_Repeat_abundance_rollsum_1000.png"), width = 1400, height = 700)
+    plot(RepeatAbundance_chr$Genome_position, RepeatAbund500)
+    grDevices::dev.off()
+
+    # write out total file
+    utils::write.table(x=Repeat_abund_chr, file=paste0(outpath,"/", fname, "/Summary_output/output_data/", fname,"_Chr", chromosome, "_Repeat_abundance_rollsum.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
+
+    Repeat_abund_chr <- as.data.frame(Repeat_abund_chr)
+
+    Repeat_abund_chr$Genome_position <- as.numeric(Repeat_abund_chr$Genome_position)
+    Repeat_abund_chr$RepeatAbundance <- as.numeric(Repeat_abund_chr$RepeatAbundance)
+    Repeat_abund_chr$RepeatAbund100 <- as.numeric(Repeat_abund_chr$RepeatAbund100)
+    Repeat_abund_chr$RepeatAbund500 <- as.numeric(Repeat_abund_chr$RepeatAbund500)
+
+    RepeatAbundTotal <- rbind(RepeatAbundTotal, Repeat_abund_chr)
+
+    #---------------------------------
 
     # find min position
-    cent_min <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance == min(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE))]
-    cent_max <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance == max(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE))]
+    cent_min <- Repeat_abund_chr$Genome_position[which(Repeat_abund_chr$RepeatAbund500 == min(Repeat_abund_chr$RepeatAbund500, na.rm=TRUE))]
+    cent_max <- Repeat_abund_chr$Genome_position[which(Repeat_abund_chr$RepeatAbund100 == max(Repeat_abund_chr$RepeatAbund100, na.rm=TRUE))]
 
     # find SD of data
-    SD_repeatAbund <- sd(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE)
+    SD_repeatAbund_up <- sd(Repeat_abund_chr$RepeatAbund100, na.rm=TRUE)
+    SD_repeatAbund_low <- sd(Repeat_abund_chr$RepeatAbund500, na.rm=TRUE)
 
-    thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (1.5* SD_repeatAbund)
-    thres_lower = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) - (1.5* SD_repeatAbund)
+    thres_upper = mean(Repeat_abund_chr$RepeatAbund100, na.rm=TRUE) + (2.5* SD_repeatAbund_up)
+    thres_lower = mean(Repeat_abund_chr$RepeatAbund500, na.rm=TRUE) - (1.75* SD_repeatAbund_low)
 
+    #-------------------------
     # find positions of - two SD less than mean
-    cent_range_wind <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance <= thres_lower )]/5000
+    cent_range_wind <- Repeat_abund_chr$Genome_position[which(Repeat_abund_chr$RepeatAbund500 <= thres_lower )]/50000
 
     # find range of these values
     # ChemoSpecUtils
@@ -8249,18 +8318,18 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
       cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
       cent_range[nrow(cent_range)+1,] <- c(0,0,0,0,0)
 
-      cent_range_pos_start <- cent_range[,1]*5000
-      cent_range_pos_end <- cent_range[,2]*5000
+      cent_range_pos_start <- cent_range[,1]*50000
+      cent_range_pos_end <- cent_range[,2]*50000
 
       SPP_l <- rep(fname, length(cent_range_pos_start))
       Chr_l <- rep(chromosome, length(cent_range_pos_start))
 
-      RepeatAbund_cent_chr <- cbind(SPP_l, Chr_l, cent_range_pos_start, cent_range_pos_end)
-      RepeatAbund_cent <- rbind(RepeatAbund_cent, RepeatAbund_cent_chr)
+      RepeatAbund_cent_chr_min <- cbind(SPP_l, Chr_l, cent_range_pos_start, cent_range_pos_end)
+      RepeatAbund_cent_min <- rbind(RepeatAbund_cent_min, RepeatAbund_cent_chr_min)
     }
     #-------------------------------
     # find positions of + two SD more than mean
-    cent_range_wind_max <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper)]/5000
+    cent_range_wind_max <- Repeat_abund_chr$Genome_position[which(Repeat_abund_chr$RepeatAbund100 >= thres_upper)]/5000
 
     if (length(cent_range_wind_max)>0) {
       cent_range_max <- ChemoSpecUtils::check4Gaps(cent_range_wind_max)
@@ -8284,39 +8353,42 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
     RepeatAbund_max_chr <- c("MaxRepeatAbund", fname, chromosome, cent_max)
     RepeatAbund_max <- rbind(RepeatAbund_max, RepeatAbund_max_chr)
 
-    chr_length <- max(RepeatAbundance_chr$Genome_position)
+    chr_length <- max(Repeat_abund_chr$Genome_position)
     RepeatAbund_length_chr <- c("Length", fname, chromosome, chr_length)
     RepeatAbund_length <- rbind(RepeatAbund_length, RepeatAbund_length_chr)
 
   }
 
   # remove zeros if files are not empty
-  if (length(RepeatAbund_cent)>0){
-    RepeatAbund_cent <- RepeatAbund_cent[-which(RepeatAbund_cent[,3] == 0),]
-    RepeatAbund_cent <- as.data.frame(RepeatAbund_cent)
-    RepeatAbund_cent$Label <- rep("MinRepeatAbund", nrow(RepeatAbund_cent))
+  if (length(RepeatAbund_cent_min)>0){
+    RepeatAbund_cent_min <- RepeatAbund_cent_min[-which(RepeatAbund_cent_min[,3] == 0),]
+    RepeatAbund_cent_min <- as.data.frame(RepeatAbund_cent_min)
+    RepeatAbund_cent_min$Label <- rep("MinRepeatAbund", nrow(RepeatAbund_cent_min))
   }
   if(length(RepeatAbund_cent_max)>0){
     RepeatAbund_cent_max <- RepeatAbund_cent_max[-which(RepeatAbund_cent_max[,3] == 0),]
     RepeatAbund_cent_max <- as.data.frame(RepeatAbund_cent_max)
     RepeatAbund_cent_max$Label <- rep("MaxRepeatAbund", nrow(RepeatAbund_cent_max))
   }
-  if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent)>0){
-    colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent)
+  if (length(RepeatAbund_cent_max)>0 && length(RepeatAbund_cent_min)>0){
+    colnames(RepeatAbund_cent_max) <-  colnames(RepeatAbund_cent_min)
   }
-
-  RepeatAbund_cent_total <-  rbind(RepeatAbund_cent_max, RepeatAbund_cent)
 
   print(RepeatAbund_max)
   print(RepeatAbund_min)
+
+  RepeatAbund_cent <- rbind(RepeatAbund_cent_min, RepeatAbund_cent_max)
 
   # output final files
   utils::write.table(x=RepeatAbund_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_max, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_prediction_max.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=RepeatAbund_length, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname, "_RepeatAbund_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
-  utils::write.table(x=RepeatAbund_cent_total, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=RepeatAbund_cent_max, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_maxrange.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=RepeatAbund_cent_min, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_minrange.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
+  utils::write.table(x=RepeatAbund_cent, file=paste0(outpath,"/", fname,"/Summary_output/histograms/", fname,  "_RepeatAbund_centromere_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
 
   #-----------------------------------------------
+  # get ranges for Shannon diversity
 
   Shannon_list <- file_list[grep("Shannon", file_list)]
 
@@ -8329,6 +8401,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   Shannon_div_total <- dplyr::bind_rows(lsd, .id = 'chromosome')
   colnames(Shannon_div_total) <- c("Chromosome", "Genome_position", "Shannon_div")
 
+  #--------------------------------------
   # join parts
   Shannon_div_total_parts <- Shannon_div_total[grep("-", Shannon_div_total$Chromosome),]
 
@@ -8346,26 +8419,39 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   Shannon_div_total$Genome_position <- as.numeric(as.character(Shannon_div_total$Genome_position))
   Shannon_div_total$Shannon_div <- as.numeric(as.character(Shannon_div_total$Shannon_div))
 
-  # define window
-  bin_size=500
-  
+  #---------------------------------------------
+
   # find start and end of highly repeating regions based 1SD from min
   Shannon_cent <- data.frame()
   Shannon_min <- data.frame()
   Shannon_length <- data.frame()
+  Shannon <- data.frame()
+
   for (chromosome in unique(Shannon_div_total$Chrnum)){
 
-    Shannon_div_chr <- Shannon_div_total[which(Shannon_div_total$Chrnum == chromosome),]
+    Shannon_div_chr0 <- Shannon_div_total[which(Shannon_div_total$Chrnum == chromosome),]
 
-    Shannon_div_chr$roll_mean_Shannon <- zoo::rollapply(Shannon_div_chr$Shannon_div, width = bin_size, FUN=mean, fill = NA, partial=(bin_size/2))
+    Shannon_div_chr <- Shannon_div_chr0[which(!is.na(Shannon_div_chr0$Shannon_div)),]
+
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/Shannon_div/", fname,"_Chr", chromosome, "_Shannon_div.png"), width = 1400, height = 700)
+    plot(Shannon_div_chr$Genome_position, Shannon_div_chr$Shannon_div)
+    grDevices::dev.off()
+
+    bin_size=500
+    Shannon_div_chr$roll_mean_Shannon <- zoo::rollmean(Shannon_div_chr$Shannon_div, k=bin_size, fill = NA, align = "center")
 
     # find min position
     cent_min <- Shannon_div_chr$Genome_position[which(Shannon_div_chr$roll_mean_Shannon == min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE))]
+    print(min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE))
+
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/Shannon_div/", fname,"_Chr", chromosome, "_Shannon_div_rollmean500.png"), width = 1400, height = 700)
+    plot(Shannon_div_chr$Genome_position, Shannon_div_chr$roll_mean_Shannon)
+    grDevices::dev.off()
 
     # find SD of data
     SD_repeatAbund <- sd(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE)
 
-    thres = min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE) + (1 * SD_repeatAbund)
+    thres = min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE) + (0.5 * SD_repeatAbund)
 
     # find positions of + two SD from min
     cent_range_wind <- Shannon_div_chr$Genome_position[which(Shannon_div_chr$roll_mean_Shannon <= thres)]/5000
@@ -8395,6 +8481,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
     chr_length <- max(Shannon_div_chr$Genome_position)
     Shannon_length_chr <- c("Length", fname, chromosome, chr_length)
     Shannon_length <- rbind(Shannon_length, Shannon_length_chr)
+    Shannon <- rbind(Shannon, Shannon_div_chr)
 
   }
 
@@ -8407,6 +8494,117 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   utils::write.table(x=Shannon_min, file=paste0(outpath,"/", fname,"/Summary_output/Shannon_div/", fname, "_Shannon_centromere_prediction_min.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
   utils::write.table(x=Shannon_length, file=paste0(outpath,"/", fname,"/Summary_output/Shannon_div/", fname, "_Shannon_centromere_prediction_length.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = FALSE)
 
+
+  #-------------------------
+  # plot all chromosomes
+
+  print("plotting all chromosomes")
+  Shannon$Chrnum <- as.numeric(as.character(Shannon$Chrnum))
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Shannon_div.png"), width = 1000, height = 700)
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=Shannon, ggplot2::aes(x=Genome_position, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=Shannon_div))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Shannon_div.pdf"))
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=Shannon, ggplot2::aes(x=Genome_position, y=Shannon_div))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=Shannon_div))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #-------------------------------
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_roll_mean_Shannon.png"), width = 1000, height = 700)
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=Shannon, ggplot2::aes(x=Genome_position, y=roll_mean_Shannon))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=roll_mean_Shannon))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_roll_mean_Shannon.pdf"))
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=Shannon, ggplot2::aes(x=Genome_position, y=roll_mean_Shannon))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=roll_mean_Shannon))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #-------------------------------
+  RepeatAbundTotal$Chrnum <- as.numeric(as.character(RepeatAbundTotal$Chrnum))
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.png"), width = 1000, height = 700)
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_Repeat_Sum_Abundance.pdf"))
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbundance))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+  #-------------------------------
+
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbund100.png"), width = 1000, height = 700)
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepeatAbund100))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbund100))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbund100.pdf"))
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepAbund100))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbund100))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  #-------------------------------
+
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbund500.png"), width = 1000, height = 700)
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepeatAbund500))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbund500))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
+
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbund500.pdf"))
+  # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
+  print(
+    ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepAbund500))+
+      ggplot2::geom_point(ggplot2::aes(x=Genome_position, y=RepeatAbund500))+
+      ggplot2::facet_wrap(~Chrnum, scales = "free")+
+      ggplot2::theme_classic()
+  )
+  grDevices::dev.off()
 }
 
 #' cent_finalize
@@ -8488,189 +8686,144 @@ cent_finalize <- function(fname=fname, outpath=outpath){
 
   utils::write.table(x=Total_cent_range, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_total_possible_range.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
 
+
+  #####################################
+  # Plot prediction comparisons
+
+  #--------------------------------
+  # read in total possible positions
+  total_cent_pos <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/",fname, "_total_possible.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
+
   #-------------------------------------
-  # Not used currently
-  # check if any Repabund is 1 SD above mean
+  # read in total possible ranges
+  total_cent_ranges <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/",fname, "_total_possible_range.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
 
-  # cent_final <- NULL
-  # range_final <- NULL
-  # for (chromosome in unique(RepeatAbundance_total$Chromosome)){
-  # RepeatAbundance_chr <- RepeatAbundance_total[which(RepeatAbundance_total$Chromosome == chromosome),]
+  #-------------------------------------
+  # read in chromosome lengths
+  chr_sizes0 <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/histograms/",fname, "_RepeatAbund_centromere_prediction_length.txt"), sep= "\t", header = FALSE, check.names = FALSE)))
 
-  # # find SD of data
-  # SD_repeatAbund <- sd(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE)
-  # thres_upper = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (2* SD_repeatAbund)
-  # # find positions of +2 SD from mean
-  # cent_max <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper)]/5000
+  #-------------------------------------
+  # read in known cent positions
+  # Known_cent0 <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath, "/Known_centromeres_Sept2024.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
+  # Known_cent <-  as.data.frame(cbind(Known_cent0$Spp, Known_cent0$Chr, as.numeric(Known_cent0$Known),  as.numeric(Known_cent0$Start),  as.numeric(Known_cent0$End), Known_cent0$NewName))
+  # Known_cent[,7] <-  rep("Known", nrow(Known_cent))
+  # colnames(Known_cent) <-  c("Spp", "Chr", "Centromere", "Start", "End", "Mixed", "Label")
 
-  # thres_upper2 = mean(RepeatAbundance_chr$RepeatAbundance, na.rm=TRUE) + (3* SD_repeatAbund)
-  # # find positions of +3 SD from mean
-  # cent_max2 <- RepeatAbundance_chr$Genome_position[which(RepeatAbundance_chr$RepeatAbundance >= thres_upper2)]/5000
+  #####################################
+  # Make mixed column for joining
+  total_cent_pos$Mixed <- paste0(total_cent_pos$Spp,  "_", total_cent_pos$Chr)
+  total_cent_ranges$Mixed <- paste0(total_cent_ranges$Spp,  "_", total_cent_ranges$Chr)
 
-  # Total_cent <- as.data.frame(Total_cent)
-  # Total_cent_range <- as.data.frame(Total_cent_range)
-  # if (length(cent_max2)>0) {
-  # centromeres_chr <- Total_cent[which(Total_cent$Chr==chromosome & Total_cent$Label=="MaxRepeatAbund"),]
-  # range_chr <- Total_cent_range[which(Total_cent_range$Chr==chromosome & Total_cent_range$Label=="MaxRepeatAbund"),]
-  # } else {
-  # if (length(cent_max)>0) {
-  # centromeres_chr <- Total_cent[which(Total_cent$Chr==chromosome & Total_cent$Label=="MinRepeatAbund"),]
-  # range_chr <- Total_cent_range[which(Total_cent_range$Chr==chromosome & Total_cent_range$Label=="MinRepeatAbund"),]
-  # }else {
-  # centromeres_chr <- Total_cent[which(Total_cent$Chr==chromosome & Total_cent$Label=="Shannon"),]
-  # range_chr <- Total_cent_range[which(Total_cent_range$Chr==chromosome & Total_cent_range$Label=="Shannon"),]
-  # }}
+  # make column names
+  colnames(total_cent_pos) <-   c("Label","Spp", "Chr",  "Centromere", "Mixed")
+  colnames(total_cent_ranges) <-  c("Label","Spp", "Chr",  "Start", "End", "Mixed")
 
-  # cent_final <- rbind(cent_final, centromeres_chr)
-  # range_final <- rbind(range_final, range_chr)
-  # }
+  # subset known data
+  # Known_cent_pos <- as.data.frame(cbind(Known_cent$Label, Known_cent$Spp, Known_cent$Chr, Known_cent$Centromere,  Known_cent$Mixed))
+  # Known_cent_range <- as.data.frame(cbind(Known_cent$Label, Known_cent$Spp, Known_cent$Chr, Known_cent$Start, Known_cent$End, Known_cent$Mixed))
 
-  # range_final_gb <- dplyr::group_by(range_final, Label, Spp, Chr)
-  # range_final0 <- dplyr::summarise(range_final_gb, Start = min(Start), End = max(End))
+  # colnames(Known_cent_pos) <-  c("Label","Spp", "Chr",  "Centromere", "Mixed")
+  # colnames(Known_cent_range) <-  c("Label","Spp", "Chr",  "Start", "End", "Mixed")
 
-  #print(cent_final)
-  #print(range_final0)
+  # define ranges as total
+  cent_range <- total_cent_ranges
 
-  # write out final centromere predictions
-  #utils::write.table(x=cent_final, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_centromeres.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
-  #utils::write.table(x=range_final, file=paste0(outpath,"/", fname, "/Summary_output/", fname,"_cent_ranges.txt"), sep = "\t", dec = ".",row.names = FALSE, col.names = TRUE)
+  # make predicted values in Mbp
+  cent_range$Start <- as.numeric(cent_range$Start)/1e6
+  cent_range$End <- as.numeric(cent_range$End)/1e6
+  total_cent_pos$Centromere <- as.numeric(total_cent_pos$Centromere)/1e6
 
-#####################################
-# Plot prediction comparisons
+  # make known values numeric
+  # Known_cent_pos$Centromere <- as.numeric(Known_cent_pos$Centromere)
+  # Known_cent_range$Start <- as.numeric(Known_cent_range$Start)
+  # Known_cent_range$End <- as.numeric(Known_cent_range$End)
 
-#--------------------------------
-# read in total possible positions
-total_cent_pos <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/",fname, "_total_possible.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
+  # join all the data
+  Total_cent <-  total_cent_pos # rbind(total_cent_pos, Known_cent_pos)
+  Total_range <- cent_range # rbind(cent_range, Known_cent_range)
 
-#-------------------------------------
-# read in total possible ranges
-total_cent_ranges <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/",fname, "_total_possible_range.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
+  # remove NA values
+  Total_cent <- Total_cent[which(!is.na(Total_cent$Centromere)),]
 
-#-------------------------------------
-# read in chromosome lengths
-chr_sizes0 <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath,"/", fname,"/Summary_output/histograms/",fname, "_RepeatAbund_centromere_prediction_length.txt"), sep= "\t", header = FALSE, check.names = FALSE)))
+  ##############################
+  # Get centromere lengths
 
-#-------------------------------------
-# read in known cent positions
-# Known_cent0 <- as.data.frame(base::as.matrix(utils::read.table(paste0(outpath, "/Known_centromeres_Sept2024.txt"), sep= "\t", header = TRUE, check.names = FALSE)))
-# Known_cent <-  as.data.frame(cbind(Known_cent0$Spp, Known_cent0$Chr, as.numeric(Known_cent0$Known),  as.numeric(Known_cent0$Start),  as.numeric(Known_cent0$End), Known_cent0$NewName))
-# Known_cent[,7] <-  rep("Known", nrow(Known_cent))
-# colnames(Known_cent) <-  c("Spp", "Chr", "Centromere", "Start", "End", "Mixed", "Label")
+  colnames(chr_sizes0) <- c("Label", "Spp", "Chr", "Length")
+  chr_sizes0$Mixed <- paste0(chr_sizes0$Spp,  "_Chr", chr_sizes0$Chr)
+  chr_sizes0$Length <- as.numeric(chr_sizes0$Length)/1e6
 
-#####################################
-# Make mixed column for joining
-total_cent_pos$Mixed <- paste0(total_cent_pos$Spp,  "_", total_cent_pos$Chr)
-total_cent_ranges$Mixed <- paste0(total_cent_ranges$Spp,  "_", total_cent_ranges$Chr)
+  #############################
+  # Plot the chromosome known, shannon and abundance sum centromeres
 
-# make column names
-colnames(total_cent_pos) <-   c("Label","Spp", "Chr",  "Centromere", "Mixed")
-colnames(total_cent_ranges) <-  c("Label","Spp", "Chr",  "Start", "End", "Mixed")
+  library(tidyverse)
+  #library(statebins)
+  library(ggplot2)
 
-# subset known data
-# Known_cent_pos <- as.data.frame(cbind(Known_cent$Label, Known_cent$Spp, Known_cent$Chr, Known_cent$Centromere,  Known_cent$Mixed))
-# Known_cent_range <- as.data.frame(cbind(Known_cent$Label, Known_cent$Spp, Known_cent$Chr, Known_cent$Start, Known_cent$End, Known_cent$Mixed))
+  cent_data_formatted <-  dplyr::mutate(Total_cent, pred_vert = dplyr::case_when(Label == "MaxRepeatAbund" ~ 0.6,
+                                                                                 Label == "MinRepeatAbund"~ 0.3,
+                                                                                 Label == "Histogram" ~ 0.3,
+                                                                                 Label == "Shannon" ~ 0))
+  cent_ranges_formatted <-  dplyr::mutate(Total_range, pred_vert = dplyr::case_when(Label == "MaxRepeatAbund" ~ 0.6,
+                                                                                    Label == "MinRepeatAbund"~ 0.3,
+                                                                                    Label == "Shannon" ~ 0))
 
-# colnames(Known_cent_pos) <-  c("Label","Spp", "Chr",  "Centromere", "Mixed")
-# colnames(Known_cent_range) <-  c("Label","Spp", "Chr",  "Start", "End", "Mixed")
+  cent_data_formatted2 <- tidyr::separate(cent_data_formatted, Mixed, c("SPP","Chromosome"), "_Chr")
+  cent_ranges_formatted2 <- tidyr::separate(cent_ranges_formatted, Mixed, c("SPP","Chromosome"), "_Chr")
 
-# define ranges as total
-cent_range <- total_cent_ranges
+  chr_sizes <- tidyr::separate(chr_sizes0, Mixed, c("SPP","Chromosome"), "_Chr")
+  chr_sizes$SPP <- chr_sizes$Spp
+  chr_sizes$Chr <- paste0("Chr", chr_sizes$Chromosome)
 
-# make predicted values in Mbp
-cent_range$Start <- as.numeric(cent_range$Start)/1e6
-cent_range$End <- as.numeric(cent_range$End)/1e6
-total_cent_pos$Centromere <- as.numeric(total_cent_pos$Centromere)/1e6
+  chr_sizes$Chromosome <- as.numeric(chr_sizes$Chromosome)
+  cent_data_formatted2$Chromosome <- as.numeric(cent_data_formatted2$Chromosome)
+  cent_ranges_formatted2$Chromosome <- as.numeric(cent_ranges_formatted2$Chromosome)
+  cent_ranges_formatted2$Label <- as.factor(cent_ranges_formatted2$Label)
 
-# make known values numeric
-# Known_cent_pos$Centromere <- as.numeric(Known_cent_pos$Centromere)
-# Known_cent_range$Start <- as.numeric(Known_cent_range$Start)
-# Known_cent_range$End <- as.numeric(Known_cent_range$End)
+  chrnum <- length(unique(chr_sizes$Chr))
+  #--------------------------
+  # plot
+  library(ggplot2)
+  grDevices::png(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_prediction_comparisons.png"), height=50*chrnum, width=500)
+  print(
+    ggplot2::ggplot(chr_sizes) +
+      ggplot2::geom_rect(data=chr_sizes, ggplot2::aes(xmin=0,xmax=Length,ymin=Chromosome-0.5,ymax=Chromosome+0.5),color="black",fill=NA) +
+      ggplot2::geom_rect(data=cent_ranges_formatted2,ggplot2::aes(xmin=Start,xmax=End,ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.3-0.5,fill=Label),color=NA) +
+      #ggplot2::geom_rect(data=cent_data_formatted2,ggplot2::aes(xmin=(Centromere-0.1),xmax=(Centromere+0.1),ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.3-0.5,fill="grey"),color=NA) +
+      ggplot2::scale_fill_manual(values =c("#FFB31C","green","purple"),name="Predictor",
+                                 labels = c(expression("RepAbundMax"),expression("RepAbundMin"),expression("Shannon"))) +
+      ggplot2::scale_y_reverse(breaks=c(1:nrow(chr_sizes))) +
+      xlab("Mbp") + ylab("Chromosome") +
+      ggplot2::theme_classic() +
+      ggplot2::theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                     panel.background = element_blank(), axis.line = element_blank(),
+                     legend.position="bottom",
+                     axis.text.y = element_text(margin=margin(0,-15,0,0)),
+                     axis.ticks.y = element_blank())+
+      ggplot2::facet_wrap(~SPP, scales = "free")
+  )
+  grDevices::dev.off()
 
-# join all the data
-Total_cent <-  total_cent_pos # rbind(total_cent_pos, Known_cent_pos)
-Total_range <- cent_range # rbind(cent_range, Known_cent_range)
-
-# remove NA values
-Total_cent <- Total_cent[which(!is.na(Total_cent$Centromere)),]
-
-##############################
-# Get centromere lengths
-
-colnames(chr_sizes0) <- c("Label", "Spp", "Chr", "Length")
-chr_sizes0$Mixed <- paste0(chr_sizes0$Spp,  "_Chr", chr_sizes0$Chr)
-chr_sizes0$Length <- as.numeric(chr_sizes0$Length)/1e6
-
-#############################
-# Plot the chromosome known, shannon and abundance sum centromeres
-
-library(tidyverse)
-#library(statebins)
-library(ggplot2)
-
-cent_data_formatted <-  dplyr::mutate(Total_cent, pred_vert = dplyr::case_when(Label == "MaxRepeatAbund" ~ 0.66,
-                                                                              Label == "MinRepeatAbund"~ 0.33,
-                                                                              Label == "Histogram" ~ 0.33,
-                                                                              Label == "Shannon" ~ 0))
-cent_ranges_formatted <-  dplyr::mutate(Total_range, pred_vert = dplyr::case_when(Label == "MaxRepeatAbund" ~ 0.66,
-                                                                               Label == "MinRepeatAbund"~ 0.33,
-                                                                               Label == "Shannon" ~ 0))
-
-cent_data_formatted2 <- tidyr::separate(cent_data_formatted, Mixed, c("SPP","Chromosome"), "_Chr")
-cent_ranges_formatted2 <- tidyr::separate(cent_ranges_formatted, Mixed, c("SPP","Chromosome"), "_Chr")
-
-chr_sizes <- tidyr::separate(chr_sizes0, Mixed, c("SPP","Chromosome"), "_Chr")
-chr_sizes$SPP <- chr_sizes$Spp
-chr_sizes$Chr <- paste0("Chr", chr_sizes$Chromosome)
-
-chr_sizes$Chromosome <- as.numeric(chr_sizes$Chromosome)
-cent_data_formatted2$Chromosome <- as.numeric(cent_data_formatted2$Chromosome)
-cent_ranges_formatted2$Chromosome <- as.numeric(cent_ranges_formatted2$Chromosome)
-cent_ranges_formatted2$Label <- as.factor(cent_ranges_formatted2$Label)
-
-chrnum <- length(unique(chr_sizes$Chr))
-#--------------------------
-# plot
-library(ggplot2)
-grDevices::png(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_prediction_comparisons.png"), height=50*chrnum, width=500)
-print(
-  ggplot2::ggplot(chr_sizes) +
-  ggplot2::geom_rect(data=chr_sizes, ggplot2::aes(xmin=0,xmax=Length,ymin=Chromosome-0.5,ymax=Chromosome+0.5),color="black",fill=NA) +
-  ggplot2::geom_rect(data=cent_ranges_formatted2,ggplot2::aes(xmin=Start,xmax=End,ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill=Label),color=NA) +
-  #ggplot2::geom_rect(data=cent_data_formatted2,ggplot2::aes(xmin=(Centromere-0.1),xmax=(Centromere+0.1),ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill="grey"),color=NA) +
-    ggplot2::scale_fill_manual(values =c("#FFB31C","green","purple"),name="Predictor",
-                               labels = c(expression("RepAbundMin"),expression("Shannon"),expression("RepAbundMax"))) +
-  ggplot2::scale_y_reverse(breaks=c(1:nrow(chr_sizes))) +
-  xlab("Mbp") + ylab("Chromosome") +
-  ggplot2::theme_classic() +
-  ggplot2::theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_blank(),
-        legend.position="bottom",
-        axis.text.y = element_text(margin=margin(0,-15,0,0)),
-        axis.ticks.y = element_blank())+
-  ggplot2::facet_wrap(~SPP, scales = "free")
-)
-grDevices::dev.off()
-
-grDevices::pdf(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_prediction_comparisons.pdf"))
-print(
-  ggplot2::ggplot(chr_sizes) +
-  ggplot2::geom_rect(data=chr_sizes, ggplot2::aes(xmin=0,xmax=Length,ymin=Chromosome-0.5,ymax=Chromosome+0.5),color="black",fill=NA) +
-  ggplot2::geom_rect(data=cent_ranges_formatted2,ggplot2::aes(xmin=Start,xmax=End,ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill=Label),color=NA) +
-  #ggplot2::geom_rect(data=cent_data_formatted2,ggplot2::aes(xmin=(Centromere-0.1),xmax=(Centromere+0.1),ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.25-0.5,fill="grey"),color=NA) +
-    ggplot2::scale_fill_manual(values =c("#FFB31C","green","purple"),name="Predictor",
-                               labels = c(expression("RepAbundMin"),expression("Shannon"),expression("RepAbundMax"))) +
-  ggplot2::scale_y_reverse(breaks=c(1:nrow(chr_sizes))) +
-  xlab("Mbp") + ylab("Chromosome") +
-  ggplot2::theme_classic() +
-  ggplot2::theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_blank(),
-        legend.position="bottom",
-        axis.text.y = element_text(margin=margin(0,-15,0,0)),
-        axis.ticks.y = element_blank())+
-  ggplot2::facet_wrap(~SPP, scales = "free")
-)
-grDevices::dev.off()
+  grDevices::pdf(paste0(outpath,"/", fname,"/Summary_output/",fname, "_centromere_prediction_comparisons.pdf"))
+  print(
+    ggplot2::ggplot(chr_sizes) +
+      ggplot2::geom_rect(data=chr_sizes, ggplot2::aes(xmin=0,xmax=Length,ymin=Chromosome-0.5,ymax=Chromosome+0.5),color="black",fill=NA) +
+      ggplot2::geom_rect(data=cent_ranges_formatted2,ggplot2::aes(xmin=Start,xmax=End,ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.3-0.5,fill=Label),color=NA) +
+      #ggplot2::geom_rect(data=cent_data_formatted2,ggplot2::aes(xmin=(Centromere-0.1),xmax=(Centromere+0.1),ymin=Chromosome+pred_vert-0.5,ymax=Chromosome+pred_vert+0.3-0.5,fill="grey"),color=NA) +
+      ggplot2::scale_fill_manual(values =c("#FFB31C","green","purple"),name="Predictor",
+                                 labels = c(expression("RepAbundMax"),expression("RepAbundMin"),expression("Shannon"))) +
+      ggplot2::scale_y_reverse(breaks=c(1:nrow(chr_sizes))) +
+      xlab("Mbp") + ylab("Chromosome") +
+      ggplot2::theme_classic() +
+      ggplot2::theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                     panel.background = element_blank(), axis.line = element_blank(),
+                     legend.position="bottom",
+                     axis.text.y = element_text(margin=margin(0,-15,0,0)),
+                     axis.ticks.y = element_blank())+
+      ggplot2::facet_wrap(~SPP, scales = "free")
+  )
+  grDevices::dev.off()
 }
+
 #----------------------------------------
 # Create documentations for functions above
 # devtools::document()

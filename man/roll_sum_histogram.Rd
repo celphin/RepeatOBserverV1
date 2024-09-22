@@ -13,7 +13,7 @@ roll_sum_histogram(fname = fname, outpath = outpath)
 output dataset
 }
 \description{
-Calculates and plots the roll sum abundance from the summary directory files. This code can only be run once the rest of the progam is complete.
+Calculates and plots the summed repeat abundance from the Fourier spectra summary directory files. This code can only be run once the rest of the progam is complete.
 }
 \examples{
 function()
