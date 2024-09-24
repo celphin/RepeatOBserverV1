@@ -22,7 +22,10 @@ Imports:
     parallel,
     rapportools,
     zoo,
-    ChemoSpecUtils
+    ChemoSpecUtils,
+    ggplot2,
+    tidyverse,
+    dplyr
 Suggests: 
     knitr,
     rmarkdown
