@@ -413,7 +413,7 @@ print("plot all chromosomes roll_sum_histogram and Shannon starting")
 # plot all chromosomes shannon diversity and histograms in one plot
 plot_all_chromosomes(fname=fname, inpath=inpath, outpath=outpath)
 roll_sum_histogram(fname=fname, outpath=outpath)
-roll_mean_Shannon(fname=fname, outpath=outpath)
+roll_mean_diversity(fname=fname, outpath=outpath)
 calculate_ranges(fname=fname, outpath=outpath)
 cent_finalize(fname=fname, outpath=outpath)
 

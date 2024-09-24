@@ -8121,7 +8121,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
 }
 
 
-#' roll_mean_Shannon
+#' roll_mean_diversity
 #'
 #' Calculates and plots the Shannon diversity of the Fourier spectra
 #'
@@ -8132,7 +8132,7 @@ roll_sum_histogram <- function(fname=fname, outpath=outpath){
 #' @examples
 #' function()
 #' @export
-roll_mean_Shannon <- function(fname=fname, outpath=outpath){
+roll_mean_diversity <- function(fname=fname, outpath=outpath){
 
   # get chromosome count
   summary_path <- paste0(outpath,"/", fname, "/", "Summary_output/output_data")
