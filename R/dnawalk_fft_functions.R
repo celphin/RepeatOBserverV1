@@ -8204,7 +8204,10 @@ roll_mean_diversity <- function(fname=fname, outpath=outpath){
 #' @examples
 #' function()
 #' @export
-calculate_ranges <- function(fname=fname, outpath=outpath){
+calculate_ranges <- function(fname=fname, outpath=outpath,
+                             Shannon_bin_size=500, Shannon_SD=2,
+                             RepAbundMax_bin_size=80, RepAbundMax_SD=2.5,
+                             RepAbundMin_bin_size=500, RepAbundMin_SD=2){
 
   #-----------------------
   # Read in data for all chromosomes and plot
@@ -8260,23 +8263,21 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
     subsetRepeatAbundance[c((length(subsetRepeatAbundance)-400):length(subsetRepeatAbundance))] <- NA
 
     # run rolling sum
-    wind_size=80
-    RepeatAbund100 <-  zoo::rollsum(subsetRepeatAbundance, k=wind_size,  fill = NA, align = "center")
+    RepeatAbund100 <-  zoo::rollsum(subsetRepeatAbundance, k=RepAbundMax_bin_size,  fill = NA, align = "center")
 
     # run rolling sum
-    wind_size=1000
-    RepeatAbund500 <-  zoo::rollsum(subsetRepeatAbundance, k=wind_size, fill = NA, align = "center")
+    RepeatAbund500 <-  zoo::rollsum(subsetRepeatAbundance, k=RepAbundMin_bin_size, fill = NA, align = "center")
 
     # join sums with genome positions
     Repeat_abund_chr <- cbind(RepeatAbundance_chr, RepeatAbund100, RepeatAbund500)
 
     #plot
-    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/histograms/", fname,"_Chr", chromosome, "_Repeat_abundance_rollsum_80.png"), width = 1400, height = 700)
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/histograms/", fname,"_Chr", chromosome, "_", RepAbundMax_bin_size,"_Repeat_abundance_rollsum_max.png"), width = 1400, height = 700)
     plot(RepeatAbundance_chr$Genome_position, RepeatAbund100)
     grDevices::dev.off()
 
     #plot
-    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/histograms/", fname,"_Chr", chromosome, "_Repeat_abundance_rollsum_1000.png"), width = 1400, height = 700)
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/histograms/", fname,"_Chr", chromosome, "_", RepAbundMin_bin_size,"_Repeat_abundance_rollsum_min.png"), width = 1400, height = 700)
     plot(RepeatAbundance_chr$Genome_position, RepeatAbund500)
     grDevices::dev.off()
 
@@ -8302,8 +8303,8 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
     SD_repeatAbund_up <- sd(Repeat_abund_chr$RepeatAbund100, na.rm=TRUE)
     SD_repeatAbund_low <- sd(Repeat_abund_chr$RepeatAbund500, na.rm=TRUE)
 
-    thres_upper = mean(Repeat_abund_chr$RepeatAbund100, na.rm=TRUE) + (2.5* SD_repeatAbund_up)
-    thres_lower = mean(Repeat_abund_chr$RepeatAbund500, na.rm=TRUE) - (1.75* SD_repeatAbund_low)
+    thres_upper = mean(Repeat_abund_chr$RepeatAbund100, na.rm=TRUE) + (RepAbundMax_SD* SD_repeatAbund_up)
+    thres_lower = mean(Repeat_abund_chr$RepeatAbund500, na.rm=TRUE) - (RepAbundMin_SD* SD_repeatAbund_low)
 
     #-------------------------
     # find positions of - two SD less than mean
@@ -8437,23 +8438,22 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
     plot(Shannon_div_chr$Genome_position, Shannon_div_chr$Shannon_div)
     grDevices::dev.off()
 
-    bin_size=500
-    Shannon_div_chr$roll_mean_Shannon <- zoo::rollmean(Shannon_div_chr$Shannon_div, k=bin_size, fill = NA, align = "center")
+    Shannon_div_chr$roll_mean_Shannon <- zoo::rollmean(Shannon_div_chr$Shannon_div, k=Shannon_bin_size, fill = NA, align = "center")
 
     # find min position
     cent_min <- Shannon_div_chr$Genome_position[which(Shannon_div_chr$roll_mean_Shannon == min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE))]
     print(min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE))
 
-    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/Shannon_div/", fname,"_Chr", chromosome, "_Shannon_div_rollmean500.png"), width = 1400, height = 700)
+    grDevices::png(filename = paste0(outpath,"/", fname, "/Summary_output/Shannon_div/", fname,"_Chr", chromosome, "_Shannon_div_rollmean_",Shannon_bin_size,".png"), width = 1400, height = 700)
     plot(Shannon_div_chr$Genome_position, Shannon_div_chr$roll_mean_Shannon)
     grDevices::dev.off()
 
     # find SD of data
     SD_repeatAbund <- sd(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE)
 
-    thres = min(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE) + (0.5 * SD_repeatAbund)
+    thres = mean(Shannon_div_chr$roll_mean_Shannon, na.rm=TRUE) - (Shannon_SD * SD_repeatAbund)
 
-    # find positions of + two SD from min
+    # find positions of + 1 SD from mean
     cent_range_wind <- Shannon_div_chr$Genome_position[which(Shannon_div_chr$roll_mean_Shannon <= thres)]/5000
 
     # find range of these values
@@ -8564,7 +8564,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   grDevices::dev.off()
   #-------------------------------
 
-  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbund100.png"), width = 1000, height = 700)
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbundmin.png"), width = 1000, height = 700)
   # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
   print(
     ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepeatAbund100))+
@@ -8574,7 +8574,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   )
   grDevices::dev.off()
 
-  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbund100.pdf"))
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbundmin.pdf"))
   # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
   print(
     ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepAbund100))+
@@ -8586,7 +8586,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
 
   #-------------------------------
 
-  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbund500.png"), width = 1000, height = 700)
+  grDevices::png(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbundmax.png"), width = 1000, height = 700)
   # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
   print(
     ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepeatAbund500))+
@@ -8596,7 +8596,7 @@ calculate_ranges <- function(fname=fname, outpath=outpath){
   )
   grDevices::dev.off()
 
-  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbund500.pdf"))
+  grDevices::pdf(file=paste0(outpath,"/", fname,"/Summary_output/",fname, "_RepeatAbundmax.pdf"))
   # https://www.geeksforgeeks.org/add-vertical-and-horizontal-lines-to-ggplot2-plot-in-r/
   print(
     ggplot2::ggplot(data=RepeatAbundTotal, ggplot2::aes(x=Genome_position, y=RepAbund500))+

@@ -4,7 +4,16 @@
 \alias{calculate_ranges}
 \title{calculate_ranges}
 \usage{
-calculate_ranges(fname = fname, outpath = outpath)
+calculate_ranges(
+  fname = fname,
+  outpath = outpath,
+  Shannon_bin_size = 500,
+  Shannon_SD = 2,
+  RepAbundMax_bin_size = 80,
+  RepAbundMax_SD = 2.5,
+  RepAbundMin_bin_size = 500,
+  RepAbundMin_SD = 2
+)
 }
 \arguments{
 \item{nam}{input dataset}
