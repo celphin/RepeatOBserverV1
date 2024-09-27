@@ -24,6 +24,7 @@ Imports:
     zoo,
     ChemoSpecUtils,
     ggplot2,
+    colorspace,
     tidyverse,
     dplyr
 Suggests: 
