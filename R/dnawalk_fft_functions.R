@@ -8232,11 +8232,8 @@ calculate_ranges <- function(fname=fname, outpath=outpath,
     RepeatAbundance_total$Chrnum0 <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
     RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,1])
     RepeatAbundance_total$Chrpart <- as.numeric(stringr::str_split(RepeatAbundance_total$Chrnum0, "-", simplify =TRUE)[,2])
-    if (!is.na(RepeatAbundance_total$Chrpart)){
-      RepeatAbundance_total$Genome_position <- RepeatAbundance_total$Genome_position + (RepeatAbundance_total$Chrpart -1)*4e8
-    } else{
-      RepeatAbundance_total$Genome_position <- RepeatAbundance_total$Genome_position
-    }
+    RepeatAbundance_total$Chrpart[which(is.na(RepeatAbundance_total$Chrpart))] <-1
+    RepeatAbundance_total$Genome_position <- RepeatAbundance_total$Genome_position + (RepeatAbundance_total$Chrpart -1)*4e8
   }else{
     RepeatAbundance_total$Chrnum <- as.factor(stringr::str_split(RepeatAbundance_total$Chromosome, "r", simplify =TRUE)[,2])
   }
@@ -8412,11 +8409,8 @@ calculate_ranges <- function(fname=fname, outpath=outpath,
     Shannon_div_total$Chrnum0 <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
     Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,1])
     Shannon_div_total$Chrpart <- as.numeric(stringr::str_split(Shannon_div_total$Chrnum0, "-", simplify =TRUE)[,2])
-    if (!is.na(Shannon_div_total$Chrpart)){
-      Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position + (Shannon_div_total$Chrpart -1)*4e8
-    } else{
-      Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position
-    }
+    Shannon_div_total$Chrpart[which(is.na(Shannon_div_total$Chrpart))] <-1
+    Shannon_div_total$Genome_position <- Shannon_div_total$Genome_position + (Shannon_div_total$Chrpart -1)*4e8
   }else{
     Shannon_div_total$Chrnum <- as.factor(stringr::str_split(Shannon_div_total$Chromosome, "r", simplify =TRUE)[,2])
   }
