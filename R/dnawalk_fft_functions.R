@@ -6358,7 +6358,7 @@ run_summary_plots_range <- function(fname=fname, chromosome=chromosome, inpath=i
   }
   if (startbp>40000001 && endbp>40000001 && startbp<5.5e+07 && endbp<5.5e+07){
     startval="40000001"
-    endval="5.5e+07"
+    endval="4.5e+07"
   }
 
   if (startbp>45000001 && endbp>45000001 && startbp<5e+07 && endbp<5e+07){
