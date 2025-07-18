@@ -57,7 +57,7 @@ RepeatOBserver is an R package that can be run on any chromosome scale reference
 RepeatOBserver returns many plots describing the tandem repeats and clusters of transposons found across each chromosome. 
 Based on the repeat patterns, RepeatOBserver also returns a predicted centromere location for each chromosome based on the repeat diversity across that chromosome. 
 
-You can learn more about the interpretations of the plots in our manuscript here: https://www.biorxiv.org/content/10.1101/2023.12.30.573697v1
+You can learn more about the interpretations of the plots in our manuscript here:  https://doi.org/10.1111/1755-0998.14084 
 
 ### Software needed
 The following software are need to run the automatic RepeatOBserver script: 
