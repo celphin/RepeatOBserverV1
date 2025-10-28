@@ -99,8 +99,9 @@ To install the R package "RepeatOBserverV1", you will first need to install the 
 
 ### Version changes
 
-Oct 28th 2025 : The Setup_Run_Repeats.sh has been updated and this should fix the renaming of the chromosomes to be in a more logical order. It is recommended to use this new script when using the program for the first time. You can also find the old script here is you want to stay with the previous naming system: Setup_Run_Repeats_old_Oct28_2025.sh
-There is also a small update for the R package (RepeatOBserverV1) such that will now finish plotting the summary plots for all chromosomes. This should not affect most genomes but solves a rare error that occurs in some genomes. 
+Oct 28th 2025 : 
+- The Setup_Run_Repeats.sh has been updated and this should fix the renaming of the chromosomes to be in a more logical order. It is recommended to use this new script when using the program for the first time. You can also find the old script here is you want to stay with the previous naming system: Setup_Run_Repeats_old_Oct28_2025.sh
+- There is also a small update for the R package (RepeatOBserverV1) such that will now finish plotting the summary plots for all chromosomes. This should not affect most genomes but solves a rare error that occurs in some genomes. 
 
 
 Feb 20th, 2024 : The older Setup_Run_Repeats_old_Feb20_2024.sh may still work but it is ideal to rerun the program from scratch (i.e. download the new script, reinstall R library and delete old folders). 
