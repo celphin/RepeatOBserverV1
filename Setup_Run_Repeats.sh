@@ -92,15 +92,31 @@ split_fasta() {
   echo "The resulting chromosome files are: "
   ls    
   
-  # rename chromosomes
+  # # rename chromosomes old version
+  # touch ../chromosome_renaming.txt
+  # echo "Old_Name	New_Name" >> ../chromosome_renaming.txt
+  # count=1
+  # for filename in *; do
+    # new_name="${species}_${haplotype}_Chr$count"
+    # # Rename the file
+    # mv "$filename" "$new_name"
+    # echo "$filename	$new_name" >> ../chromosome_renaming.txt
+    # ((count++))
+  # done
+  # echo "Files renamed"
+  
+  # rename chromosomes new version
   touch ../chromosome_renaming.txt
-  echo "Old_Name	New_Name" >> ../chromosome_renaming.txt
+  echo -e "Old_Name\tNew_Name" >> ../chromosome_renaming.txt
   count=1
-  for filename in *; do
+  # Using ls -v to sort files in natural order and handle filenames with spaces
+  ls -v | while IFS= read -r filename; do
+    # Create new name based on count
     new_name="${species}_${haplotype}_Chr$count"
     # Rename the file
     mv "$filename" "$new_name"
-    echo "$filename	$new_name" >> ../chromosome_renaming.txt
+    # Record the old and new names
+    echo -e "$filename\t$new_name" >> ../chromosome_renaming.txt
     ((count++))
   done
   echo "Files renamed"
