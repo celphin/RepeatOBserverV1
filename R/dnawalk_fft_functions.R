@@ -8460,7 +8460,12 @@ calculate_ranges <- function(fname=fname, outpath=outpath,
 
     #library(ChemoSpecUtils)
 
-    cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
+    #cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
+    #cent_range[nrow(cent_range)+1,] <- c(0,0,0,0,0)
+
+    if (length(cent_range_wind)>0) {
+        cent_range <- ChemoSpecUtils::check4Gaps(cent_range_wind)
+    } else {cent_range <- data.frame(0,0,0,0)}
     cent_range[nrow(cent_range)+1,] <- c(0,0,0,0,0)
 
     cent_range_pos_start <- cent_range[,1]*5000
