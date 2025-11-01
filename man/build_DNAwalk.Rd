@@ -4,7 +4,12 @@
 \alias{build_DNAwalk}
 \title{build_DNAwalk}
 \usage{
-build_DNAwalk(fname = fname, inpath = inpath, outpath = outpath)
+build_DNAwalk(
+  fname = fname,
+  chromosome = chromosome,
+  inpath = inpath,
+  outpath = outpath
+)
 }
 \arguments{
 \item{nam}{input dataset}

@@ -4,7 +4,12 @@
 \alias{calc_R2_DNAwalk}
 \title{calc_R2_DNAwalk}
 \usage{
-calc_R2_DNAwalk(fname = fname, inpath = inpath, outpath = outpath)
+calc_R2_DNAwalk(
+  fname = fname,
+  chromosome = chromosome,
+  inpath = inpath,
+  outpath = outpath
+)
 }
 \arguments{
 \item{nam}{input dataset}

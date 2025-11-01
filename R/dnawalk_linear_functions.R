@@ -10,10 +10,10 @@
 #' @examples
 #' function()
 #' @export
-build_DNAwalk <- function(fname=fname,  inpath=inpath, outpath=outpath) {
+build_DNAwalk <- function(fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath) {
 
   # get total length of chromosome
-  dna1 <- utils::read.table(paste0(inpath, fname, ".fasta"), sep = "\t", header = FALSE, check.names = FALSE)
+  dna1 <- utils::read.table(paste0(inpath, fname,"/chromosome_files/",fname,"_",chromosome, ".fasta"), sep = "\t", header = FALSE, check.names = FALSE)
 
   # Load DNA sequence
   dna1 <- dna1[-1, ]
@@ -49,10 +49,10 @@ build_DNAwalk <- function(fname=fname,  inpath=inpath, outpath=outpath) {
   colnames(DNAwalk_long_rows) <- c("AT", "CG", "Position")
 
   # Optional: Save result for each chunk
-  out_file <- paste0(outpath, "/", fname,"_total_dnawalk.txt")
+  out_file <- paste0(outpath, "/", fname,"_", chromosome, "_total_dnawalk.txt")
   write.table(DNAwalk_long_rows, file = out_file, sep = "\t", row.names = FALSE, col.names = TRUE)
 
-  grDevices::png(paste0(outpath, "/png/", fname, "_DNAwalk.png"), height=1000, width=1000)
+  grDevices::png(paste0(outpath, "/png/", fname,"_", chromosome, "_DNAwalk.png"), height=1000, width=1000)
   plot(DNAwalk_long_rows$AT, DNAwalk_long_rows$CG, main=fname )
   grDevices::dev.off()
 
@@ -71,10 +71,10 @@ build_DNAwalk <- function(fname=fname,  inpath=inpath, outpath=outpath) {
 #' @examples
 #' function()
 #' @export
-calc_R2_DNAwalk <- function(fname=fname, inpath=inpath, outpath=outpath) {
+calc_R2_DNAwalk <- function(fname=fname, chromosome=chromosome, inpath=inpath, outpath=outpath) {
 
   # read in total dnawalk
-  DNAwalk_long_rows <- utils::read.table(paste0(outpath, "/",  fname, "_total_dnawalk.txt"), sep = "\t", header = TRUE)
+  DNAwalk_long_rows <- utils::read.table(paste0(outpath, "/",  fname, "_", chromosome, "_total_dnawalk.txt"), sep = "\t", header = TRUE)
 
   head(DNAwalk_long_rows)
   tail(DNAwalk_long_rows)
@@ -153,12 +153,11 @@ calc_R2_DNAwalk <- function(fname=fname, inpath=inpath, outpath=outpath) {
 
   R2_slopes <- cbind(r_squared_values, slope_values)
 
-  write.table(R2_slopes, file = paste0(outpath, "/",  fname, "_r2_slope.txt"), sep = "\t", row.names = FALSE, col.names = FALSE)
+  write.table(R2_slopes, file = paste0(outpath, "/",  fname, "_", chromosome,"_r2_slope.txt"), sep = "\t", row.names = FALSE, col.names = FALSE)
 
   non_zero_r2 <- r_squared_values[r_squared_values != 0]
   average_r2 <- mean(non_zero_r2)
   #print(average_r2)
-
 
   non_zero_slope <- slope_values[slope_values != 0]
   average_slope <- mean(non_zero_slope)
@@ -391,6 +390,9 @@ calc_R2_TEs <- function(fname=fname, chromosome=chromosome, inpath=inpath, outpa
   print(TE_avg_slope)
 
 }
+
+
+
 
 
 #' DNAwalks_with_genes
