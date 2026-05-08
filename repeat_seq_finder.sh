@@ -37,13 +37,13 @@ sed -n "23,$p" ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out
 #echo $linep
 
 # extract values from output
-emb_start=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 2)
+emb_start=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 1)
 echo $emb_start
 
-emb_end=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 3)
+emb_end=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 2)
 echo $emb_end
 
-repeatlength=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 6)
+repeatlength=$(tail -n4 ${pathname}/${Chromosome_file}_${start_seq}-${end_seq}.out | head -n1 |  tr -s " " "_" | cut -d '_' -f 5)
 echo $repeatlength
 
 # get line numbers associated with character positions
